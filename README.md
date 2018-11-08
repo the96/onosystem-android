@@ -3,10 +3,10 @@
 
 
 ## リポジトリの使い方
-プロジェクトの関連資料はそれぞれ以下のサブディレクトリで管理してください。
-* Document関連 -> doc
-* Androidのソースコード -> android
-* Serverのソースコード -> server
+プロジェクトの関連資料はそれぞれのリポジトリで管理してください。
+* Document関連 -> onosystem-doc
+* Androidのソースコード -> onosystem-android
+* Serverのソースコード -> onosystem-server
 
 ## 利用上のルール
 * それぞれブランチを切ってコミットしてください。  
