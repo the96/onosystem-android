@@ -21,10 +21,14 @@
         </activity>
 
         <activity
-            android:name=".SubActivity"
-            android:label="@string/sub_app_name" >
+            android:name=".CourierDeliveryDetail"
+            android:label="@string/courier_detail_name" >
         </activity>
 
+        <activity
+            android:name=".TimeChange"
+            android:label="@string/time_change_name" >
+        </activity>
     </application>
 
 </manifest>
