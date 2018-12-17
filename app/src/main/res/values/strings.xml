@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ホーム画面</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">ユーザ情報</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="sub_app_name">配達物詳細画面</string>
+    <string name="main">Main Activity</string>
+    <string name="sub">Sub Activity</string>
+</resources>
