@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity
 
     // リスト項目が押されたときのイベント
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getApplication(), SubActivity.class);  // 遷移先指定
+        Intent intent = new Intent(getApplication(), CourierDeliveryDetail.class);  // 遷移先指定
         intent.putExtra("DATA", position);// 遷移先に値を渡す，(ここではリストのポジションにしている)
         startActivity(intent);// SubActivityに遷移
     }

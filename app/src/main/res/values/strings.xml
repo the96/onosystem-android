@@ -9,4 +9,9 @@
     <string name="sub_app_name">配達物詳細画面</string>
     <string name="main">Main Activity</string>
     <string name="sub">Sub Activity</string>
+    <string name="rescheduling_button">日時変更</string>
+    <string name="message">message</string>
+    <string name="courier_detail_name">配達員側詳細画面</string>
+    <string name="change_complete">変更確定</string>
+    <string name="time_change_name">日時変更画面</string>
 </resources>
