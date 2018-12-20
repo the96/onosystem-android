@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.onosystems;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

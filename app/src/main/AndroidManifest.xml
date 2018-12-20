@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.test">
+    package="com.example.onosystems">
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".HomeActivity"
+            android:name="com.example.onosystems.HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,12 +21,12 @@
         </activity>
 
         <activity
-            android:name=".CourierDeliveryDetail"
+            android:name="com.example.onosystems.CourierDeliveryDetail"
             android:label="@string/courier_detail_name" >
         </activity>
 
         <activity
-            android:name=".TimeChange"
+            android:name="com.example.onosystems.TimeChange"
             android:label="@string/time_change_name" >
         </activity>
     </application>
