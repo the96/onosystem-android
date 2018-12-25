@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.onosystems.HomeActivity"
+            android:name="com.example.onosystems.CourierHomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,6 +29,17 @@
             android:name="com.example.onosystems.TimeChange"
             android:label="@string/time_change_name" >
         </activity>
+
+        <activity
+            android:name="com.example.onosystems.HomeActivity"
+            android:label="@string/time_change_name" >
+        </activity>
+
+        <activity
+            android:name="com.example.onosystems.CustomerHomeActivity"
+            android:label="@string/time_change_name" >
+        </activity>
+
     </application>
 
 </manifest>
