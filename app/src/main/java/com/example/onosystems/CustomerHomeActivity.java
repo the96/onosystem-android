@@ -16,10 +16,15 @@ public class CustomerHomeActivity extends HomeActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
 
-            if (id == R.id.toggle1 || id == R.id.toggle2 || id == R.id.toggle3) {
-                toggleVisibleFromReceivable();
-            } else if (id == R.id.receivableSelect) {
-                receivableSelect();
+            switch(id) {
+                case R.id.toggle1:
+                case R.id.toggle2:
+                case R.id.toggle3:
+                    toggleVisibleFromReceivable();
+                    break;
+                case R.id.receivableSelect:
+                    receivableSelect();
+                    break;
             }
             return super.onOptionsItemSelected(item);
         }

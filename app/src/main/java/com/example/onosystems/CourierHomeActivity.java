@@ -1,5 +1,6 @@
 package com.example.onosystems;
 
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,16 +17,24 @@ public class CourierHomeActivity extends HomeActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
 
-            if (id == R.id.mapView) {
-                showMapActivity(); //マップ画面へ
-            } else if (id == R.id.toggle1 || id == R.id.toggle2 || id == R.id.toggle3) {
-                toggleVisibleFromReceivable();
-            } else if (id == R.id.receivableSelect) {
-                receivableSelect();
-            } else if (id == R.id.sortTime) {
-                sortTime();
-            } else if  (id == R.id.sortDistance) {
-                sortDistance();
+            switch(id) {
+                case R.id.mapView:
+                    showMapActivity();
+                    break;
+                case R.id.toggle1:
+                case R.id.toggle2:
+                case R.id.toggle3:
+                    toggleVisibleFromReceivable();
+                    break;
+                case R.id.receivableSelect:
+                    receivableSelect();
+                    break;
+                case R.id.sortTime:
+                    sortTime();
+                    break;
+                case R.id.sortDistance:
+                    sortDistance();
+                    break;
             }
             return super.onOptionsItemSelected(item);
         }
@@ -37,5 +46,7 @@ public class CourierHomeActivity extends HomeActivity {
         }
 
         public void showMapActivity() {
+            // Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
+            // startActivity(intent);// CourierMapActivityに遷移
         }
 }

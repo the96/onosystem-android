@@ -32,9 +32,9 @@ public class HomeActivity extends AppCompatActivity
        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
 
     public ListView listView;
-    public Delivery[] deliveryInfo = new Delivery[100];
+    public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public List<Map<String, String>> list;
-    public JSONArray datalength;
+    public JSONArray deliveryData;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,23 +65,18 @@ public class HomeActivity extends AppCompatActivity
 
     public void getDeliveries() {
         //本来はサーバからデータ受け取る
-        // 各要素ごとにインスタンス化
-        for(int i = 0; i < deliveryInfo.length; i++) {
-            deliveryInfo[i] = new Delivery();
-        }
-
         try {
             JSONObject json = new JSONObject("{\"data\":[{\"name\":\"001\", \"time\":\"001\", \"day\":\"1\", \"slipNumber\":\"1111\", \"address\":\"1001\"}," +
                     " {\"name\":\"002\", \"time\":\"002\", \"day\":\"2\", \"slipNumber\":\"1112\", \"address\":\"1002\"}, " +
                     "{\"name\":\"003\", \"time\":\"003\", \"day\":\"3\", \"slipNumber\":\"1113\", \"address\":\"1003\"}]}");
 
-            datalength = json.getJSONArray("data");
+            deliveryData = json.getJSONArray("data");
 
-            for (int i = 0; i < datalength.length(); i++) {
-                deliveryInfo[i].name = json.getJSONArray("data").getJSONObject(i).getString("name");
-                deliveryInfo[i].day = json.getJSONArray("data").getJSONObject(i).getInt("day");
-                deliveryInfo[i].slipNumber = json.getJSONArray("data").getJSONObject(i).getLong("slipNumber");
-                deliveryInfo[i].address = json.getJSONArray("data").getJSONObject(i).getString("address");
+            for (int i = 0; i < deliveryData.length(); i++) {
+                deliveryInfo.add(new Delivery(deliveryData.getJSONObject(i).getString("name"),
+                                              deliveryData.getJSONObject(i).getInt("day"),
+                                              deliveryData.getJSONObject(i).getLong("slipNumber"),
+                                              deliveryData.getJSONObject(i).getString("address")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -89,13 +84,13 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void reloadDeliveries() {
-        list = new ArrayList<Map<String, String>>();
-        for (int i = 0; i < datalength.length(); i++) {
-            Map<String, String> item = new HashMap<String, String>();
-            item.put("name", deliveryInfo[i].name);
-            item.put("day", String.valueOf(deliveryInfo[i].day));
-            item.put("slipNumber", String.valueOf(deliveryInfo[i].slipNumber));
-            item.put("address", deliveryInfo[i].address);
+        list = new ArrayList<>();
+        for (int i = 0; i < deliveryInfo.size(); i++) {
+            Map<String, String> item = new HashMap<>();
+            item.put("name", deliveryInfo.get(i).getName());
+            item.put("day", String.valueOf(deliveryInfo.get(i).getDay()));
+            item.put("slipNumber", String.valueOf(deliveryInfo.get(i).getSlipNumber()));
+            item.put("address", deliveryInfo.get(i).getAddress());
             list.add(item);
         }
 
@@ -161,4 +156,29 @@ class Delivery {
     double lat;
     double lng;
     boolean visible;
+
+    /* ↓今使っている部分だけ書いてます↓ */
+
+    public int getDay() {
+        return this.day;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public long getSlipNumber() {
+        return this.slipNumber;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public Delivery(String name, int day, long slipNumber, String address) {
+        this.name = name;
+        this.day = day;
+        this.slipNumber = slipNumber;
+        this.address = address;
+    }
 }
