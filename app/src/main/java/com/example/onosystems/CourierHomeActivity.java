@@ -1,52 +1,57 @@
 package com.example.onosystems;
 
 import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class CourierHomeActivity extends HomeActivity {
 
-        //toolbarのアイテム表示
-        public boolean onCreateOptionsMenu(Menu menu) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.tool_options_courier, menu);
-            return super.onCreateOptionsMenu(menu);
+    @Override
+    public void setUserOptions() {
+        toolBarLayout = R.menu.tool_options_courier;
+        detailActivity = CourierDeliveryDetail.class;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch(id) {
+            case R.id.mapView:
+                showMapActivity();
+                break;
+            case R.id.sortTime:
+                sortTime();
+                break;
+            case R.id.sortDistance:
+                sortDistance();
+                break;
         }
 
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
+        return super.onOptionsItemSelected(item);
+    }
 
-            switch(id) {
-                case R.id.mapView:
-                    showMapActivity();
-                    break;
-                case R.id.toggle1:
-                case R.id.toggle2:
-                case R.id.toggle3:
-                    toggleVisibleFromReceivable();
-                    break;
-                case R.id.receivableSelect:
-                    receivableSelect();
-                    break;
-                case R.id.sortTime:
-                    sortTime();
-                    break;
-                case R.id.sortDistance:
-                    sortDistance();
-                    break;
+    public void sortTime() {
+        //BubbleSort
+        for (int i = 0; i < deliveryInfo.size()-1; i++) {
+            for (int j = 1; j < deliveryInfo.size(); j++) {
+                if (deliveryInfo.get(i).getTime() > deliveryInfo.get(j).getTime()) {
+                    Delivery tmp = deliveryInfo.get(i);
+                    deliveryInfo.set(i, deliveryInfo.get(j));
+                    deliveryInfo.set(j, tmp);
+                }
             }
-            return super.onOptionsItemSelected(item);
         }
 
-        public void sortTime() {
-        }
+        reloadDeliveries();
+    }
 
-        public void sortDistance() {
-        }
+    public void sortDistance() {
 
-        public void showMapActivity() {
-            // Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-            // startActivity(intent);// CourierMapActivityに遷移
-        }
+    }
+
+    public void showMapActivity() {
+        //Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
+        //intent.putExtra("itemInfo", list.toString());
+        // startActivity(intent);// CourierMapActivityに遷移
+    }
+
 }

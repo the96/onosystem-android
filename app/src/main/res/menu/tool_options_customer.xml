@@ -8,21 +8,27 @@
         android:title=""/>
 
     <item
-    android:id="@+id/toggle1"
-    android:icon="@drawable/ic_menu_camera"
-    app:showAsAction="always"
-    android:title=""/>
-
-    <item
         android:id="@+id/toggle2"
-        android:icon="@drawable/ic_menu_camera"
-        app:showAsAction="always"
-        android:title=""/>
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_switch2"
+        app:showAsAction="always" />
 
     <item
-        android:id="@+id/toggle3"
-        android:icon="@drawable/ic_menu_camera"
-        app:showAsAction="always"
-        android:title=""/>
+        android:id="@+id/toggle1"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_switch1"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/toggle0"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_switch0"
+        app:showAsAction="always" />
 
 </menu>
