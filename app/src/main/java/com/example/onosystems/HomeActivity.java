@@ -65,8 +65,8 @@ public class HomeActivity extends AppCompatActivity
         //本来はサーバからデータ受け取る
         try {
             JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}]");
+                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
+                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}]");
 
             for (int i = 0; i < json.length(); i++) {
                 JSONObject deliveryData = json.getJSONObject(i);
@@ -82,6 +82,7 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
     }
 
     public void reloadDeliveries() {
@@ -97,9 +98,9 @@ public class HomeActivity extends AppCompatActivity
                 item.put("time", String.valueOf(sdf.format(date)));
                 item.put("slipNumber", String.valueOf(deliveryInfo.get(i).getSlipNumber()));
                 item.put("address", deliveryInfo.get(i).getAddress());
-                item.put("ship_from", deliveryInfo.get(i).getShip_from());
-                item.put("delivered_status", String.valueOf(deliveryInfo.get(i).getDelivered_status()));
-                item.put("receivable_status", String.valueOf(deliveryInfo.get(i).getReceivable_status()));
+                item.put("shipFrom", deliveryInfo.get(i).getShip_from());
+                item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).getDelivered_status()));
+                item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).getReceivable_status()));
                 // item.put("unixTime", String.valueOf(deliveryInfo.get(i).getTime())); //受け渡し用
                 item.put("image", statusName);
                 list.add(item);
@@ -108,7 +109,7 @@ public class HomeActivity extends AppCompatActivity
 
         SimpleAdapter adapter = new SimpleAdapter(this,
                 list, R.layout.list_layout,
-                new String[]{"name", "time", "slipNumber", "address", "image", "ship_from"}, // どの項目を
+                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom"}, // どの項目を
                 new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom} // どのidの項目に入れるか
         );
 
@@ -182,6 +183,7 @@ public class HomeActivity extends AppCompatActivity
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         //intent.putExtra("itemInfo", listView.getItemAtPosition(position).toString());
+        intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
     }
 
@@ -255,6 +257,10 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
     }
 
+    public void editProfile() {
+
+    }
+
 }
 
 class Delivery {
@@ -266,11 +272,6 @@ class Delivery {
     int delivered_status;
     int receivable_status;
     boolean visible;
-    int UNDELIVERED = 0;
-    int DELIVERD = 1;
-    int UNSELECTED = 0;
-    int UNRECEIVABLE = 1;
-    int RECEIVABLE =2;
 
     public long getSlipNumber() { return this.slipNumber; }
 
@@ -301,4 +302,12 @@ class Delivery {
         this.receivable_status = receivable_status;
         this.visible = visible;
     }
+}
+
+class User {
+    String name;
+    String password;
+    String mail;
+    long tel;
+
 }
