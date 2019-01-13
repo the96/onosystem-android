@@ -93,7 +93,7 @@ public class HomeActivity extends AppCompatActivity
                 "  password: \"onosystems\"\n" +
                 "}";
         PostAPI api = new PostAPI("http://54.92.85.232/aws/Login",body);
-        api.setRefference(this);
+        api.setReference(this);
         api.execute("");
         System.out.println("aaa");
     }
@@ -159,9 +159,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void postedCallback(String json) {
-        System.out.println("ssssssssssssssssssssssssssssssssssssssssssssss");
         System.out.println(json);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 }
 

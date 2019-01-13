@@ -47,13 +47,12 @@ public class PostAPI extends AsyncTask<String,String,String> {
         this.body = body;
     }
 
-    public void setRefference(PostedCallback ref) {
+    public void setReference(PostedCallback ref) {
         this.ref = ref;
     }
 
     @Override
     protected String doInBackground(String... strings) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.json = post(url,body);
         return this.json;
     }

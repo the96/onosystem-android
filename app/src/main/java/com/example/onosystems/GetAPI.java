@@ -46,7 +46,7 @@ public class GetAPI extends AsyncTask<String,String,String> {
         this.body = body;
     }
 
-    public void setRefference(GotCallback ref) {
+    public void setReference(GotCallback ref) {
         this.ref = ref;
     }
 
