@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
-       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
+       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,PostAPI.PostedCallback {
 
     public ListView listView;
     public Delivery[] deliveryInfo = new Delivery[100];
@@ -39,11 +41,11 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
-
         toolbarView();
         getDeliveries();
         reloadDeliveries();
         findDeliveries();
+
     }
 
     public void findDeliveries() {
@@ -86,6 +88,14 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        String body =  "{\n" +
+                "  id: \"kut@gmail.com\",\n" +
+                "  password: \"onosystems\"\n" +
+                "}";
+        PostAPI api = new PostAPI("http://54.92.85.232/aws/Login",body);
+        api.setRefference(this);
+        api.execute("");
+        System.out.println("aaa");
     }
 
     public void reloadDeliveries() {
@@ -147,6 +157,12 @@ public class HomeActivity extends AppCompatActivity
     public void receivableSelect() {
     }
 
+    @Override
+    public void postedCallback(String json) {
+        System.out.println("ssssssssssssssssssssssssssssssssssssssssssssss");
+        System.out.println(json);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    }
 }
 
 class Delivery {
