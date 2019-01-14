@@ -91,16 +91,12 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        try {
-            SampleLogin loginTask = new SampleLogin();
-            String body = "{\n" +
-                    "  id: \"kut@gmail.com\",\n" +
-                    "  password: \"onosystems\"\n" +
-                    "}";
-            loginTask.execute("http://54.92.85.232/aws/Login", body);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        SampleLogin loginTask = new SampleLogin();
+        String body = "{\n" +
+                "  id: \"kut@gmail.com\",\n" +
+                "  password: \"onosystems\"\n" +
+                "}";
+        loginTask.execute("http://54.92.85.232/aws/Login", body);
     }
 
     public void reloadDeliveries() {
