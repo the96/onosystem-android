@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import org.json.JSONArray;
@@ -42,6 +43,8 @@ public class HomeActivity extends AppCompatActivity
     public int receivableStatus;
 
     public int toolBarLayout;
+    public int drawerLayout;
+    public int homeLayout;
     public Class detailActivity;
 
     public ActionBarDrawerToggle toggle;
@@ -50,23 +53,38 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_layout);
-
         setUserOptions();
+        setContentView(homeLayout);
+
         toolbarView();
         getDeliveries();
         reloadDeliveries();
         findDeliveries();
+        setProfile();
     }
 
     public void setUserOptions() { }
 
+    public void setProfile() { }
+    public void updateProfile() {  }
+
+    //荷物関係
     public void getDeliveries() {
         //本来はサーバからデータ受け取る
         try {
             JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
                                             "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
-                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}]");
+                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"004\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"008\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"010\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"013\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}]");
 
             for (int i = 0; i < json.length(); i++) {
                 JSONObject deliveryData = json.getJSONObject(i);
@@ -84,7 +102,6 @@ public class HomeActivity extends AppCompatActivity
         }
 
     }
-
     public void reloadDeliveries() {
         list = new ArrayList<>(); //初期化
 
@@ -94,14 +111,14 @@ public class HomeActivity extends AppCompatActivity
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
 
             if(deliveryInfo.get(i).getVisible()) {
-                item.put("name", deliveryInfo.get(i).getName());
+                item.put("name", deliveryInfo.get(i).name);
                 item.put("time", String.valueOf(sdf.format(date)));
-                item.put("slipNumber", String.valueOf(deliveryInfo.get(i).getSlipNumber()));
-                item.put("address", deliveryInfo.get(i).getAddress());
-                item.put("shipFrom", deliveryInfo.get(i).getShip_from());
-                item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).getDelivered_status()));
-                item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).getReceivable_status()));
-                // item.put("unixTime", String.valueOf(deliveryInfo.get(i).getTime())); //受け渡し用
+                item.put("slipNumber", String.valueOf(deliveryInfo.get(i).slipNumber));
+                item.put("address", deliveryInfo.get(i).address);
+                item.put("shipFrom", deliveryInfo.get(i).ship_from);
+                item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).delivered_status));
+                item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
+                item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
                 item.put("image", statusName);
                 list.add(item);
             }
@@ -109,7 +126,7 @@ public class HomeActivity extends AppCompatActivity
 
         SimpleAdapter adapter = new SimpleAdapter(this,
                 list, R.layout.list_layout,
-                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom"}, // どの項目を
+                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
                 new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom} // どのidの項目に入れるか
         );
 
@@ -123,7 +140,7 @@ public class HomeActivity extends AppCompatActivity
     public void toolbarView(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(drawerLayout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -182,14 +199,12 @@ public class HomeActivity extends AppCompatActivity
     // リスト項目が押されたときのイベント
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        //intent.putExtra("itemInfo", listView.getItemAtPosition(position).toString());
         intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
     }
 
     //バッグボタンが押されたときのイベント
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -257,10 +272,6 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
     }
 
-    public void editProfile() {
-
-    }
-
 }
 
 class Delivery {
@@ -309,5 +320,19 @@ class User {
     String password;
     String mail;
     long tel;
+
+    public String getName() { return name; }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public long getTel() {
+        return tel;
+    }
 
 }
