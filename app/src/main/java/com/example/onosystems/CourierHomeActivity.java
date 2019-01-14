@@ -17,6 +17,9 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 public class CourierHomeActivity extends HomeActivity {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileStoreCode, profilePassword, profileRePassword;
@@ -48,16 +51,12 @@ public class CourierHomeActivity extends HomeActivity {
     }
 
     public void sortTime() {
-        //BubbleSort
-        for (int i = 0; i < deliveryInfo.size()-1; i++) {
-            for (int j = 1; j < deliveryInfo.size(); j++) {
-                if (deliveryInfo.get(i).getTime() > deliveryInfo.get(j).getTime()) {
-                    Delivery tmp = deliveryInfo.get(i);
-                    deliveryInfo.set(i, deliveryInfo.get(j));
-                    deliveryInfo.set(j, tmp);
-                }
+        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+            @Override
+            public int compare(Delivery a, Delivery b){
+                return a.time - b.time;
             }
-        }
+        });
 
         reloadDeliveries();
     }
