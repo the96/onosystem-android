@@ -2,6 +2,7 @@ package com.example.onosystems;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -23,6 +24,10 @@ import java.util.Comparator;
 public class CourierHomeActivity extends HomeActivity {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileStoreCode, profilePassword, profileRePassword;
+
+    AlertDialog alertDialog;
+
+
 
     @Override
     public void setUserOptions() {
@@ -75,7 +80,7 @@ public class CourierHomeActivity extends HomeActivity {
     public void getProfileCourier() {
         //本来はサーバからデータ受け取る
         try {
-            JSONObject profileData = new JSONObject("{\"name\":\"001\", \"mail\":\"1546239600\", \"tel\":\"1000000001\", \"store_code\":\"1001\"}");
+            JSONObject profileData = new JSONObject("{\"name\":\"driver\", \"mail\":\"driver@gmail.com\", \"tel\":\"1000000001\", \"store_code\":\"1001\"}");
 
             profileInfo = new Courier(profileData.getString("name"),
                                       profileData.getString("mail"),
@@ -102,13 +107,27 @@ public class CourierHomeActivity extends HomeActivity {
         profileTel.setText(String.valueOf(((Courier) profileInfo).getTel()), TextView.BufferType.NORMAL);
         profileStoreCode.setText(String.valueOf(((Courier) profileInfo).getStore_code()), TextView.BufferType.NORMAL);
         profilePassword.setText(((Courier) profileInfo).getPassword(), TextView.BufferType.NORMAL);
+        profileRePassword.setText("");
 
-        Button editButton = (Button)findViewById(R.id.edit_profile_button);
+        Button editButton = findViewById(R.id.edit_profile_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                updateProfile();
-                drawer.closeDrawer(GravityCompat.START);
+                alertDialog = new AlertDialog.Builder(CourierHomeActivity.this)
+                        .setTitle("確認")
+                        .setMessage("プロフィールの更新をしますか？")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                updateProfile(); //プロフィールを更新する
+                                drawer.closeDrawer(GravityCompat.START);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
             }
         });
     }
@@ -116,12 +135,25 @@ public class CourierHomeActivity extends HomeActivity {
     @Override
     public void updateProfile() {
         //変更されたprofileデータを渡す
-        SpannableStringBuilder newProfileName = (SpannableStringBuilder)profileName.getText();
-        SpannableStringBuilder newProfileMail = (SpannableStringBuilder)profileMail.getText();
-        SpannableStringBuilder newProfileTel = (SpannableStringBuilder)profileTel.getText();
-        SpannableStringBuilder newProfileStoreCode = (SpannableStringBuilder)profileStoreCode.getText();
-        SpannableStringBuilder newProfilePassword = (SpannableStringBuilder)profilePassword.getText();
-        SpannableStringBuilder newProfileRePassword = (SpannableStringBuilder)profileName.getText();
+        String newProfileName = profileName.getText().toString();
+        String newProfileMail = profileMail.getText().toString();
+        String newProfileTel = profileTel.getText().toString();
+        String newProfileStoreCode = profileStoreCode.getText().toString();
+        String newProfilePassword = profilePassword.getText().toString();
+        String newProfileRePassword = profileRePassword.getText().toString();
+
+        if(newProfilePassword.equals(newProfileRePassword)) {
+            //更新する
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("パスワードが一致しません").setPositiveButton("やり直す", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            });
+            builder.show();
+        }
     }
 
 }

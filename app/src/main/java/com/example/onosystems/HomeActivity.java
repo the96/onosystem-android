@@ -126,7 +126,7 @@ public class HomeActivity extends AppCompatActivity
 
         SimpleAdapter adapter = new SimpleAdapter(this,
                 list, R.layout.list_layout,
-                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
+                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom"}, // どの項目を
                 new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom} // どのidの項目に入れるか
         );
 
@@ -152,6 +152,7 @@ public class HomeActivity extends AppCompatActivity
                 if (drawer.isDrawerVisible(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 } else {
+                    setProfile();
                     drawer.openDrawer(GravityCompat.START);
                 }
             }
