@@ -1,22 +1,33 @@
 package com.example.takamaru.test;
+
 import android.location.Geocoder;
 import android.location.Address;
 import android.content.Intent;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.widget.Toast;
+import android.Manifest;
+import android.support.v4.app.ActivityCompat;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -32,9 +43,11 @@ class Deliver {
 }
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
+    LocationManager locationManager;
+    LatLng mylocation; //初期現在地
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +58,123 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if(mMap != null) {
-            //mMap.setMyLocationEnabled(true);
-        }
+
 
     }
 
+    private class MyLocationSource implements LocationSource { //現在地を指定した座標に変える(テスト用)
+        @Override
+        public void activate(OnLocationChangedListener listener) {
+            // 好きな緯度・経度を設定した Location を作成
+            Location location = new Location("MyLocation");
+            location.setLatitude(33.620972);
+            location.setLongitude(133.719778);
+            location.setAccuracy(100); // 精度
+            // Location に設定
+            listener.onLocationChanged(location);
+            // カメラの初期位置用にLatLng型にもしておく
+            mylocation = new LatLng(location.getLatitude(), location.getLongitude());
+        }
+        @Override
+        public void deactivate() {
+        }
+    }
+
+    private void locationStart() { //
+        Log.d("debug", "locationStart()");
+
+        // LocationManager インスタンス生成
+        locationManager =
+                (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d("debug", "location manager Enabled");
+        } else {
+            // GPSを設定するように促す
+            Intent settingsIntent =
+                    new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(settingsIntent);
+
+            Log.d("debug", "not gpsEnable, startActivity");
+        }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+
+            Log.d("debug", "checkSelfPermission false");
+            return;
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                1000, 50, this);
+
+    }
+    // 結果の受け取り
+
+    /**
+     * Android Quickstart:
+     * https://developers.google.com/sheets/api/quickstart/android
+     *
+     * Respond to requests for permissions at runtime for API 23 and above.
+     * @param requestCode The request code passed in
+     *     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+
+    //--LocationListenerの構成要素、現在地マーカーの設置に必要
+    @Override
+    public void onRequestPermissionsResult( //パーミッションの許可を聞きにいった結果を返してくれる
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1000) {
+            // 使用が許可された
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("debug", "checkSelfPermission true");
+
+                locationStart();
+            } else {
+                // それでも拒否された時の対応
+                Toast toast = Toast.makeText(this,
+                        "これ以上なにもできません", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        switch (status) {
+            case LocationProvider.AVAILABLE:
+                Log.d("debug", "LocationProvider.AVAILABLE");
+                break;
+            case LocationProvider.OUT_OF_SERVICE:
+                Log.d("debug", "LocationProvider.OUT_OF_SERVICE");
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                Log.d("debug", "LocationProvider.TEMPORARILY_UNAVAILABLE");
+                break;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+    //--ここまで
 
     /**
      * Manipulates the map once available.
@@ -64,14 +188,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+
         // ひとまず許しておいてほしいゾーン
         // 簡易的なマーカーのデータを作成
         Deliver[] deliver = new Deliver[4];
-        for(int i = 0; i < deliver.length; i++) {
+        for (int i = 0; i < deliver.length; i++) {
             deliver[i] = new Deliver();
         }
         int maxResults = 1;
-        String place = "高知県香美市土佐山田町宮ノ口１８５";
+        final Intent intent_CourierDeliveryDetail = new Intent(getApplication(), CourierDeliveryDetail.class);
 
         deliver[0].name = "高知工科大学";
         deliver[0].address = "高知県香美市土佐山田町宮ノ口１８５";
@@ -100,10 +225,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         deliver[3].visible = 0;
 
         // ここまで
+
+        //Geocoder APIを使って住所から座標への変換を行う
         Geocoder gcoder = new Geocoder(this, Locale.getDefault());
         List<Address> lstAddr;
         try {
-            for(int i = 0; i < deliver.length ; i++) {
+            for (int i = 0; i < deliver.length; i++) {
                 lstAddr = gcoder.getFromLocationName(deliver[i].address, maxResults);
                 Address addr = lstAddr.get(0);
                 deliver[i].lat = (addr.getLatitude());
@@ -114,18 +241,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        final Intent intent_CourierDeliveryDetail = new Intent(getApplication(), CourierDeliveryDetail.class);
+
         // 画面上にマップを作成
         mMap = googleMap; //マップ
+
+
+        if (mMap != null) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,},
+                        1000);
+            } else {
+                locationStart();
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        1000, 50, this);
+
+            }
+            // 現在地設定の取得
+            MyLocationSource source = new MyLocationSource();
+            mMap.setLocationSource(source);
+
+            // UI設定の取得
+            UiSettings settings = mMap.getUiSettings();
+
+
+            mMap.setMyLocationEnabled(true); //現在地表示の有効化
+            settings.setZoomControlsEnabled(true); //ズームボタン有効化
+        }
+
+
         // ひとまず作ったデータをマーカーとして配置
-        //LatLng sydney = new LatLng(33.3333, 133.3333);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Kochi"));
-
-
         LatLng[] points = new LatLng[deliver.length]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
         for(int i = 0; i < points.length; i++) {
             points[i] = new LatLng(deliver[i].lat, deliver[i].lng);
-            // mMap.addMarker(new MarkerOptions().position(markers[i]).title(deliver[i].address).snippet(deliver[i].address));
         }
 
         MarkerOptions[] option = new MarkerOptions[deliver.length];
@@ -134,7 +285,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             option[i].position(points[i]);
             option[i].title(deliver[i].name);
             option[i].snippet(String.valueOf(deliver[i].time) + "時頃");
-            //option[i].snippet(String.valueOf(deliver[i].lat) + ":" + String.valueOf(deliver[i].lng));
             if(deliver[i].deliverd_status == 0) {
                 option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             }else if(deliver[i].deliverd_status == 1) {
@@ -157,7 +307,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points[3], 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 15));
 
 
     }
