@@ -1,5 +1,6 @@
 package com.example.onosystems;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -137,8 +139,8 @@ public class CourierHomeActivity extends HomeActivity {
         //変更されたprofileデータを渡す
         String newProfileName = profileName.getText().toString();
         String newProfileMail = profileMail.getText().toString();
-        String newProfileTel = profileTel.getText().toString();
-        String newProfileStoreCode = profileStoreCode.getText().toString();
+        long newProfileTel = Long.valueOf(profileTel.getText().toString());
+        int newProfileStoreCode = Integer.valueOf(profileStoreCode.getText().toString());
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
