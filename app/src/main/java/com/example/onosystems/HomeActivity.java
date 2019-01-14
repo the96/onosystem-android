@@ -22,6 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
-       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,PostAPI.PostedCallback {
+       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
 
     public ListView listView;
     public Delivery[] deliveryInfo = new Delivery[100];
@@ -88,14 +91,16 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String body =  "{\n" +
-                "  id: \"kut@gmail.com\",\n" +
-                "  password: \"onosystems\"\n" +
-                "}";
-        PostAPI api = new PostAPI("http://54.92.85.232/aws/Login",body);
-        api.setReference(this);
-        api.execute("");
-        System.out.println("aaa");
+        try {
+            SampleLogin loginTask = new SampleLogin();
+            String body = "{\n" +
+                    "  id: \"kut@gmail.com\",\n" +
+                    "  password: \"onosystems\"\n" +
+                    "}";
+            loginTask.execute("http://54.92.85.232/aws/Login", body);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void reloadDeliveries() {
@@ -157,10 +162,7 @@ public class HomeActivity extends AppCompatActivity
     public void receivableSelect() {
     }
 
-    @Override
-    public void postedCallback(String json) {
-        System.out.println(json);
-    }
+
 }
 
 class Delivery {
