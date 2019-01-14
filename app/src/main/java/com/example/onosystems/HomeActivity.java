@@ -1,19 +1,23 @@
 package com.example.onosystems;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
@@ -63,6 +67,14 @@ public class HomeActivity extends AppCompatActivity
         setProfile();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        reloadDeliveries();
+    }
+
+
     public void setUserOptions() { }
 
     public void setProfile() { }
@@ -76,14 +88,14 @@ public class HomeActivity extends AppCompatActivity
                                             "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
                                             "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
                     "{\"name\":\"004\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
+                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
                     "{\"name\":\"008\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
                     "{\"name\":\"010\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
                     "{\"name\":\"013\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}]");
 
             for (int i = 0; i < json.length(); i++) {
@@ -95,6 +107,7 @@ public class HomeActivity extends AppCompatActivity
                                               deliveryData.getInt("time"),
                                               deliveryData.getInt("delivered_status"),
                                               deliveryData.getInt("receivable_status"),
+                                              Boolean.TRUE,
                                               Boolean.TRUE));
             }
         } catch (JSONException e) {
@@ -111,6 +124,7 @@ public class HomeActivity extends AppCompatActivity
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
 
             if(deliveryInfo.get(i).getVisible()) {
+                item.put("itemNumber", String.valueOf(i));
                 item.put("name", deliveryInfo.get(i).name);
                 item.put("time", String.valueOf(sdf.format(date)));
                 item.put("slipNumber", String.valueOf(deliveryInfo.get(i).slipNumber));
@@ -120,14 +134,18 @@ public class HomeActivity extends AppCompatActivity
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
                 item.put("image", statusName);
+                if(deliveryInfo.get(i).read_flag) {
+                    String newName =  String.valueOf(getResources().getIdentifier("newtext","drawable",this.getPackageName()));
+                    item.put("new", newName);
+                }
                 list.add(item);
             }
         }
 
         SimpleAdapter adapter = new SimpleAdapter(this,
                 list, R.layout.list_layout,
-                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom"}, // どの項目を
-                new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom} // どのidの項目に入れるか
+                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
+                new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
         );
 
         listView = findViewById(R.id.listView);
@@ -199,6 +217,11 @@ public class HomeActivity extends AppCompatActivity
 
     // リスト項目が押されたときのイベント
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //既読済みに変更
+        HashMap<String, String> item = (HashMap<String, String>) parent.getItemAtPosition(position);
+        int itemNum = Integer.valueOf(item.get("itemNumber"));
+        deliveryInfo.get(itemNum).setRead_flag(false);
+
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
@@ -284,6 +307,7 @@ class Delivery {
     int delivered_status;
     int receivable_status;
     boolean visible;
+    boolean read_flag;
 
     public long getSlipNumber() { return this.slipNumber; }
 
@@ -303,8 +327,10 @@ class Delivery {
 
     public void setVisible(boolean visible) { this.visible = visible; }
 
+    public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
+
     public Delivery(long slipNumber, String name, String address, String ship_from, int time,
-                    int delivered_status, int receivable_status, boolean visible) {
+                    int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
@@ -313,6 +339,7 @@ class Delivery {
         this.delivered_status = delivered_status;
         this.receivable_status = receivable_status;
         this.visible = visible;
+        this.read_flag = read_flag;
     }
 }
 
