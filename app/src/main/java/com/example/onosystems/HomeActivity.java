@@ -22,6 +22,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,11 +44,11 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
-
         toolbarView();
         getDeliveries();
         reloadDeliveries();
         findDeliveries();
+
     }
 
     public void findDeliveries() {
@@ -86,6 +91,12 @@ public class HomeActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        SampleLogin loginTask = new SampleLogin();
+        String body = "{\n" +
+                "  id: \"kut@gmail.com\",\n" +
+                "  password: \"onosystems\"\n" +
+                "}";
+        loginTask.execute("http://54.92.85.232/aws/Login", body);
     }
 
     public void reloadDeliveries() {
@@ -146,6 +157,7 @@ public class HomeActivity extends AppCompatActivity
 
     public void receivableSelect() {
     }
+
 
 }
 
