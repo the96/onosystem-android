@@ -8,13 +8,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 //import java.sql.Time;
 
 public class CourierDeliveryDetail extends AppCompatActivity {
     public HashMap<String, String> status;
-
+    public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +28,10 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         String name = status.get("name");
         String slip_number = status.get("slipNumber");
         String address = status.get("address");
+        int unixtime = Integer.valueOf(status.get("unixTime"));
+        Date date = new Date(unixtime * 1000L);
 
-
-        String time = status.get("time");
+        String time = sdf.format(date);
 
         // TextView のインスタンスを作成
         TextView Customer_name = findViewById(R.id.name);
