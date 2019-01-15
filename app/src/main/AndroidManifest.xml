@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.onosystems">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="com.example.onosystems.TimeChange"
+            android:name="com.example.onosystems.CourierTimeChange"
             android:label="@string/time_change_name" >
         </activity>
 
@@ -40,6 +41,11 @@
             android:label="@string/customer_Home_Activity" >
         </activity>
 
+        <activity
+        android:name="com.example.onosystems.CustomerTimeChange"
+        android:label="@string/time_change_name" >
+        </activity>
+
     </application>
 
-</manifest>
+    </manifest>

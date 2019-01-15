@@ -29,6 +29,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,7 +67,7 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setUserOptions();
         setContentView(homeLayout);
-
+        
         toolbarView();
         getDeliveries();
         reloadDeliveries();
@@ -298,6 +303,7 @@ public class HomeActivity extends AppCompatActivity
 
         reloadDeliveries();
     }
+
 
 }
 

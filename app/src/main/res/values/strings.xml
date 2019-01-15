@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name"></string>
+    <string name="app_name">ホーム画面</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">ユーザ情報</string>
@@ -16,4 +16,26 @@
     <string name="courier_detail_name">配達員側詳細画面</string>
     <string name="courier_Home_Activity">配達員側ホーム画面</string>
     <string name="customer_Home_Activity">消費者側ホーム画面</string>
+    <string name="delivery_complete">配達完了</string>
+
+    <string name="juusho">【住所】</string>
+    <string name="haitatu">【配達希望日時】</string>
+    <string name="denpyou">【伝票番号】</string>
+    <string name="slip_number">伝票番号</string>
+    <string name="address">住所</string>
+    <string name="time">配達希望日時</string>
+    <string name="name">宛名</string>
+    <string name="textview">TextView</string>
+    <string name="atena">【宛名】</string>
+    <string name="dialog">配達日</string>
+    <string name="change_confirm">変更確定</string>
+    <string name="delivery_date">配達希望日時</string>
+
+    <string-array name="time_list">
+        <item>9時〜12時</item>
+        <item>12時〜15時</item>
+        <item>15時〜18時</item>
+        <item>18時〜21時</item>
+    </string-array>
+
 </resources>
