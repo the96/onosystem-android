@@ -63,7 +63,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                //ホーム画面に遷移
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
 
             }
@@ -72,7 +72,6 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     }
 
 }
-
 
 
 
