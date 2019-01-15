@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="com.example.onosystems.TimeChange"
+            android:name="com.example.onosystems.CourierTimeChange"
             android:label="@string/time_change_name" >
         </activity>
 
@@ -39,9 +39,16 @@
         <activity
             android:name="com.example.onosystems.CustomerHomeActivity"
             android:label="@string/time_change_name" >
-        </activity>
+    </activity>
+
+<activity
+android:name="com.example.onosystems.CustomerTimeChange"
+android:label="@string/time_change_name" >
+</activity>
+
+
 
 
     </application>
 
-</manifest>
+    </manifest>

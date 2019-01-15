@@ -21,18 +21,18 @@
         android:background="@drawable/button_time_change"
         android:text="@string/rescheduling_button"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/delivery_complete_Button"
+        app:layout_constraintBottom_toTopOf="@+id/not_receive_Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/delivery_complete_Button"
+        android:id="@+id/not_receive_Button"
         android:layout_width="160dp"
         android:layout_height="55dp"
         android:layout_margin="20dp"
         android:background="@drawable/button_complete"
-        android:text="@string/delivery_complete"
+        android:text="受領不可"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
