@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity
     public List<Map<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
-    public SimpleDateFormat sdf = new SimpleDateFormat("MM/dd kk:mm"); //日付フォーマット
+    public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日HH:mm"); //日付フォーマット
     public int deliveredStatus;
     public int receivableStatus;
 
