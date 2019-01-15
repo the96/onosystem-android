@@ -4,6 +4,6 @@
         android:drawable="@drawable/receivable_image0" >
     </item>
     <item android:state_checked="false"
-        android:drawable="@drawable/receivable_image0" >
+        android:drawable="@drawable/receivable_image00" >
     </item>
 </selector>
