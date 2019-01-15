@@ -54,6 +54,7 @@ public class HomeActivity extends AppCompatActivity
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
     public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
+
     public int deliveredStatus;
     public int receivableStatus;
 
@@ -123,6 +124,8 @@ public class HomeActivity extends AppCompatActivity
                                               Delivery.VISIBLE,
                                               Delivery.READ_FLAG));
             }
+            
+            sortTime(); //時間順にソート
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -178,6 +181,15 @@ public class HomeActivity extends AppCompatActivity
                 if (SwipeRefresh.isRefreshing()) {
                     SwipeRefresh.setRefreshing(false);
                 }
+            }
+        });
+    }
+    
+    public void sortTime() {
+        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+            @Override
+            public int compare(Delivery a, Delivery b){
+                return a.time - b.time;
             }
         });
     }
