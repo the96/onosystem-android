@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_drawer"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:background="@color/side_bar"
+    android:layout_gravity="left"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:text="@string/nav_header_title"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/left_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusableInTouchMode="true" >
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:text="名前"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_name"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:inputType="text"
+                android:maxLength="64"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:textColor= "#000000"
+                android:text="メールアドレス"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_mail"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:inputType="text"
+                android:maxLength="64"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:textColor= "#000000"
+                android:text="パスワード"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_password"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:inputType="textPassword"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:textColor= "#000000"
+                android:text="パスワード再入力"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_rePassword"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:inputType="textPassword"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:textColor= "#000000"
+                android:text="電話番号"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_tel"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:maxLength="11"
+                android:inputType="text"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:textColor= "#000000"
+                android:text="住所"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/edit_address"
+                android:layout_width="@dimen/editText_width"
+                android:layout_height="@dimen/editText_height"
+                android:layout_gravity="center"
+                android:textColor= "#000000"
+                android:inputType="text"
+                android:background="@drawable/edit_frame_style" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <Button
+                android:id="@+id/edit_profile_button"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/button_frame_style"
+                android:text="更新"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

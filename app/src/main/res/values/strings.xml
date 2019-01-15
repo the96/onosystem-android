@@ -5,15 +5,17 @@
     <string name="nav_header_title">ユーザ情報</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
-    <string name="sub_app_name">配達物詳細画面</string>
     <string name="main">Main Activity</string>
     <string name="sub">Sub Activity</string>
     <string name="rescheduling_button">日時変更</string>
     <string name="message">message</string>
-    <string name="courier_detail_name">配達員側詳細画面</string>
     <string name="change_complete">変更確定</string>
+
+
     <string name="time_change_name">日時変更画面</string>
+    <string name="courier_detail_name">配達員側詳細画面</string>
+    <string name="courier_Home_Activity">配達員側ホーム画面</string>
+    <string name="customer_Home_Activity">消費者側ホーム画面</string>
     <string name="delivery_complete">配達完了</string>
 
     <string name="juusho">【住所】</string>

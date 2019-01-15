@@ -33,21 +33,18 @@
 
         <activity
             android:name="com.example.onosystems.HomeActivity"
-            android:label="@string/time_change_name" >
+            android:label="@string/main" >
         </activity>
 
         <activity
             android:name="com.example.onosystems.CustomerHomeActivity"
-            android:label="@string/time_change_name" >
-    </activity>
+            android:label="@string/customer_Home_Activity" >
+        </activity>
 
-<activity
-android:name="com.example.onosystems.CustomerTimeChange"
-android:label="@string/time_change_name" >
-</activity>
-
-
-
+        <activity
+        android:name="com.example.onosystems.CustomerTimeChange"
+        android:label="@string/time_change_name" >
+        </activity>
 
     </application>
 

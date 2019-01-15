@@ -1,136 +1,242 @@
 package com.example.onosystems;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class HomeActivity extends AppCompatActivity
-       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
+       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
+    public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
+    public List<Map<String, String>> list = new ArrayList<>();
     public ListView listView;
-    public Delivery[] deliveryInfo = new Delivery[100];
-    public List<Map<String, String>> list;
-    public JSONArray datalength;
+    public ToggleButton toggle0, toggle1, toggle2, toggle3;
+    public SimpleDateFormat sdf = new SimpleDateFormat("MM/dd kk:mm"); //日付フォーマット
+    public int deliveredStatus;
+    public int receivableStatus;
 
+    public int toolBarLayout;
+    public int drawerLayout;
+    public int homeLayout;
+    public Class detailActivity;
+
+    public ActionBarDrawerToggle toggle;
+    public DrawerLayout drawer;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_layout);
+        setUserOptions();
+        setContentView(homeLayout);
+        
         toolbarView();
         getDeliveries();
         reloadDeliveries();
         findDeliveries();
-
+        setProfile();
     }
 
-    public void findDeliveries() {
-       SearchView search = findViewById(R.id.searchView);
-       search.setOnQueryTextListener(this);
-       listView.setTextFilterEnabled(true); // インクリメンタルサーチをおこなうかどうか
-       search.setQueryHint("検索文字を入力して下さい"); // 何も入力されてないときのテキスト
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        reloadDeliveries();
     }
 
-    public void toolbarView(){
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-    }
 
+    public void setUserOptions() { }
+
+    public void setProfile() { }
+    public void updateProfile() { }
+
+    //荷物関係
     public void getDeliveries() {
         //本来はサーバからデータ受け取る
-        // 各要素ごとにインスタンス化
-        for(int i = 0; i < deliveryInfo.length; i++) {
-            deliveryInfo[i] = new Delivery();
-        }
-
         try {
-            JSONObject json = new JSONObject("{\"data\":[{\"name\":\"001\", \"time\":\"001\", \"day\":\"1\", \"slipNumber\":\"1111\", \"address\":\"1001\"}," +
-                    " {\"name\":\"002\", \"time\":\"002\", \"day\":\"2\", \"slipNumber\":\"1112\", \"address\":\"1002\"}, " +
-                    "{\"name\":\"003\", \"time\":\"003\", \"day\":\"3\", \"slipNumber\":\"1113\", \"address\":\"1003\"}]}");
+            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
+                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"004\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
+                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
+                    "{\"name\":\"008\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"010\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
+                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
+                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
+                    "{\"name\":\"013\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}]");
 
-            datalength = json.getJSONArray("data");
-
-            for (int i = 0; i < datalength.length(); i++) {
-                deliveryInfo[i].name = json.getJSONArray("data").getJSONObject(i).getString("name");
-                deliveryInfo[i].day = json.getJSONArray("data").getJSONObject(i).getInt("day");
-                deliveryInfo[i].slipNumber = json.getJSONArray("data").getJSONObject(i).getLong("slipNumber");
-                deliveryInfo[i].address = json.getJSONArray("data").getJSONObject(i).getString("address");
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject deliveryData = json.getJSONObject(i);
+                deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
+                                              deliveryData.getString("name"),
+                                              deliveryData.getString("address"),
+                                              deliveryData.getString("ship_from"),
+                                              deliveryData.getInt("time"),
+                                              deliveryData.getInt("delivered_status"),
+                                              deliveryData.getInt("receivable_status"),
+                                              Delivery.VISIBLE,
+                                              Delivery.READ_FLAG));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        SampleLogin loginTask = new SampleLogin();
-        String body = "{\n" +
-                "  id: \"kut@gmail.com\",\n" +
-                "  password: \"onosystems\"\n" +
-                "}";
-        loginTask.execute("http://54.92.85.232/aws/Login", body);
-    }
 
+    }
     public void reloadDeliveries() {
-        list = new ArrayList<Map<String, String>>();
-        for (int i = 0; i < datalength.length(); i++) {
-            Map<String, String> item = new HashMap<String, String>();
-            item.put("name", deliveryInfo[i].name);
-            item.put("day", String.valueOf(deliveryInfo[i].day));
-            item.put("slipNumber", String.valueOf(deliveryInfo[i].slipNumber));
-            item.put("address", deliveryInfo[i].address);
-            list.add(item);
+        list = new ArrayList<>(); //初期化
+
+        for (int i = 0; i < deliveryInfo.size(); i++) {
+            Map<String, String> item = new HashMap<>();
+            Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
+            String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
+
+            if(deliveryInfo.get(i).getVisible()) {
+                item.put("itemNumber", String.valueOf(i));
+                item.put("name", deliveryInfo.get(i).name);
+                item.put("time", String.valueOf(sdf.format(date)));
+                item.put("slipNumber", String.valueOf(deliveryInfo.get(i).slipNumber));
+                item.put("address", deliveryInfo.get(i).address);
+                item.put("shipFrom", deliveryInfo.get(i).ship_from);
+                item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).delivered_status));
+                item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
+                item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
+                item.put("image", statusName);
+                if(deliveryInfo.get(i).read_flag) {
+                    String newName =  String.valueOf(getResources().getIdentifier("newtext","drawable",this.getPackageName()));
+                    item.put("new", newName);
+                }
+                list.add(item);
+            }
         }
 
         SimpleAdapter adapter = new SimpleAdapter(this,
-                list, // 使用するデータ
-                R.layout.list_layout, // 自作したレイアウト
-                new String[]{"name", "day", "slipNumber", "address"}, // どの項目を
-                new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText} // どのidの項目に入れるか
+                list, R.layout.list_layout,
+                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
+                new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
         );
+
         listView = findViewById(R.id.listView);
+        listView.setEmptyView(findViewById(R.id.emptyView));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
     }
 
+    //toolbarのアイテム表示
+    public void toolbarView(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawer = findViewById(drawerLayout);
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        toggle.setDrawerIndicatorEnabled(false);
+        toggle.setHomeAsUpIndicator(R.drawable.ic_menu_camera);
+        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    setProfile();
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+        toggle.syncState();
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(toolBarLayout, menu);
+
+        toggle0 = menu.findItem(R.id.toggle0).getActionView().findViewById(R.id.toggle_layout_switch0);
+        toggle1 = menu.findItem(R.id.toggle1).getActionView().findViewById(R.id.toggle_layout_switch1);
+        toggle2 = menu.findItem(R.id.toggle2).getActionView().findViewById(R.id.toggle_layout_switch2);
+        toggle3 = menu.findItem(R.id.toggleReceivable).getActionView().findViewById(R.id.receivableSelect);
+        toggle0.setChecked(true);
+        toggle1.setChecked(true);
+        toggle2.setChecked(true);
+        toggle3.setChecked(true);
+        toggle0.setOnCheckedChangeListener(this);
+        toggle1.setOnCheckedChangeListener(this);
+        toggle2.setOnCheckedChangeListener(this);
+        toggle3.setOnCheckedChangeListener(this);
+
+        return true;
+    }
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        int buttonId = buttonView.getId();
+
+        switch(buttonId) {
+            case R.id.toggle_layout_switch0:
+                toggleVisibleFromReceivable(Delivery.UNSELECTED, isChecked);
+                break;
+            case R.id.toggle_layout_switch1:
+                toggleVisibleFromReceivable(Delivery.UNRECEIVABLE, isChecked);
+                break;
+            case R.id.toggle_layout_switch2:
+                toggleVisibleFromReceivable(Delivery.RECEIVABLE, isChecked);
+                break;
+            case R.id.receivableSelect:
+                deliveredSelect(isChecked);
+                break;
+        }
+    }
+
     // リスト項目が押されたときのイベント
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getApplication(), CourierDeliveryDetail.class);  // 遷移先指定
-        intent.putExtra("DATA", position);// 遷移先に値を渡す，(ここではリストのポジションにしている)
-        startActivity(intent);// CourierDeliveryDetailに遷移
+        //既読済みに変更
+        HashMap<String, String> item = (HashMap<String, String>) parent.getItemAtPosition(position);
+        int itemNum = Integer.valueOf(item.get("itemNumber"));
+        deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
+
+        Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
+        intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
+        startActivity(intent);// 詳細画面に遷移
     }
 
     //バッグボタンが押されたときのイベント
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -139,38 +245,140 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // 検索関係
+    public void findDeliveries() {
+        SearchView search = findViewById(R.id.searchView);
+        search.setOnQueryTextListener(this);
+        listView.setTextFilterEnabled(true); // インクリメンタルサーチをおこなうかどうか
+        search.setQueryHint("検索文字を入力して下さい"); // 何も入力されてないときのテキスト
+    }
     public boolean onQueryTextSubmit(String query){
         return false; // summitButtonを実装していないので，falseを返すだけのやつ
     }
     public boolean onQueryTextChange(String queryText){
+        SimpleAdapter filterList = (SimpleAdapter) listView.getAdapter();
+
         if (TextUtils.isEmpty(queryText)) {
-            listView.clearTextFilter();
+            filterList.getFilter().filter(null);
         } else {
-            listView.setFilterText(queryText.toString());
+            filterList.getFilter().filter(queryText.toString());
         }
-        return false;
+
+        return true;
     }
 
+    //商品ステータスの切り替え
+    public void toggleVisibleFromReceivable(int number, boolean isChecked) {
+        for (int i = 0; i < deliveryInfo.size(); i++) {
+            deliveredStatus = deliveryInfo.get(i).getDelivered_status();
+            receivableStatus = deliveryInfo.get(i).getReceivable_status();
 
-    public void toggleVisibleFromReceivable() {
+            if(receivableStatus == number) {
+                if (isChecked) {
+                    if(!(!toggle3.isChecked() && deliveredStatus== Delivery.DELIVERED)) {
+                        deliveryInfo.get(i).setVisible(Delivery.VISIBLE);
+                    }
+                } else {
+                    deliveryInfo.get(i).setVisible(Delivery.NOT_VISIBLE);
+                }
+            }
+        }
+
+        reloadDeliveries();
     }
+    public void deliveredSelect(boolean isChecked) {
+        Boolean check[] = {toggle0.isChecked(), toggle1.isChecked(), toggle2.isChecked()};
 
-    public void receivableSelect() {
+        for (int i = 0; i < deliveryInfo.size(); i++) {
+            deliveredStatus = deliveryInfo.get(i).getDelivered_status();
+            receivableStatus = deliveryInfo.get(i).getReceivable_status();
+
+            if (deliveredStatus == Delivery.DELIVERED) {
+                if (isChecked && check[receivableStatus]) {
+                    deliveryInfo.get(i).setVisible(Delivery.VISIBLE);
+                } else {
+                    deliveryInfo.get(i).setVisible(Delivery.NOT_VISIBLE);
+                }
+            }
+        }
+
+        reloadDeliveries();
     }
 
 
 }
 
 class Delivery {
+    public static final boolean VISIBLE = TRUE;
+    public static final boolean NOT_VISIBLE = FALSE;
+    public static final boolean READ_FLAG = TRUE;
+    public static final boolean NOT_READ_FLAG = FALSE;
+    public static final int UNDELIVERED = 0;
+    public static final int DELIVERED = 1;
+    public static final int UNSELECTED = 0;
+    public static final int UNRECEIVABLE = 1;
+    public static final int RECEIVABLE = 2;
     long slipNumber;
     String name;
     String address;
-    long slip_from;
+    String ship_from;
     int time;
-    int day;
+    int delivered_status;
     int receivable_status;
-    int delivered_tatus;
-    double lat;
-    double lng;
     boolean visible;
+    boolean read_flag;
+
+    public long getSlipNumber() { return this.slipNumber; }
+
+    public String getName() { return this.name; }
+
+    public String getAddress() { return this.address; }
+
+    public String getShip_from() { return ship_from; }
+
+    public int getTime() { return this.time; }
+
+    public int getDelivered_status() { return delivered_status; }
+
+    public int getReceivable_status() { return receivable_status; }
+
+    public boolean getVisible() { return visible; }
+
+    public void setVisible(boolean visible) { this.visible = visible; }
+
+    public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
+
+    public Delivery(long slipNumber, String name, String address, String ship_from, int time,
+                    int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
+        this.slipNumber = slipNumber;
+        this.name = name;
+        this.address = address;
+        this.ship_from = ship_from;
+        this.time = time;
+        this.delivered_status = delivered_status;
+        this.receivable_status = receivable_status;
+        this.visible = visible;
+        this.read_flag = read_flag;
+    }
+}
+
+class User {
+    String name;
+    String password;
+    String mail;
+    long tel;
+
+    public String getName() { return name; }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public long getTel() {
+        return tel;
+    }
+
 }
