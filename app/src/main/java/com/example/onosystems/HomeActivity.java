@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class HomeActivity extends AppCompatActivity
        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -78,7 +81,7 @@ public class HomeActivity extends AppCompatActivity
     public void setUserOptions() { }
 
     public void setProfile() { }
-    public void updateProfile() {  }
+    public void updateProfile() { }
 
     //荷物関係
     public void getDeliveries() {
@@ -107,8 +110,8 @@ public class HomeActivity extends AppCompatActivity
                                               deliveryData.getInt("time"),
                                               deliveryData.getInt("delivered_status"),
                                               deliveryData.getInt("receivable_status"),
-                                              Boolean.TRUE,
-                                              Boolean.TRUE));
+                                              Delivery.VISIBLE,
+                                              Delivery.READ_FLAG));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -201,13 +204,13 @@ public class HomeActivity extends AppCompatActivity
 
         switch(buttonId) {
             case R.id.toggle_layout_switch0:
-                toggleVisibleFromReceivable(0, isChecked);
+                toggleVisibleFromReceivable(Delivery.UNSELECTED, isChecked);
                 break;
             case R.id.toggle_layout_switch1:
-                toggleVisibleFromReceivable(1, isChecked);
+                toggleVisibleFromReceivable(Delivery.UNRECEIVABLE, isChecked);
                 break;
             case R.id.toggle_layout_switch2:
-                toggleVisibleFromReceivable(2, isChecked);
+                toggleVisibleFromReceivable(Delivery.RECEIVABLE, isChecked);
                 break;
             case R.id.receivableSelect:
                 deliveredSelect(isChecked);
@@ -220,7 +223,7 @@ public class HomeActivity extends AppCompatActivity
         //既読済みに変更
         HashMap<String, String> item = (HashMap<String, String>) parent.getItemAtPosition(position);
         int itemNum = Integer.valueOf(item.get("itemNumber"));
-        deliveryInfo.get(itemNum).setRead_flag(false);
+        deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
@@ -266,11 +269,11 @@ public class HomeActivity extends AppCompatActivity
 
             if(receivableStatus == number) {
                 if (isChecked) {
-                    if(!(!toggle3.isChecked() && deliveredStatus== 1)) {
-                        deliveryInfo.get(i).setVisible(true);
+                    if(!(!toggle3.isChecked() && deliveredStatus== Delivery.DELIVERED)) {
+                        deliveryInfo.get(i).setVisible(Delivery.VISIBLE);
                     }
                 } else {
-                    deliveryInfo.get(i).setVisible(false);
+                    deliveryInfo.get(i).setVisible(Delivery.NOT_VISIBLE);
                 }
             }
         }
@@ -284,11 +287,11 @@ public class HomeActivity extends AppCompatActivity
             deliveredStatus = deliveryInfo.get(i).getDelivered_status();
             receivableStatus = deliveryInfo.get(i).getReceivable_status();
 
-            if (deliveredStatus == 1) {
+            if (deliveredStatus == Delivery.DELIVERED) {
                 if (isChecked && check[receivableStatus]) {
-                    deliveryInfo.get(i).setVisible(true);
+                    deliveryInfo.get(i).setVisible(Delivery.VISIBLE);
                 } else {
-                    deliveryInfo.get(i).setVisible(false);
+                    deliveryInfo.get(i).setVisible(Delivery.NOT_VISIBLE);
                 }
             }
         }
@@ -299,6 +302,15 @@ public class HomeActivity extends AppCompatActivity
 }
 
 class Delivery {
+    public static final boolean VISIBLE = TRUE;
+    public static final boolean NOT_VISIBLE = FALSE;
+    public static final boolean READ_FLAG = TRUE;
+    public static final boolean NOT_READ_FLAG = FALSE;
+    public static final int UNDELIVERED = 0;
+    public static final int DELIVERED = 1;
+    public static final int UNSELECTED = 0;
+    public static final int UNRECEIVABLE = 1;
+    public static final int RECEIVABLE = 2;
     long slipNumber;
     String name;
     String address;
