@@ -15,7 +15,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-import static android.support.constraint.Constraints.TAG;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();;
