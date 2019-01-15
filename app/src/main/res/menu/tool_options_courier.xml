@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/sortDistance"
-        android:icon="@drawable/ic_menu_camera"
+        android:icon="@drawable/distance"
         app:showAsAction="always"
         android:title=""/>
 

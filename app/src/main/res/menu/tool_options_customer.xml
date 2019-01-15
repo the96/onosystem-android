@@ -2,10 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/receivableSelect"
-        android:icon="@drawable/ic_menu_camera"
-        app:showAsAction="always"
-        android:title=""/>
+        android:id="@+id/toggleReceivable"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_receivable"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/toggle2"
