@@ -10,8 +10,6 @@ import java.net.URL;
 
 public class SampleLogin extends AsyncTask<String, String, String> {
     CookieManager manager;
-    URL url;
-    String body;
     SampleLogin() {
         // Cookieが発行される通信の前(要するにLoginの際)にCookieManagerを生成してセットする
         manager = new CookieManager();
