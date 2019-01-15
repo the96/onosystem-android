@@ -35,6 +35,8 @@ import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -118,6 +120,8 @@ public class HomeActivity extends AppCompatActivity
                                               Delivery.VISIBLE,
                                               Delivery.READ_FLAG));
             }
+
+            sortTime(); //時間順にソート
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -160,6 +164,15 @@ public class HomeActivity extends AppCompatActivity
         listView.setEmptyView(findViewById(R.id.emptyView));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
+    }
+
+    public void sortTime() {
+        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+            @Override
+            public int compare(Delivery a, Delivery b){
+                return a.time - b.time;
+            }
+        });
     }
 
     //toolbarのアイテム表示
@@ -303,7 +316,6 @@ public class HomeActivity extends AppCompatActivity
 
         reloadDeliveries();
     }
-
 
 }
 

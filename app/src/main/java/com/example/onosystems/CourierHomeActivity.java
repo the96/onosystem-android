@@ -46,30 +46,9 @@ public class CourierHomeActivity extends HomeActivity {
             case R.id.mapView:
                 showMapActivity();
                 break;
-            case R.id.sortTime:
-                sortTime();
-                break;
-            case R.id.sortDistance:
-                sortDistance();
-                break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void sortTime() {
-        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
-            @Override
-            public int compare(Delivery a, Delivery b){
-                return a.time - b.time;
-            }
-        });
-
-        reloadDeliveries();
-    }
-
-    public void sortDistance() {
-
     }
 
     public void showMapActivity() {
