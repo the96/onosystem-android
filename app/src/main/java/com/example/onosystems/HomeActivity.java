@@ -3,6 +3,7 @@ package com.example.onosystems;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -35,12 +36,12 @@ import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -52,7 +53,7 @@ public class HomeActivity extends AppCompatActivity
     public List<Map<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
-    public SimpleDateFormat sdf = new SimpleDateFormat("MM/dd kk:mm"); //日付フォーマット
+    public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
     public int deliveredStatus;
     public int receivableStatus;
 
@@ -63,6 +64,7 @@ public class HomeActivity extends AppCompatActivity
 
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
+    public SwipeRefreshLayout SwipeRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
         findDeliveries();
         setProfile();
+        refresh();
     }
 
     @Override
@@ -120,8 +123,6 @@ public class HomeActivity extends AppCompatActivity
                                               Delivery.VISIBLE,
                                               Delivery.READ_FLAG));
             }
-
-            sortTime(); //時間順にソート
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -133,6 +134,7 @@ public class HomeActivity extends AppCompatActivity
         for (int i = 0; i < deliveryInfo.size(); i++) {
             Map<String, String> item = new HashMap<>();
             Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
+
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
 
             if(deliveryInfo.get(i).getVisible()) {
@@ -165,12 +167,17 @@ public class HomeActivity extends AppCompatActivity
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
     }
-
-    public void sortTime() {
-        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+    public void refresh() {
+        SwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        SwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public int compare(Delivery a, Delivery b){
-                return a.time - b.time;
+            public void onRefresh() {
+                getDeliveries();
+                reloadDeliveries();
+
+                if (SwipeRefresh.isRefreshing()) {
+                    SwipeRefresh.setRefreshing(false);
+                }
             }
         });
     }
