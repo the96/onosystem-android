@@ -88,32 +88,23 @@ public class HomeActivity extends AppCompatActivity
     public void getDeliveries() {
         //本来はサーバからデータ受け取る
         try {
-            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
-                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"004\", \"time\":\"1546239600\", \"slip_number\":\"1114\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1115\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1116\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"008\", \"time\":\"1546239600\", \"slip_number\":\"1112\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1113\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"010\", \"time\":\"1546239600\", \"slip_number\":\"1114\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1115\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1116\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"013\", \"time\":\"1546239600\", \"slip_number\":\"1117\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}]");
+            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\", \"delivery_time\":\"0\"}," +
+                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\", \"delivery_time\":\"1\"}," +
+                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\", \"delivery_time\":\"2\"}]");
 
             for (int i = 0; i < json.length(); i++) {
                 JSONObject deliveryData = json.getJSONObject(i);
                 if(deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                            deliveryData.getString("name"),
-                            deliveryData.getString("address"),
-                            deliveryData.getString("ship_from"),
-                            deliveryData.getInt("time"),
-                            deliveryData.getInt("delivered_status"),
-                            deliveryData.getInt("receivable_status"),
-                            Delivery.VISIBLE,
-                            Delivery.READ_FLAG));
+                                                  deliveryData.getString("name"),
+                                                  deliveryData.getString("address"),
+                                                  deliveryData.getString("ship_from"),
+                                                  deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivered_status"),
+                                                  deliveryData.getInt("receivable_status"),
+                                                  deliveryData.getInt("delivery_time"),
+                                                  Delivery.VISIBLE,
+                                                  Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 }
             }
@@ -346,6 +337,7 @@ class Delivery {
     String address;
     String ship_from;
     int time;
+    int delivery_time;
     int delivered_status;
     int receivable_status;
     boolean visible;
@@ -361,6 +353,8 @@ class Delivery {
 
     public int getTime() { return this.time; }
 
+    public int getDelivery_time() { return this.delivery_time; }
+
     public int getDelivered_status() { return delivered_status; }
 
     public int getReceivable_status() { return receivable_status; }
@@ -371,13 +365,14 @@ class Delivery {
 
     public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
 
-    public Delivery(long slipNumber, String name, String address, String ship_from, int time,
+    public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
                     int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
         this.ship_from = ship_from;
         this.time = time;
+        this.delivery_time = delivery_time;
         this.delivered_status = delivered_status;
         this.receivable_status = receivable_status;
         this.visible = visible;
