@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 public class CustomerHomeActivity extends HomeActivity {
     public Object profileInfo;
-    public EditText profileName, profileMail, profileTel, profileAddress, profilePassword, profileRePassword;
-
+    public EditText profileName, profileMail, profileTel, profileAddress, profileRePassword;
+    public TextView profilePassword;
     AlertDialog alertDialog;
 
     @Override
@@ -47,7 +47,7 @@ public class CustomerHomeActivity extends HomeActivity {
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
         profileAddress = findViewById(R.id.edit_address);
-        profilePassword = findViewById(R.id.edit_password);
+        profilePassword = findViewById(R.id.password);
         profileRePassword = findViewById(R.id.edit_rePassword);
 
         profileName.setText(((Customer) profileInfo).getName(), TextView.BufferType.NORMAL);
@@ -90,7 +90,7 @@ public class CustomerHomeActivity extends HomeActivity {
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if(newProfilePassword.equals(newProfileRePassword)) {
+        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
             //更新する
 
         } else {

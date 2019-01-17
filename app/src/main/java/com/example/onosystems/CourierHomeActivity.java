@@ -25,8 +25,8 @@ import java.util.Comparator;
 
 public class CourierHomeActivity extends HomeActivity {
     public Object profileInfo;
-    public EditText profileName, profileMail, profileTel, profileStoreCode, profilePassword, profileRePassword;
-
+    public EditText profileName, profileMail, profileTel, profileStoreCode, profileRePassword;
+    public TextView profilePassword;
     AlertDialog alertDialog;
 
 
@@ -34,7 +34,7 @@ public class CourierHomeActivity extends HomeActivity {
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_courier;
-        detailActivity = CourierDeliveryDetail.class;
+        detailActivity = CourierDeliveryDetailToolbar.class;
         drawerLayout = R.id.courier_layout;
         homeLayout = R.layout.courier_home_layout;
     }
@@ -80,7 +80,7 @@ public class CourierHomeActivity extends HomeActivity {
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
         profileStoreCode = findViewById(R.id.edit_store_code);
-        profilePassword = findViewById(R.id.edit_password);
+        profilePassword = findViewById(R.id.password);
         profileRePassword = findViewById(R.id.edit_rePassword);
 
         profileName.setText(((Courier) profileInfo).getName(), TextView.BufferType.NORMAL);
@@ -123,7 +123,7 @@ public class CourierHomeActivity extends HomeActivity {
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if(newProfilePassword.equals(newProfileRePassword)) {
+        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
             //更新する
 
         } else {
