@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -17,7 +18,8 @@ import java.util.Map;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();;
+    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+    private String url = "http://54.92.85.232/aws/Notification";
 
     public void onTokenRefresh() {
         // Get updated InstanceID token.
@@ -32,6 +34,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendRegistrationToServer(String refreshedToken) {
         // TODO: Implement this method to send token to your app server.
+        SampleLogin sampleLogin = new SampleLogin();
+        sampleLogin.execute(url, refreshedToken);
     }
 
     @Override
