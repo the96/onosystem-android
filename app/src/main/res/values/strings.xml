@@ -38,4 +38,27 @@
         <item>18時〜21時</item>
     </string-array>
 
+    <!-- Strings related to login -->
+    <string name="prompt_id">ID</string>
+    <string name="prompt_email">メールアドレス</string>
+    <string name="prompt_password">パスワード</string>
+    <string name="action_sign_in">ログイン</string>
+    <string name="action_create_account">アカウント作成</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This id is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+    completions."</string>
+
+    <!-- NewAccountActivity -->
+    <string name="create_account_name">アカウント作成</string>
+    <string name="user_name">名前</string>
+    <string name="mail">メールアドレス</string>
+    <string name="password">パスワード</string>
+    <string name="re_password">パスワード再入力</string>
+    <string name="tel">電話番号</string>
+    <string name="title_activity_login2">Sign in</string>
+
 </resources>

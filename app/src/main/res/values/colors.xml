@@ -10,4 +10,9 @@
     <color name="colorPull_down">#8ca7e1</color>
     <color name="colorComplete">#bde4b0</color>
     <color name="colorChange_date">#8ca7e1</color>
+
+    <color name="login_background">#ffffff</color>
+    <color name="input_form">#d9e2f5</color>
+    <color name="account_back">#dbf4fe</color>
+    <color name="login_button">#96c2ea</color>
 </resources>
