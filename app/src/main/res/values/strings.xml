@@ -31,12 +31,7 @@
     <string name="change_confirm">変更確定</string>
     <string name="delivery_date">配達希望日時</string>
 
-    <string-array name="time_list">
-        <item>9時〜12時</item>
-        <item>12時〜15時</item>
-        <item>15時〜18時</item>
-        <item>18時〜21時</item>
-    </string-array>
+
 
     <!-- Strings related to login -->
     <string name="prompt_id">ID</string>
@@ -60,5 +55,19 @@
     <string name="re_password">パスワード再入力</string>
     <string name="tel">電話番号</string>
     <string name="title_activity_login2">Sign in</string>
+
+    <string-array name="time_list">
+        <item>時間指定なし</item>
+        <item>9時〜12時</item>
+        <item>12時〜15時</item>
+        <item>15時〜18時</item>
+        <item>18時〜21時</item>
+    </string-array>
+
+
+    <string name="dlg_btn">配達完了</string>
+    <string name="dlg_title">確認</string>
+    <string name="dlg_msg1">配達が完了しましたか？</string>
+    <string name="dlg_msg2">変更が完了しましたか？</string>
 
 </resources>

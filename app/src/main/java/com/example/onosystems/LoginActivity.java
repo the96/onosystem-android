@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 //                loginEmail = mEmailView.getText().toString();
 //                loginPassword = mPasswordView.getText().toString();
 
-                Intent intent = new Intent(LoginActivity.this, CustomerHomeActivity.class);
+                Intent intent = new Intent(LoginActivity.this, CourierHomeActivity.class);
                 startActivity(intent);
 
 //                FirebaseMessaging.getInstance().subscribeToTopic("test");
