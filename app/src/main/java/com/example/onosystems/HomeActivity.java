@@ -1,27 +1,23 @@
 package com.example.onosystems;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import org.json.JSONArray;
@@ -29,12 +25,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +40,12 @@ public class HomeActivity extends AppCompatActivity
        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
+    public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
     public List<Map<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
-    public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日HH:mm"); //日付フォーマット
+    public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
+
     public int deliveredStatus;
     public int receivableStatus;
 
@@ -61,6 +56,7 @@ public class HomeActivity extends AppCompatActivity
 
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
+    public SwipeRefreshLayout SwipeRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +69,7 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
         findDeliveries();
         setProfile();
+        refresh();
     }
 
     @Override
@@ -81,7 +78,6 @@ public class HomeActivity extends AppCompatActivity
 
         reloadDeliveries();
     }
-
 
     public void setUserOptions() { }
 
@@ -92,32 +88,28 @@ public class HomeActivity extends AppCompatActivity
     public void getDeliveries() {
         //本来はサーバからデータ受け取る
         try {
-            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\"}," +
-                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"004\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"005\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"006\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"007\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"008\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"009\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"010\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}," +
-                    "{\"name\":\"011\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"2\"}," +
-                    "{\"name\":\"012\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"1\"}," +
-                    "{\"name\":\"013\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\"}]");
+            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\", \"delivery_time\":\"0\"}," +
+                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\", \"delivery_time\":\"1\"}," +
+                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\", \"delivery_time\":\"2\"}]");
 
             for (int i = 0; i < json.length(); i++) {
                 JSONObject deliveryData = json.getJSONObject(i);
-                deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                                              deliveryData.getString("name"),
-                                              deliveryData.getString("address"),
-                                              deliveryData.getString("ship_from"),
-                                              deliveryData.getInt("time"),
-                                              deliveryData.getInt("delivered_status"),
-                                              deliveryData.getInt("receivable_status"),
-                                              Delivery.VISIBLE,
-                                              Delivery.READ_FLAG));
+                if(deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
+                    deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
+                                                  deliveryData.getString("name"),
+                                                  deliveryData.getString("address"),
+                                                  deliveryData.getString("ship_from"),
+                                                  deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivered_status"),
+                                                  deliveryData.getInt("receivable_status"),
+                                                  deliveryData.getInt("delivery_time"),
+                                                  Delivery.VISIBLE,
+                                                  Delivery.READ_FLAG));
+                    deliveryCheck.put(deliveryData.getLong("slip_number"), true);
+                }
             }
+            
+            sortTime(); //時間順にソート
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -129,6 +121,7 @@ public class HomeActivity extends AppCompatActivity
         for (int i = 0; i < deliveryInfo.size(); i++) {
             Map<String, String> item = new HashMap<>();
             Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
+
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
 
             if(deliveryInfo.get(i).getVisible()) {
@@ -160,6 +153,29 @@ public class HomeActivity extends AppCompatActivity
         listView.setEmptyView(findViewById(R.id.emptyView));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
+    }
+    public void refresh() {
+        SwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        SwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getDeliveries();
+                reloadDeliveries();
+
+                if (SwipeRefresh.isRefreshing()) {
+                    SwipeRefresh.setRefreshing(false);
+                }
+            }
+        });
+    }
+    
+    public void sortTime() {
+        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+            @Override
+            public int compare(Delivery a, Delivery b){
+                return a.time - b.time;
+            }
+        });
     }
 
     //toolbarのアイテム表示
@@ -304,7 +320,6 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
     }
 
-
 }
 
 class Delivery {
@@ -322,6 +337,7 @@ class Delivery {
     String address;
     String ship_from;
     int time;
+    int delivery_time;
     int delivered_status;
     int receivable_status;
     boolean visible;
@@ -337,6 +353,8 @@ class Delivery {
 
     public int getTime() { return this.time; }
 
+    public int getDelivery_time() { return this.delivery_time; }
+
     public int getDelivered_status() { return delivered_status; }
 
     public int getReceivable_status() { return receivable_status; }
@@ -347,13 +365,14 @@ class Delivery {
 
     public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
 
-    public Delivery(long slipNumber, String name, String address, String ship_from, int time,
+    public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
                     int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
         this.ship_from = ship_from;
         this.time = time;
+        this.delivery_time = delivery_time;
         this.delivered_status = delivered_status;
         this.receivable_status = receivable_status;
         this.visible = visible;

@@ -2,18 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/sortDistance"
-        android:icon="@drawable/distance"
-        app:showAsAction="always"
-        android:title=""/>
-
-    <item
-        android:id="@+id/sortTime"
-        android:icon="@drawable/ic_menu_camera"
-        app:showAsAction="always"
-        android:title=""/>
-
-    <item
         android:id="@+id/toggleReceivable"
         android:enabled="true"
         android:title=""
