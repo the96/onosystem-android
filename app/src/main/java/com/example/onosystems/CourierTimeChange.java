@@ -26,7 +26,9 @@ public class CourierTimeChange extends AppCompatActivity {
     public SimpleDateFormat sdfm = new SimpleDateFormat("MM"); //日付フォーマット
     public SimpleDateFormat sdfd = new SimpleDateFormat("dd"); //日付フォーマット
     AlertDialog mAlertDlg;
-
+    Date date;
+    private int index = 2;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
+    private Spinner spinner;
 
 
     @Override
@@ -80,12 +82,9 @@ public class CourierTimeChange extends AppCompatActivity {
         String slip_number = status.get("slipNumber");
         String address = status.get("address");
         int unixtime = Integer.valueOf(status.get("unixTime"));
-        Date date = new Date(unixtime * 1000L);
+        date = new Date(unixtime * 1000L);
 
         String time = sdf.format(date);
-        int time_y = Integer.parseInt(sdfy.format(date));
-        int time_m = Integer.parseInt(sdfm.format(date));
-        int time_d = Integer.parseInt(sdfd.format(date));
 
         // TextView のインスタンスを作成
         TextView Customer_name = findViewById(R.id.name1);
@@ -103,7 +102,10 @@ public class CourierTimeChange extends AppCompatActivity {
 
         intent.putExtra("itemInfo",name);
 
-        Spinner spinner = findViewById(R.id.spinner);
+
+
+        spinner = findViewById(R.id.spinner);
+
 
         // ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item,getResources().getStringArray(R.array.time_list));
@@ -112,6 +114,7 @@ public class CourierTimeChange extends AppCompatActivity {
 
         // spinner に adapter をセット
         spinner.setAdapter(adapter);
+        spinner.setSelection(index);
 
         // スピナーのアイテムが選択された時の動作を設定
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -139,8 +142,22 @@ public class CourierTimeChange extends AppCompatActivity {
             @Override
             // クリックしたらダイアログを表示する処理
             public void onClick(View v) {
+
+
+
                 // ダイアログクラスをインスタンス化
                 DialogFlagment dialog = new DialogFlagment();
+                int time_y = Integer.parseInt(sdfy.format(date));
+                int time_m = Integer.parseInt(sdfm.format(date));
+                int time_d = Integer.parseInt(sdfd.format(date));
+
+                Bundle args = new Bundle();
+                args.putInt("time_y", time_y);
+                args.putInt("time_m", time_m);
+                args.putInt("time_d", time_d);
+                dialog.setArguments(args);
+
+
                 // 表示  getFragmentManager()は固定、sampleは識別タグ
                 dialog.show(getSupportFragmentManager(), "sample");
             }
