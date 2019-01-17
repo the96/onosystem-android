@@ -100,9 +100,9 @@ public class HomeActivity extends AppCompatActivity
                                                   deliveryData.getString("address"),
                                                   deliveryData.getString("ship_from"),
                                                   deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivery_time"),
                                                   deliveryData.getInt("delivered_status"),
                                                   deliveryData.getInt("receivable_status"),
-                                                  deliveryData.getInt("delivery_time"),
                                                   Delivery.VISIBLE,
                                                   Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
@@ -134,6 +134,7 @@ public class HomeActivity extends AppCompatActivity
                 item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).delivered_status));
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
+                item.put("deliveryTime", String.valueOf(deliveryInfo.get(i).delivery_time));
                 item.put("image", statusName);
                 if(deliveryInfo.get(i).read_flag) {
                     String newName =  String.valueOf(getResources().getIdentifier("newtext","drawable",this.getPackageName()));
