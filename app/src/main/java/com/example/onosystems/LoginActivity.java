@@ -27,6 +27,7 @@ import java.net.CookiePolicy;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Driver;
 
 
 /**
@@ -57,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+//        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
 //        autoLogin();
 
         mEmailView = findViewById(R.id.loginId);
@@ -70,17 +71,21 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loginEmail = mEmailView.getText().toString();
-                loginPassword = mPasswordView.getText().toString();
+//                loginEmail = mEmailView.getText().toString();
+//                loginPassword = mPasswordView.getText().toString();
 
-                FirebaseMessaging.getInstance().subscribeToTopic("test");
+                Intent intent = new Intent(LoginActivity.this, CustomerHomeActivity.class);
+                startActivity(intent);
+
+//                FirebaseMessaging.getInstance().subscribeToTopic("test");
 
 //                Toast toast = Toast.makeText(LoginActivity.this, "test", Toast.LENGTH_SHORT);
 //                toast.show();
-
+/*
                 if (isEmpty(loginEmail)) {
                     if (isEmpty(loginPassword)) {
-                        login(loginEmail, loginPassword);
+//                        login(loginEmail, loginPassword);
+
                     } else {
                     AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
                         .setMessage("パスワードを入力してください")
@@ -98,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                 }
                             }).show();
-                }
+                }*/
 
             }
         });
@@ -130,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // ログイン処理
     public void login(String id, String password) {
-        try {
+        /*try {
             JSONObject loginJson = new JSONObject();
             loginJson.put("id", id);
             loginJson.put("password", password);
@@ -148,12 +153,12 @@ public class LoginActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
     // ログイン成功時にホーム画面へ遷移する
-    public void transitionActivity() {
+    /*public void transitionActivity() {
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         sendToken();
 
@@ -185,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             mPasswordView.setError("Error");
         }
-    }
+    }*/
 
     public void createNewAccountActivity() {
         Intent intent = new Intent(getApplication(), NewAccountActivity.class);
