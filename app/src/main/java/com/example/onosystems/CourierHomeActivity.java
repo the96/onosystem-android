@@ -34,7 +34,7 @@ public class CourierHomeActivity extends HomeActivity {
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_courier;
-        detailActivity = CourierDeliveryDetailToolbar.class;
+        detailActivity = CourierDeliveryDetail.class;
         drawerLayout = R.id.courier_layout;
         homeLayout = R.layout.courier_home_layout;
     }
