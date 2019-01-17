@@ -1,6 +1,10 @@
 package com.example.onosystems;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,9 +39,8 @@ public class LoginActivity extends AppCompatActivity {
     private String loginPassword;
     private int customer_id = 0;
     private int driver_id = 0;
-
-    String customerId = "customerId";
-    String driverId = "driverId";
+    private SharedPreferences sharedPreferences;
+    private String url = "http://54.92.85.232/aws/Login";
 
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
@@ -53,20 +57,49 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+//        autoLogin();
+
         mEmailView = findViewById(R.id.loginId);
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
         // ログインボタン
-        ImageButton loginButton = findViewById(R.id.email_sign_in_button);
+        final ImageButton loginButton = findViewById(R.id.email_sign_in_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loginEmail = mEmailView.getText().toString();
                 loginPassword = mPasswordView.getText().toString();
 
-                login(loginEmail, loginPassword);
+                FirebaseMessaging.getInstance().subscribeToTopic("test");
+
+//                Toast toast = Toast.makeText(LoginActivity.this, "test", Toast.LENGTH_SHORT);
+//                toast.show();
+
+                if (isEmpty(loginEmail)) {
+                    if (isEmpty(loginPassword)) {
+                        login(loginEmail, loginPassword);
+                    } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                        .setMessage("パスワードを入力してください")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
+                    }
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                            .setMessage("メールアドレスを入力してください")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                }
+                            }).show();
+                }
+
             }
         });
 
@@ -83,14 +116,16 @@ public class LoginActivity extends AppCompatActivity {
     public void sendToken() {
         MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
         myFirebaseMessagingService.onTokenRefresh();
-
-        Toast toast = Toast.makeText(LoginActivity.this, "test", Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     // 自動ログイン
-    public void  autoLogin() {
-//        login(id, password);
+    public void autoLogin() {
+        // 端末からデータを取得
+        String account = sharedPreferences.getString("account", "");
+        String pass = sharedPreferences.getString("pass", "");
+        if (isEmpty(account) && isEmpty(pass)) {
+            login(account, pass);
+        }
     }
 
     // ログイン処理
@@ -100,22 +135,14 @@ public class LoginActivity extends AppCompatActivity {
             loginJson.put("id", id);
             loginJson.put("password", password);
 
-            URL url = null;
-            try {
-                url = new URL("http://sample.jp");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+            String loginInfo = loginJson.toString();
+            SampleLogin sampleLogin = new SampleLogin();
+            sampleLogin.execute(url, loginInfo);
+            String result = sampleLogin.doInBackground(url, loginInfo);
 
-            String result = doInBackground();
             JSONObject jsonObject = new JSONObject(result);
-//            JSONObject jsonObject = Request.sendRequest(url, loginJson);
             customer_id = jsonObject.getInt("customer_id");
             driver_id = jsonObject.getInt("driver_id");
-
-            CookieManager cookieManager = new CookieManager();
-            cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CallAPI.setCookieManager(cookieManager);
 
             transitionActivity();
 
@@ -130,15 +157,30 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseMessaging.getInstance().subscribeToTopic("test");
         sendToken();
 
+        // ログイン情報を端末に保存
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("account", loginEmail);
+        editor.putString("pass", loginPassword);
+        editor.apply();
+
+        Toast toast = Toast.makeText(LoginActivity.this, "trance", Toast.LENGTH_SHORT);
+                toast.show();
+
+        Intent intent2 = new Intent(getApplication(), CustomerHomeActivity.class);
+        startActivity(intent2);
+
+
         if (customer_id != 0) {
             // 消費者側
             Intent intent = new Intent(getApplication(), CustomerHomeActivity.class);
-            intent.putExtra(customerId, customer_id);
+            intent.putExtra("customer_id", customer_id);
+            intent.putExtra("password", loginPassword);
             startActivity(intent);
-        } else if (driver_id != 0){
+        } else if (driver_id != 0) {
             // 配達員側
             Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-            intent.putExtra(driverId, driver_id);
+            intent.putExtra("driver_id", driver_id);
+            intent.putExtra("password", loginPassword);
             startActivity(intent);
         } else {
             mPasswordView.setError("Error");
@@ -150,23 +192,12 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    @Override
-    protected String doInBackground(String... params) {
-        URL url = null;
-        /*try {
-            // Simulate network access.
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            return null;
-        }*/
-
-        try {
-            url = new URL(params[0]);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+    public boolean isEmpty(String text) {
+        if (!text.equals("") && !text.equals(null)) {
+            return true;
         }
-        String body = params[1];
-        return CallAPI.post(url, body);
+        return false;
     }
+
 }
 
