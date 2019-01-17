@@ -53,8 +53,7 @@ public class CourierHomeActivity extends HomeActivity {
 
     public void showMapActivity() {
         //Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-        //intent.putExtra("itemInfo", list.toString());
-        //intent.putStringArrayListExtra("name", list);
+        //intent.putExtra("deliveryInfo", list);
         //startActivity(intent);// CourierMapActivityに遷移
     }
 

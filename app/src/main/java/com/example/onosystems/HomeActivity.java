@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
-    public List<Map<String, String>> list = new ArrayList<>();
+    public ArrayList<HashMap<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
     public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
@@ -119,7 +119,7 @@ public class HomeActivity extends AppCompatActivity
         list = new ArrayList<>(); //初期化
 
         for (int i = 0; i < deliveryInfo.size(); i++) {
-            Map<String, String> item = new HashMap<>();
+            HashMap<String, String> item = new HashMap<>();
             Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
 
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
@@ -248,7 +248,7 @@ public class HomeActivity extends AppCompatActivity
         deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
+        intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
     }
 
