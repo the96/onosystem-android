@@ -7,14 +7,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
@@ -250,6 +253,8 @@ public class HomeActivity extends AppCompatActivity
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
+
+        Log.d("124", list.toString());
     }
 
     //バッグボタンが押されたときのイベント
@@ -260,6 +265,21 @@ public class HomeActivity extends AppCompatActivity
             //どこにも遷移しない
         }
     }
+
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus) {
+            // フォーカスが外れた場合キーボードを非表示にする
+            InputMethodManager inputMethodMgr = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodMgr.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("1234", "a");
+        return super.onTouchEvent(event);
+    }
+
 
     // 検索関係
     public void findDeliveries() {

@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class CourierHomeActivity extends HomeActivity {
+public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileStoreCode, profileRePassword;
     public TextView profilePassword;
@@ -89,6 +89,12 @@ public class CourierHomeActivity extends HomeActivity {
         profilePassword.setText(((Courier) profileInfo).getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
+        profileName.setOnFocusChangeListener(this);
+        profileMail.setOnFocusChangeListener(this);
+        profileTel.setOnFocusChangeListener(this);
+        profileStoreCode.setOnFocusChangeListener(this);
+        profileRePassword.setOnFocusChangeListener(this);
+
         Button editButton = findViewById(R.id.edit_profile_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +128,7 @@ public class CourierHomeActivity extends HomeActivity {
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
+        if(newProfilePassword.equals(newProfileRePassword)) {
             //更新する
 
         } else {

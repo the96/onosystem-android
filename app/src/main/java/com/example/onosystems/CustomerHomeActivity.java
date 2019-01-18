@@ -11,7 +11,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CustomerHomeActivity extends HomeActivity {
+public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileAddress, profileRePassword;
     public TextView profilePassword;
@@ -57,6 +57,12 @@ public class CustomerHomeActivity extends HomeActivity {
         profilePassword.setText(((Customer) profileInfo).getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
+        profileName.setOnFocusChangeListener(this);
+        profileMail.setOnFocusChangeListener(this);
+        profileTel.setOnFocusChangeListener(this);
+        profileAddress.setOnFocusChangeListener(this);
+        profileRePassword.setOnFocusChangeListener(this);
+
         Button editButton = findViewById(R.id.edit_profile_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +96,7 @@ public class CustomerHomeActivity extends HomeActivity {
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
+        if(newProfilePassword.equals(newProfileRePassword)) {
             //更新する
 
         } else {
