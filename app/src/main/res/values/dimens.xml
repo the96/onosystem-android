@@ -9,4 +9,10 @@
     <dimen name="editText_width">220dp</dimen>
     <dimen name="editText_height">35dp</dimen>
 
+    <dimen name="input_form_width">30dp</dimen>
+    <dimen name="input_form_margin">16dp</dimen>
+    <dimen name="login_button_width">90dp</dimen>
+    <dimen name="login_padding">5dp</dimen>
+    <dimen name="input_account">10dp</dimen>
+
 </resources>
