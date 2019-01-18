@@ -11,10 +11,10 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CustomerHomeActivity extends HomeActivity {
+public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
     public Object profileInfo;
-    public EditText profileName, profileMail, profileTel, profileAddress, profilePassword, profileRePassword;
-
+    public EditText profileName, profileMail, profileTel, profileAddress, profileRePassword;
+    public TextView profilePassword;
     AlertDialog alertDialog;
 
     @Override
@@ -47,7 +47,7 @@ public class CustomerHomeActivity extends HomeActivity {
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
         profileAddress = findViewById(R.id.edit_address);
-        profilePassword = findViewById(R.id.edit_password);
+        profilePassword = findViewById(R.id.password);
         profileRePassword = findViewById(R.id.edit_rePassword);
 
         profileName.setText(((Customer) profileInfo).getName(), TextView.BufferType.NORMAL);
@@ -56,6 +56,12 @@ public class CustomerHomeActivity extends HomeActivity {
         profileAddress.setText(((Customer) profileInfo).getAddress(), TextView.BufferType.NORMAL);
         profilePassword.setText(((Customer) profileInfo).getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
+
+        profileName.setOnFocusChangeListener(this);
+        profileMail.setOnFocusChangeListener(this);
+        profileTel.setOnFocusChangeListener(this);
+        profileAddress.setOnFocusChangeListener(this);
+        profileRePassword.setOnFocusChangeListener(this);
 
         Button editButton = findViewById(R.id.edit_profile_button);
         editButton.setOnClickListener(new View.OnClickListener() {

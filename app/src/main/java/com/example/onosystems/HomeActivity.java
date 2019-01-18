@@ -7,14 +7,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
@@ -41,7 +44,7 @@ public class HomeActivity extends AppCompatActivity
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
-    public List<Map<String, String>> list = new ArrayList<>();
+    public ArrayList<HashMap<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
     public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
@@ -100,9 +103,9 @@ public class HomeActivity extends AppCompatActivity
                                                   deliveryData.getString("address"),
                                                   deliveryData.getString("ship_from"),
                                                   deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivery_time"),
                                                   deliveryData.getInt("delivered_status"),
                                                   deliveryData.getInt("receivable_status"),
-                                                  deliveryData.getInt("delivery_time"),
                                                   Delivery.VISIBLE,
                                                   Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
@@ -119,7 +122,7 @@ public class HomeActivity extends AppCompatActivity
         list = new ArrayList<>(); //初期化
 
         for (int i = 0; i < deliveryInfo.size(); i++) {
-            Map<String, String> item = new HashMap<>();
+            HashMap<String, String> item = new HashMap<>();
             Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
 
             String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
@@ -134,6 +137,7 @@ public class HomeActivity extends AppCompatActivity
                 item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).delivered_status));
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
+                item.put("deliveryTime", String.valueOf(deliveryInfo.get(i).delivery_time));
                 item.put("image", statusName);
                 if(deliveryInfo.get(i).read_flag) {
                     String newName =  String.valueOf(getResources().getIdentifier("newtext","drawable",this.getPackageName()));
@@ -247,8 +251,10 @@ public class HomeActivity extends AppCompatActivity
         deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        intent.putExtra("itemInfo", (HashMap<String, Object>) parent.getItemAtPosition(position));
+        intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
+
+        Log.d("124", list.toString());
     }
 
     //バッグボタンが押されたときのイベント
@@ -259,6 +265,21 @@ public class HomeActivity extends AppCompatActivity
             //どこにも遷移しない
         }
     }
+
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus) {
+            // フォーカスが外れた場合キーボードを非表示にする
+            InputMethodManager inputMethodMgr = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodMgr.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("1234", "a");
+        return super.onTouchEvent(event);
+    }
+
 
     // 検索関係
     public void findDeliveries() {

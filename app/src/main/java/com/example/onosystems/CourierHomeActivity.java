@@ -23,10 +23,10 @@ import org.json.JSONObject;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class CourierHomeActivity extends HomeActivity {
+public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
     public Object profileInfo;
-    public EditText profileName, profileMail, profileTel, profileStoreCode, profilePassword, profileRePassword;
-
+    public EditText profileName, profileMail, profileTel, profileStoreCode, profileRePassword;
+    public TextView profilePassword;
     AlertDialog alertDialog;
 
 
@@ -53,8 +53,7 @@ public class CourierHomeActivity extends HomeActivity {
 
     public void showMapActivity() {
         Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-        //intent.putExtra("itemInfo", list.toString());
-        //intent.putStringArrayListExtra("name", list);
+        intent.putExtra("deliveryInfo", list);
         startActivity(intent);// CourierMapActivityに遷移
     }
 
@@ -80,7 +79,7 @@ public class CourierHomeActivity extends HomeActivity {
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
         profileStoreCode = findViewById(R.id.edit_store_code);
-        profilePassword = findViewById(R.id.edit_password);
+        profilePassword = findViewById(R.id.password);
         profileRePassword = findViewById(R.id.edit_rePassword);
 
         profileName.setText(((Courier) profileInfo).getName(), TextView.BufferType.NORMAL);
@@ -89,6 +88,12 @@ public class CourierHomeActivity extends HomeActivity {
         profileStoreCode.setText(String.valueOf(((Courier) profileInfo).getStore_code()), TextView.BufferType.NORMAL);
         profilePassword.setText(((Courier) profileInfo).getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
+
+        profileName.setOnFocusChangeListener(this);
+        profileMail.setOnFocusChangeListener(this);
+        profileTel.setOnFocusChangeListener(this);
+        profileStoreCode.setOnFocusChangeListener(this);
+        profileRePassword.setOnFocusChangeListener(this);
 
         Button editButton = findViewById(R.id.edit_profile_button);
         editButton.setOnClickListener(new View.OnClickListener() {
