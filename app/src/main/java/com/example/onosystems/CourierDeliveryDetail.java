@@ -99,6 +99,15 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
+                ///////後で消す
+                SampleLogin loginTask = new SampleLogin();
+                String body = "{\n" +
+                        "  id: \"driver@gmail.com\",\n" +
+                        "  password: \"driver\"\n" +
+                        "}";
+                // 第一引数がURL、第二引数がPOSTするbody
+                loginTask.execute("http://54.92.85.232/aws/Login", body);
+                ///////
                 intent.putExtra("itemInfo", status);
                 startActivity(intent);
             }
