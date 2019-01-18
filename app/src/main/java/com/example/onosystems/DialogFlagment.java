@@ -19,6 +19,12 @@ public class DialogFlagment extends DialogFragment {
 
     // ダイアログが生成された時に呼ばれるメソッド ※必須
     public Dialog onCreateDialog(Bundle savedInstanceState){
+        Bundle args = getArguments();
+        int time_y = args.getInt("time_y");
+        int time_m = args.getInt("time_m");
+        int time_d = args.getInt("time_d");
+
+
         // 今日の日付のカレンダーインスタンスを取得
         final Calendar calendar = Calendar.getInstance();
 
@@ -36,12 +42,13 @@ public class DialogFlagment extends DialogFragment {
                         courierTimeChange.setTextView(dateStr);
                     }
                 },
-                calendar.get(Calendar.YEAR), // 初期選択年
-                calendar.get(Calendar.MONTH), // 初期選択月
-                calendar.get(Calendar.DAY_OF_MONTH) // 初期選択日
+                //ここで初期値を入れる
+                time_y,time_m-1,time_d
+
         );
 
         // dateBuilderを返す
+
         return dateBuilder;
     }
 }
