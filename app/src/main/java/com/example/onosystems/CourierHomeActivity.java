@@ -52,9 +52,9 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     }
 
     public void showMapActivity() {
-        //Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-        //intent.putExtra("deliveryInfo", list);
-        //startActivity(intent);// CourierMapActivityに遷移
+        Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
+        intent.putExtra("deliveryInfo", list);
+        startActivity(intent);// CourierMapActivityに遷移
     }
 
     public void getProfileCourier() {
