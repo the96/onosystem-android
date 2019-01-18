@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+
+    <item
+        android:id="@+id/toggle_pin_green"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_pin_green"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/toggle_pin_red"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_pin_red"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/toggle_pin_blue"
+        android:enabled="true"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/toggle_layout_pin_blue"
+        app:showAsAction="always" />
+
+</menu>

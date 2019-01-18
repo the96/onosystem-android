@@ -52,10 +52,10 @@ public class CourierHomeActivity extends HomeActivity {
     }
 
     public void showMapActivity() {
-        //Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
+        Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
         //intent.putExtra("itemInfo", list.toString());
         //intent.putStringArrayListExtra("name", list);
-        //startActivity(intent);// CourierMapActivityに遷移
+        startActivity(intent);// CourierMapActivityに遷移
     }
 
     public void getProfileCourier() {
