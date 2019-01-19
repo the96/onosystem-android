@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
@@ -16,6 +18,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -77,6 +83,23 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, CourierHomeActivity.class);
                 startActivity(intent);
 
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.w("LoginActivity", "getInstanceId failed", task.getException());
+                                    return;
+                                }
+                                String token = task.getResult().getToken();
+                                System.out.println("TOKEN: " + token);
+                                // urlとbodyは仮置き
+                                String body = "{\"token\": \"" + token + "\"}";
+                                new PostFirebaseTokenToServer().execute("url", body);
+                            }
+                        });
+
+
 //                FirebaseMessaging.getInstance().subscribeToTopic("test");
 
 //                Toast toast = Toast.makeText(LoginActivity.this, "test", Toast.LENGTH_SHORT);
@@ -118,10 +141,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void sendToken() {
-        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
-        myFirebaseMessagingService.onTokenRefresh();
-    }
+//    public void sendToken() {
+//        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
+//        myFirebaseMessagingService.onTokenRefresh();
+//    }
 
     // 自動ログイン
     public void autoLogin() {
