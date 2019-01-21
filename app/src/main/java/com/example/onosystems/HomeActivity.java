@@ -68,14 +68,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Intent i = getIntent();
-        int keyword = i.getIntExtra("customer_id", 0);
-
-
         setUserOptions();
         setContentView(homeLayout);
-
 
         SampleLogin loginTask = new SampleLogin();
         String body = "{\n" +
@@ -137,15 +131,15 @@ public class HomeActivity extends AppCompatActivity
                 JSONObject deliveryData = jsonArray.getJSONObject(i);
                 if(deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                            deliveryData.getString("name"),
-                            deliveryData.getString("address"),
-                            deliveryData.getString("ship_from"),
-                            deliveryData.getInt("time"),
-                            deliveryData.getInt("delivery_time"),
-                            deliveryData.getInt("delivered_status"),
-                            deliveryData.getInt("receivable_status"),
-                            Delivery.VISIBLE,
-                            Delivery.READ_FLAG));
+                                                  deliveryData.getString("name"),
+                                                  deliveryData.getString("address"),
+                                                  deliveryData.getString("ship_from"),
+                                                  deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivery_time"),
+                                                  deliveryData.getInt("delivered_status"),
+                                                  deliveryData.getInt("receivable_status"),
+                                                  Delivery.VISIBLE,
+                                                  Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 }
             }
@@ -450,6 +444,7 @@ class User {
     public String getPassword() {
         return password;
     }
+    public void setPassword(String password) { this.password = password; }
 
     public String getMail() {
         return mail;

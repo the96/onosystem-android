@@ -2,6 +2,7 @@ package com.example.onosystems;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,19 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         //detailActivity = CustomerDeliveryDetail.class;
         drawerLayout = R.id.customer_layout;
         homeLayout = R.layout.customer_home_layout;
-        String id = "{\"customer_id\": \"1\"}";
-        User.setUserId(id);
+
+        Intent i = getIntent();
+        int userId = i.getIntExtra("customer_id", 0);
+        try {
+            JSONObject json = new JSONObject();
+            json.put("customer_id", userId);
+            String id = json.toString();
+            User.setUserId(id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String password = i.getStringExtra("password");
+        User.setPassword(password);
         String url = "http://www.onosystems.work/aws/TopCustomer";
         User.setUrl(url);
         String profileURL = "http://www.onosystems.work/aws/InformationCustomer";
@@ -106,13 +118,13 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                 json.put("address", newProfileAddress);
                 json.put("mail", newProfileMail);
                 json.put("tel", newProfileTel);
-                json.put("password", newProfileRePassword);
+                json.put("password", newProfilePassword);
 
-                String newjson = json.toString();
+                String newJson = json.toString();
 /*
-                DeliveryInfoAPI api = new DeliveryInfoAPI();
-                api.setReference(this);
-                api.execute("http://54.92.85.232/aws/SettingCustomer", newjson);
+                TimeChangeAPI postAsync = new TimeChangeAPI();
+                postAsync.setReference(this);
+                postAsync.execute("http://www.onosystems.work/aws/SettingCustomer", newJson);
 */
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -21,8 +21,19 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         detailActivity = CourierDeliveryDetail.class;
         drawerLayout = R.id.courier_layout;
         homeLayout = R.layout.courier_home_layout;
-        String id = "{\"driver_id\": \"1\"}";
-        User.setUserId(id);
+
+        Intent i = getIntent();
+        int userId = i.getIntExtra("driver_id", 0);
+        try {
+            JSONObject json = new JSONObject();
+            json.put("driver_id", userId);
+            String id = json.toString();
+            User.setUserId(id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String password = i.getStringExtra("password");
+        User.setPassword(password);
         String url = "http://www.onosystems.work/aws/TopCourier";
         User.setUrl(url);
         String profileURL = "http://www.onosystems.work/aws/InformationCourier";
@@ -118,13 +129,13 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                 json.put("name", newProfileName);
                 json.put("mail", newProfileMail);
                 json.put("tel", newProfileTel);
-                json.put("password", newProfileRePassword);
+                json.put("password", newProfilePassword);
 
                 String newJson = json.toString();
-
-               /* DeliveryInfoAPI api = new DeliveryInfoAPI();
-                api.setReference(this);
-                api.execute("http://54.92.85.232/aws/SettingCourier", newJson);
+/*
+                TimeChangeAPI postAsync = new TimeChangeAPI();
+                postAsync.setReference(this);
+                postAsync.execute("http://www.onosystems.work/aws/SettingCourier", newJson);
 */
             } catch (JSONException e) {
                 e.printStackTrace();
