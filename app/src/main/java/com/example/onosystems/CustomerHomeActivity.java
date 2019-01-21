@@ -2,7 +2,9 @@ package com.example.onosystems;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.view.GravityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,28 +14,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
-    public Object profileInfo;
-    public EditText profileName, profileMail, profileTel, profileAddress, profileRePassword;
-    public TextView profilePassword;
-    AlertDialog alertDialog;
+    public EditText profileAddress;
 
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_customer;
-        //detailActivity = CustomerDeliveryDetail.class;
+        detailActivity = CustomerDeliveryDetail.class;
         drawerLayout = R.id.customer_layout;
         homeLayout = R.layout.customer_home_layout;
+
+        Intent i = getIntent();
+        int userId = i.getIntExtra("customer_id", 0);
+        try {
+            JSONObject json = new JSONObject();
+            json.put("customer_id", userId);
+            String id = json.toString();
+            User.setUserId(id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String password = i.getStringExtra("password");
+        User.setPassword(password);
+        String url = "http://www.onosystems.work/aws/TopCustomer";
+        User.setUrl(url);
+        String profileURL = "http://www.onosystems.work/aws/InformationCustomer";
+        User.setProfileURL(profileURL);
     }
 
-    public void getProfileCustomer() {
-        //本来はサーバからデータ受け取る
+    @Override
+    public void parseProfile(String json) {
         try {
-            JSONObject profileData = new JSONObject("{\"name\":\"橋詰 光宙\", \"mail\":\"kut@gmail.com\", \"tel\":\"1000000000\", \"address\":\"高知県高知市帯屋町1丁目2-3\"}");
-
+            JSONObject profileData = new JSONObject(json);
             profileInfo = new Customer(profileData.getString("name"),
-                                      profileData.getString("mail"),
-                                      profileData.getLong("tel"),
-                                      profileData.getString("address"));
+                    profileData.getString("mail"),
+                    profileData.getLong("tel"),
+                    profileData.getString("address"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -41,8 +56,6 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
 
     @Override
     public void setProfile() {
-        getProfileCustomer();
-
         profileName = findViewById(R.id.edit_name);
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
@@ -98,6 +111,25 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
 
         if(newProfilePassword.equals(newProfileRePassword)) {
             //更新する
+            try {
+                JSONObject json = new JSONObject();
+                json.put("customer_id", "1");
+                json.put("name", newProfileName);
+                json.put("address", newProfileAddress);
+                json.put("mail", newProfileMail);
+                json.put("tel", newProfileTel);
+                json.put("password", newProfilePassword);
+
+                String newJson = json.toString();
+/*
+                TimeChangeAPI postAsync = new TimeChangeAPI();
+                postAsync.setReference(this);
+                postAsync.execute("http://www.onosystems.work/aws/SettingCustomer", newJson);
+*/
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -113,10 +145,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
 }
 
 class Customer extends User {
-    int customer_id;
     String address;
-
-    public int getCustomer_id() { return customer_id; }
 
     public String getAddress() { return address; }
 

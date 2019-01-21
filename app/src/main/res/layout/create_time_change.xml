@@ -16,12 +16,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/time_change_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/tool_bar"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
         <TextView
             android:id="@+id/atena1"
-            android:layout_width="131dp"
-            android:layout_height="37dp"
+            android:layout_width="137dp"
+            android:layout_height="wrap_content"
             android:text="@string/atena"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
@@ -31,7 +37,7 @@
 
         <TextView
             android:id="@+id/name1"
-            android:layout_width="350dp"
+            android:layout_width="351dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
             android:text="@string/name"
@@ -39,14 +45,13 @@
 
         <TextView
             android:id="@+id/textView11"
-            android:layout_width="194dp"
-            android:layout_height="44dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/denpyou"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
             android:textSize="30sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
 
         <TextView
@@ -79,7 +84,6 @@
             android:id="@+id/textView51"
             android:layout_width="252dp"
             android:layout_height="42dp"
-            android:layout_marginStart="10dp"
             android:text="@string/haitatu"
             android:textAlignment="viewStart"
             android:textAllCaps="false"

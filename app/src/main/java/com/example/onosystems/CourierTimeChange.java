@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,7 +37,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     String timeOfMillis;
     String slip_number;
     String delivery_time;
-    private int index = 2;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
+    //private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
     private Spinner spinner;
 
 
@@ -91,13 +93,14 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
 
         //MainActivityから値を受け取る,初期値を設定
-        HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
+        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
         String name = status.get("name");
         slip_number = status.get("slipNumber");
         delivery_time = status.get("deliverytime");
         String address = status.get("address");
         int unixtime = Integer.valueOf(status.get("unixTime"));
         date = new Date(unixtime * 1000L);
+        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
 
         //ここでカレンダーの入力値を初期化している
         this.year = Integer.parseInt(sdfy.format(date));
@@ -142,7 +145,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
         // spinner に adapter をセット
         spinner.setAdapter(adapter);
-        spinner.setSelection(index);
+        spinner.setSelection(deliveryTime);
 
         // スピナーのアイテムが選択された時の動作を設定
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -189,6 +192,26 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
                 // 表示  getFragmentManager()は固定、sampleは識別タグ
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+            }
+        });
+
+        //MainActivityから値を受け取る,初期値を設定
+
+
+        Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
+        toolbar.inflateMenu(R.menu.tool_options_detail);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.mapView) {
+                    //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplication(), CourierMapActivity.class);
+                    intent.putExtra("itemInfo", status);
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
             }
         });
 
