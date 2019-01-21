@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class PostAsync  extends AsyncTask<String, String, String> {
     interface Callback {
-        void callback();
+        void callback(String result);
     }
     private Callback ref;
 
@@ -39,6 +39,6 @@ public class PostAsync  extends AsyncTask<String, String, String> {
     }
     @Override
     protected void onPostExecute(String result) {
-        ref.callback();
+        ref.callback(result);
     }
 }
