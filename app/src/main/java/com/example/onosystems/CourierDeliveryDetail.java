@@ -120,7 +120,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                         "  password: \"driver\"\n" +
                         "}";
                 // 第一引数がURL、第二引数がPOSTするbody
-                loginTask.execute("http://54.92.85.232/aws/Login", body);
+                loginTask.execute("http://www.onosystems.work/aws/CourierDeliveryDetail", body);
                 ///////
                 intent.putExtra("itemInfo", status);
                 startActivity(intent);
