@@ -1,35 +1,25 @@
 package com.example.onosystems;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.Comparator;
-
-public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
+public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener, DeliveryInfoAPI1.Callback {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileStoreCode, profileRePassword;
     public TextView profilePassword;
     AlertDialog alertDialog;
-
-
 
     @Override
     public void setUserOptions() {
@@ -37,6 +27,10 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         detailActivity = CourierDeliveryDetail.class;
         drawerLayout = R.id.courier_layout;
         homeLayout = R.layout.courier_home_layout;
+        String id = "{\"driver_id\": \"1\"}";
+        User.setUserId(id);
+        String url = "http://54.92.85.232/aws/TopCourier";
+        User.setUrl(url);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -57,24 +51,26 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         startActivity(intent);// CourierMapActivityに遷移
     }
 
-    public void getProfileCourier() {
-        //本来はサーバからデータ受け取る
-        try {
-            JSONObject profileData = new JSONObject("{\"name\":\"driver\", \"mail\":\"driver@gmail.com\", \"tel\":\"1000000001\", \"store_code\":\"1001\"}");
+    @Override
+    public void getProfile() {
+        DeliveryInfoAPI1 api = new DeliveryInfoAPI1();
+        api.setReference(this);
+        api.execute("http://54.92.85.232/aws/InformationCourier", User.getUserId());
+    }
 
+    public void parseProfileCourier(String json) {
+        try {
+            JSONObject profileData = new JSONObject(json);
             profileInfo = new Courier(profileData.getString("name"),
                                       profileData.getString("mail"),
                                       profileData.getLong("tel"),
-                                      profileData.getInt("store_code"));
+                                      profileData.getString("store_code"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void setProfile() {
-        getProfileCourier();
-
+    public void setProfileCourier() {
         profileName = findViewById(R.id.edit_name);
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
@@ -85,7 +81,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         profileName.setText(((Courier) profileInfo).getName(), TextView.BufferType.NORMAL);
         profileMail.setText(((Courier) profileInfo).getMail(), TextView.BufferType.NORMAL);
         profileTel.setText(String.valueOf(((Courier) profileInfo).getTel()), TextView.BufferType.NORMAL);
-        profileStoreCode.setText(String.valueOf(((Courier) profileInfo).getStore_code()), TextView.BufferType.NORMAL);
+        profileStoreCode.setText(((Courier) profileInfo).getStore_code(), TextView.BufferType.NORMAL);
         profilePassword.setText(((Courier) profileInfo).getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
@@ -124,11 +120,11 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         String newProfileName = profileName.getText().toString();
         String newProfileMail = profileMail.getText().toString();
         long newProfileTel = Long.valueOf(profileTel.getText().toString());
-        int newProfileStoreCode = Integer.valueOf(profileStoreCode.getText().toString());
+        String newProfileStoreCode = profileStoreCode.getText().toString();
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if(newProfilePassword.equals(newProfileRePassword)) {
+        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
             //更新する
 
         } else {
@@ -142,17 +138,22 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
     }
 
+    @Override
+    public void callbackMethod1(String result) {
+        System.out.println(result);
+
+        parseProfileCourier(result);
+        setProfileCourier();
+    }
+
 }
 
 class Courier extends User{
-    int driver_id;
-    int store_code;
+    String store_code;
 
-    public int getDriver_id() { return driver_id; }
+    public String getStore_code() { return store_code; }
 
-    public int getStore_code() { return store_code; }
-
-    public Courier(String name, String mail, long tel, int store_code) {
+    public Courier(String name, String mail, long tel, String store_code) {
         super.name = name;
         super.mail = mail;
         super.tel = tel;

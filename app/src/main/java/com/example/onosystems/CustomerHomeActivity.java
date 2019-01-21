@@ -11,7 +11,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
+public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener, DeliveryInfoAPI1.Callback {
     public Object profileInfo;
     public EditText profileName, profileMail, profileTel, profileAddress, profileRePassword;
     public TextView profilePassword;
@@ -23,13 +23,22 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         //detailActivity = CustomerDeliveryDetail.class;
         drawerLayout = R.id.customer_layout;
         homeLayout = R.layout.customer_home_layout;
+        String id = "{\"customer_id\": \"1\"}";
+        User.setUserId(id);
+        String url = "http://54.92.85.232/aws/TopCustomer";
+        User.setUrl(url);
     }
 
-    public void getProfileCustomer() {
-        //本来はサーバからデータ受け取る
-        try {
-            JSONObject profileData = new JSONObject("{\"name\":\"橋詰 光宙\", \"mail\":\"kut@gmail.com\", \"tel\":\"1000000000\", \"address\":\"高知県高知市帯屋町1丁目2-3\"}");
+    @Override
+    public void getProfile() {
+        DeliveryInfoAPI1 api = new DeliveryInfoAPI1();
+        api.setReference(this);
+        api.execute("http://54.92.85.232/aws/InformationCustomer", User.getUserId());
+    }
 
+    public void parseProfileCustomer(String json) {
+        try {
+            JSONObject profileData = new JSONObject(json);
             profileInfo = new Customer(profileData.getString("name"),
                                       profileData.getString("mail"),
                                       profileData.getLong("tel"),
@@ -39,10 +48,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         }
     }
 
-    @Override
-    public void setProfile() {
-        getProfileCustomer();
-
+    public void setProfileCustomer() {
         profileName = findViewById(R.id.edit_name);
         profileMail = findViewById(R.id.edit_mail);
         profileTel = findViewById(R.id.edit_tel);
@@ -96,7 +102,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         String newProfilePassword = profilePassword.getText().toString();
         String newProfileRePassword = profileRePassword.getText().toString();
 
-        if(newProfilePassword.equals(newProfileRePassword)) {
+        if((newProfilePassword.equals(newProfileRePassword)) && (newProfileRePassword.equals(null))) {
             //更新する
 
         } else {
@@ -108,6 +114,14 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
             });
             builder.show();
         }
+    }
+
+    @Override
+    public void callbackMethod1(String result) {
+        System.out.println(result);
+
+        parseProfileCustomer(result);
+        setProfileCustomer();
     }
 
 }
