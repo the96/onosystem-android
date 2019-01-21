@@ -39,12 +39,10 @@
             android:label="@string/courier_Home_Activity" >
         </activity>
 
-        <!--
         <activity
-            android:name="com.example.onosystems.customerDeliveryDetail"
-            android:label="@string/customer_detail_name" >
+            android:name="com.example.onosystems.CustomerDeliveryDetail"
+            android:label="消費者側詳細画面" >
         </activity>
-        -->
 
         <activity
             android:name="com.example.onosystems.CourierDeliveryDetail"
