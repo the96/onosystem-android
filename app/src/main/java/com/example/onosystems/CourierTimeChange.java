@@ -37,7 +37,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     String timeOfMillis;
     String slip_number;
     String delivery_time;
-    private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
+    //private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
     private Spinner spinner;
 
 
@@ -93,7 +93,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
 
         //MainActivityから値を受け取る,初期値を設定
-        HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
+        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
         String name = status.get("name");
         slip_number = status.get("slipNumber");
         delivery_time = status.get("deliverytime");
@@ -195,6 +195,9 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
             }
         });
 
+        //MainActivityから値を受け取る,初期値を設定
+
+
         Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
         toolbar.inflateMenu(R.menu.tool_options_detail);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -202,7 +205,10 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
             public boolean onMenuItemClick(MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 if (id == R.id.mapView) {
-                    Toast.makeText(CourierTimeChange.this, "settings clicked 2", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplication(), CourierMapActivity.class);
+                    intent.putExtra("itemInfo", status);
+                    startActivity(intent);
                     return true;
                 }
                 return false;
