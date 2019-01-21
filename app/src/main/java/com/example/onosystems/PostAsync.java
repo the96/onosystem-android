@@ -14,7 +14,7 @@ public class PostAsync  extends AsyncTask<String, String, String> {
     private Callback ref;
 
     // 初回の通信の際に呼び出す
-    public static void InitializeCallAPI() {
+    public static void initializeCallAPI() {
         // Cookieが発行される通信の前(要するにLoginの際)にCookieManagerを生成してセットする
         CookieManager manager = new CookieManager();
         manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
