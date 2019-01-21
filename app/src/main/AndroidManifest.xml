@@ -81,6 +81,11 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
+        <activity
+            android:name="com.example.onosystems.NewAccountActivity"
+            android:label="@string/create_account_name" >
+        </activity>
+
     </application>
 
 </manifest>
