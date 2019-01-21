@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String loginEmail;
     private String loginPassword;
+    private String token;
     private int customer_id = 0;
     private int driver_id = 0;
     private SharedPreferences sharedPreferences;
@@ -77,27 +78,14 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                loginEmail = mEmailView.getText().toString();
-//                loginPassword = mPasswordView.getText().toString();
+                loginEmail = mEmailView.getText().toString();
+                loginPassword = mPasswordView.getText().toString();
+                login(loginEmail, loginPassword);
 
                 Intent intent = new Intent(LoginActivity.this, CourierHomeActivity.class);
                 startActivity(intent);
 
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                if (!task.isSuccessful()) {
-                                    Log.w("LoginActivity", "getInstanceId failed", task.getException());
-                                    return;
-                                }
-                                String token = task.getResult().getToken();
-                                System.out.println("TOKEN: " + token);
-                                // urlとbodyは仮置き
-                                String body = "{\"token\": \"" + token + "\"}";
-                                new PostFirebaseTokenToServer().execute("url", body);
-                            }
-                        });
+
 
 
 //                FirebaseMessaging.getInstance().subscribeToTopic("test");
@@ -139,6 +127,18 @@ public class LoginActivity extends AppCompatActivity {
                 createNewAccountActivity();
             }
         });
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("LoginActivity", "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        token = task.getResult().getToken();
+                        System.out.println("TOKEN: " + token);
+                    }
+                });
     }
 
 //    public void sendToken() {
@@ -157,7 +157,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // ログイン処理
-    public void login(String id, String password) {
+    public void login(final String id, final String password) {
+        // urlとbodyは仮置き
+        JSONObject body = new JSONObject();
+        try {
+            body.put("id", id);
+            body.put("password", password);
+            body.put("token", token);
+            System.out.println(body.toString());
+            
+            new PostFirebaseTokenToServer().execute("url", body.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         /*try {
             JSONObject loginJson = new JSONObject();
             loginJson.put("id", id);
