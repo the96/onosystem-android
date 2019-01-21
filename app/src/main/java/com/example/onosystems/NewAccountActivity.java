@@ -22,13 +22,13 @@ import org.json.JSONObject;
  *   消費者の新規アカウントを作成する画面
  */
 
-public class NewAccountActivity extends AppCompatActivity implements Request.CallBack {
+public class NewAccountActivity extends AppCompatActivity implements PostAsync.Callback {
 
     EditText editName, editPassword1, editPassword2, editMail, editAddress, editTel;
     String name, mail, password1, password2, address;
     long tel;
-    private String url = "http://54.92.85.232/aws/RegisterAccount";
-    String result = "ok";
+    private String url = "http://www.onosystems.work/aws/RegisterAccount";
+    private String result = "";
     AlertDialog alertDialog;
 
     @Override
@@ -83,10 +83,7 @@ public class NewAccountActivity extends AppCompatActivity implements Request.Cal
     }
 
     public boolean isEmpty(String text) {
-        if (!text.equals("") && !text.equals(null)) {
-            return true;
-        }
-        return false;
+        return !text.equals("");
     }
     private boolean isEmailValid(String email) {
         return email.contains("@");
@@ -136,13 +133,13 @@ public class NewAccountActivity extends AppCompatActivity implements Request.Cal
     }
 
     public void sendRequest(String json) {
-        Request request = new Request();
-        request.setCallBack(this);
-        request.execute(url, json);
+        PostAsync postAsync = new PostAsync();
+        postAsync.setRef(this);
+        postAsync.execute(url, json);
     }
 
     @Override
-    public void fetchResult(String result) {
+    public void callback(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
             this.result = jsonObject.getString("result");
