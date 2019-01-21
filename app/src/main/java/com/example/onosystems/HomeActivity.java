@@ -39,7 +39,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class HomeActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, PostAsync.Callback {
+        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
@@ -84,7 +84,8 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
     }
 
-    public void setUserOptions() { }
+    public void setUserOptions() {
+    }
 
     //プロフィール関係
     public void getProfile() {
@@ -98,9 +99,15 @@ public class HomeActivity extends AppCompatActivity
         });
         postAsync.execute(User.getProfileURL(), User.getUserId());
     }
-    public void parseProfile(String json) { }
-    public void setProfile() { }
-    public void updateProfile() { }
+
+    public void parseProfile(String json) {
+    }
+
+    public void setProfile() {
+    }
+
+    public void updateProfile() {
+    }
 
     //荷物関係
     public void getDeliveries() {
@@ -114,23 +121,24 @@ public class HomeActivity extends AppCompatActivity
         });
         postAsync.execute(User.getUrl(), User.getUserId());
     }
+
     public void parseDeliveries(String json) {
 
         try {
             JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < json.length(); i++) {
                 JSONObject deliveryData = jsonArray.getJSONObject(i);
-                if(deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
+                if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                                                  deliveryData.getString("name"),
-                                                  deliveryData.getString("address"),
-                                                  deliveryData.getString("ship_from"),
-                                                  deliveryData.getInt("time"),
-                                                  deliveryData.getInt("delivery_time"),
-                                                  deliveryData.getInt("delivered_status"),
-                                                  deliveryData.getInt("receivable_status"),
-                                                  Delivery.VISIBLE,
-                                                  Delivery.READ_FLAG));
+                            deliveryData.getString("name"),
+                            deliveryData.getString("address"),
+                            deliveryData.getString("ship_from"),
+                            deliveryData.getInt("time"),
+                            deliveryData.getInt("delivery_time"),
+                            deliveryData.getInt("delivered_status"),
+                            deliveryData.getInt("receivable_status"),
+                            Delivery.VISIBLE,
+                            Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 }
             }
@@ -141,6 +149,7 @@ public class HomeActivity extends AppCompatActivity
         }
 
     }
+
     public void reloadDeliveries() {
         list = new ArrayList<>(); //初期化
 
@@ -148,9 +157,9 @@ public class HomeActivity extends AppCompatActivity
             HashMap<String, String> item = new HashMap<>();
             Date date = new Date(deliveryInfo.get(i).getTime() * 1000L);
 
-            String statusName =  String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(),"drawable",this.getPackageName()));
+            String statusName = String.valueOf(getResources().getIdentifier("receivable_image" + deliveryInfo.get(i).getReceivable_status(), "drawable", this.getPackageName()));
 
-            if(deliveryInfo.get(i).getVisible()) {
+            if (deliveryInfo.get(i).getVisible()) {
                 item.put("itemNumber", String.valueOf(i));
                 item.put("name", deliveryInfo.get(i).name);
                 item.put("time", String.valueOf(sdf.format(date)));
@@ -162,8 +171,8 @@ public class HomeActivity extends AppCompatActivity
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
                 item.put("deliveryTime", String.valueOf(deliveryInfo.get(i).delivery_time));
                 item.put("image", statusName);
-                if(deliveryInfo.get(i).read_flag) {
-                    String newName =  String.valueOf(getResources().getIdentifier("newtext","drawable",this.getPackageName()));
+                if (deliveryInfo.get(i).read_flag) {
+                    String newName = String.valueOf(getResources().getIdentifier("newtext", "drawable", this.getPackageName()));
                     item.put("new", newName);
                 }
                 list.add(item);
@@ -180,6 +189,7 @@ public class HomeActivity extends AppCompatActivity
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
     }
+
     public void refresh() {
         SwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         SwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -195,16 +205,16 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void sortTime() {
-        Collections.sort( deliveryInfo, new Comparator<Delivery>(){
+        Collections.sort(deliveryInfo, new Comparator<Delivery>() {
             @Override
-            public int compare(Delivery a, Delivery b){
+            public int compare(Delivery a, Delivery b) {
                 return a.time - b.time;
             }
         });
     }
 
     //toolbarのアイテム表示
-    public void toolbarView(){
+    public void toolbarView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawer = findViewById(drawerLayout);
@@ -226,6 +236,7 @@ public class HomeActivity extends AppCompatActivity
         });
         toggle.syncState();
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(toolBarLayout, menu);
@@ -245,10 +256,11 @@ public class HomeActivity extends AppCompatActivity
 
         return true;
     }
+
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         int buttonId = buttonView.getId();
 
-        switch(buttonId) {
+        switch (buttonId) {
             case R.id.toggle_layout_switch0:
                 toggleVisibleFromReceivable(Delivery.UNSELECTED, isChecked);
                 break;
@@ -301,10 +313,12 @@ public class HomeActivity extends AppCompatActivity
         listView.setTextFilterEnabled(true); // インクリメンタルサーチをおこなうかどうか
         search.setQueryHint("検索文字を入力して下さい"); // 何も入力されてないときのテキスト
     }
-    public boolean onQueryTextSubmit(String query){
+
+    public boolean onQueryTextSubmit(String query) {
         return false; // summitButtonを実装していないので，falseを返すだけのやつ
     }
-    public boolean onQueryTextChange(String queryText){
+
+    public boolean onQueryTextChange(String queryText) {
         SimpleAdapter filterList = (SimpleAdapter) listView.getAdapter();
 
         if (TextUtils.isEmpty(queryText)) {
@@ -322,9 +336,9 @@ public class HomeActivity extends AppCompatActivity
             deliveredStatus = deliveryInfo.get(i).getDelivered_status();
             receivableStatus = deliveryInfo.get(i).getReceivable_status();
 
-            if(receivableStatus == number) {
+            if (receivableStatus == number) {
                 if (isChecked) {
-                    if(!(!toggle3.isChecked() && deliveredStatus== Delivery.DELIVERED)) {
+                    if (!(!toggle3.isChecked() && deliveredStatus == Delivery.DELIVERED)) {
                         deliveryInfo.get(i).setVisible(Delivery.VISIBLE);
                     }
                 } else {
@@ -335,6 +349,7 @@ public class HomeActivity extends AppCompatActivity
 
         reloadDeliveries();
     }
+
     public void deliveredSelect(boolean isChecked) {
         Boolean check[] = {toggle0.isChecked(), toggle1.isChecked(), toggle2.isChecked()};
 
@@ -352,11 +367,6 @@ public class HomeActivity extends AppCompatActivity
         }
 
         reloadDeliveries();
-    }
-
-    @Override
-    public void callback(String result) {
-        System.out.println(result);
     }
 }
 
