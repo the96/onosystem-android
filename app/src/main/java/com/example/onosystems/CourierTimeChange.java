@@ -35,7 +35,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     String timeOfMillis;
     String slip_number;
     String delivery_time;
-    private int index = 2;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
+    private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
     private Spinner spinner;
 
 
@@ -98,6 +98,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         String address = status.get("address");
         int unixtime = Integer.valueOf(status.get("unixTime"));
         date = new Date(unixtime * 1000L);
+        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
 
         //ここでカレンダーの入力値を初期化している
         this.year = Integer.parseInt(sdfy.format(date));
@@ -142,7 +143,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
         // spinner に adapter をセット
         spinner.setAdapter(adapter);
-        spinner.setSelection(index);
+        spinner.setSelection(deliveryTime);
 
         // スピナーのアイテムが選択された時の動作を設定
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
