@@ -133,7 +133,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
 
                 String newJson = json.toString();
 /*
-                TimeChangeAPI postAsync = new TimeChangeAPI();
+                PostAsync postAsync = new PostAsync();
                 postAsync.setReference(this);
                 postAsync.execute("http://www.onosystems.work/aws/SettingCourier", newJson);
 */
