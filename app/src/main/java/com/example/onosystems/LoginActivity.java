@@ -7,11 +7,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
@@ -42,8 +47,8 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
 
     private String loginEmail;
     private String loginPassword;
-    public int customer_id = 0;
-    public int driver_id = 0;
+    public int customer_id;
+    public int driver_id;
     private SharedPreferences sharedPreferences;
     private String url = "http://54.92.85.232/aws/Login";
 
@@ -58,7 +63,8 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+        // ログイン情報を保存するためのもの
+        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
 //        autoLogin();
 
         mEmailView = findViewById(R.id.loginId);
@@ -85,8 +91,6 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
                 } else {
                     login(loginEmail, loginPassword);
                 }
-
-
             }
         });
 
@@ -101,8 +105,8 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
     }
 
     public void sendToken() {
-//        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
-//        myFirebaseMessagingService.onTokenRefresh();
+        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
+        myFirebaseMessagingService.onTokenRefresh();
     }
 
     // 自動ログイン
@@ -125,7 +129,7 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
             String loginInfo = loginJson.toString();
             sendRequest(loginInfo);
 
-            // テスト用
+//            // テスト用
             JSONObject test = new JSONObject();
             for (String credential : DUMMY_CUSTOMER) {
                 String[] pieces = credential.split(":");
@@ -150,6 +154,10 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
             e.printStackTrace();
         }
 
+        String s = String.valueOf(customer_id);
+//        Toast toast = Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT);
+//        toast.show();
+
         if (customer_id == 0 && driver_id == 0) {
             AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
                     .setMessage("ログインに失敗しました" + customer_id)
@@ -162,7 +170,6 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
         } else {
             transitionActivity();
         }
-
     }
 
     // ログイン成功時にホーム画面へ遷移する
@@ -171,10 +178,11 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
 //        sendToken();
 
         // ログイン情報を端末に保存
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString("account", loginEmail);
-//        editor.putString("pass", loginPassword);
-//        editor.apply();
+        /*SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("account", loginEmail);
+
+        editor.putString("pass", loginPassword);
+        editor.apply();*/
 
         if (customer_id != 0) {
             // 消費者側
@@ -264,6 +272,5 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
 }
 
