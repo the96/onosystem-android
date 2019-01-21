@@ -1,4 +1,14 @@
 package com.example.onosystems;
 
-public class RequestLogin {
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
+public class RequestLogin extends Request{
+    CookieManager manager;
+    RequestLogin() {
+        // Cookieが発行される通信の前(要するにLoginの際)にCookieManagerを生成してセットする
+        manager = new CookieManager();
+        manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        CallAPI.setCookieManager(manager);
+    }
 }
