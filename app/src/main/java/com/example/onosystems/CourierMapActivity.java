@@ -19,7 +19,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 class Deliver {
     String name;
@@ -52,7 +57,7 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
     private GoogleMap mMap;
     LocationManager locationManager;
     LatLng mylocation; //初期現在地(test用)
-
+    public Map<String, String> item;
 
     //toolbarのアイテム表示
 
@@ -66,7 +71,44 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); //R.id.toolbarは各自で設定したidを入れる
+        toolbar.inflateMenu(R.menu.tool_options_couriermaps);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.toggle_pin_blue) {
+                    Toast.makeText(CourierMapActivity.this, "settings clicked 2", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
+            }
+        });
+        //setDeliveryInfo();
     }
+
+    /*
+    public void setDeliveryInfo(){
+        Intent intent = getIntent();
+        List<Map<String, String>> deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
+
+        Geocoder gcoder = new Geocoder(this, Locale.getDefault());
+        List<Address> lstAddr;
+        try {
+            for (int i = 0; i < deliverylist.size(); i++) {
+                lstAddr = gcoder.getFromLocationName(deliverylist.get(i).get("address"), maxResults);
+                Address addr = lstAddr.get(0);
+                deliver[i].lat = (addr.getLatitude());
+                deliver[i].lng = (addr.getLongitude());
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }*/
+
+
 
     private class MyLocationSource implements LocationSource { //現在地を指定した座標に変える(テスト用)
         @Override
@@ -182,6 +224,34 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
     }
     //--ここまで
 
+    // アクションバーを表示するメソッド
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tool_options_couriermaps, menu);
+        return true;
+    }
+
+    // オプションメニューのアイテムが選択されたときに呼び出されるメソッド
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //TextView varTextView = (TextView) findViewById(R.id.textView);
+        switch (item.getItemId()) {
+            case R.id.toggle_pin_green:
+                //varTextView.setText(R.string.menu_item1);
+                return true;
+            case R.id.toggle_layout_pin_red:
+                //varTextView.setText(R.string.menu_item2);
+                return true;
+            case R.id.toggle_pin_blue:
+                //varTextView.setText(R.string.menu_item3);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -246,6 +316,8 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+
 
 
         // 画面上にマップを作成
