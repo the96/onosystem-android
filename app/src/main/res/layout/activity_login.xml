@@ -12,6 +12,13 @@
     android:background="@color/login_background"
     tools:context="com.example.onosystems.LoginActivity">
 
+    <!--<ImageView-->
+        <!--android:id="@+id/imageView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/login_background"-->
+        <!--app:srcCompat="@drawable/onosystems_logo" />-->
+
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -20,13 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/login_background"
-        app:srcCompat="@drawable/onosystem_logo" />
 
     <ScrollView
         android:id="@+id/login_form"
@@ -92,18 +92,6 @@
                 android:layout_marginTop="@dimen/input_form_margin"
                 android:background="@color/login_background"
                 app:srcCompat="@drawable/login_button"/>
-
-            <!--<Button-->
-                <!--android:id="@+id/loginButton2"-->
-                <!--style="?android:textAppearanceSmall"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginStart="@dimen/login_button_width"-->
-                <!--android:layout_marginEnd="@dimen/login_button_width"-->
-                <!--android:layout_marginTop="@dimen/input_form_margin"-->
-                <!--android:background="@color/login_button"-->
-                <!--android:text="@string/action_sign_in"-->
-                <!--android:textStyle="bold" />-->
 
             <Button
                 android:id="@+id/newAccountButton"
