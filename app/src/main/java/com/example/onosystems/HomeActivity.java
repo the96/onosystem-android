@@ -39,7 +39,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class HomeActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, TimeChangeAPI.Callback {
+        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, PostAsync.Callback {
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
@@ -70,31 +70,11 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setUserOptions();
         setContentView(homeLayout);
-
-        SampleLogin loginTask = new SampleLogin();
-        String body = "{\n" +
-                "  id: \"kut@gmail.com\",\n" +
-                "  password: \"onosystems\"\n" +
-                "}";
-        loginTask.execute("http://www.onosystems.work/aws/Login", body);
-
         findDeliveries();
         toolbarView();
         refresh();
         getDeliveries();
         getProfile();
-    }
-
-    public void getDeliveries() {
-        TimeChangeAPI postAsync = new TimeChangeAPI();
-        postAsync.setReference(new TimeChangeAPI.Callback() {
-            @Override
-            public void callbackMethod(String result) {
-                parseDeliveries(result);
-                reloadDeliveries();
-            }
-        });
-        postAsync.execute(User.getUrl(), User.getUserId());
     }
 
     @Override
@@ -108,10 +88,10 @@ public class HomeActivity extends AppCompatActivity
 
     //プロフィール関係
     public void getProfile() {
-        TimeChangeAPI postAsync = new TimeChangeAPI();
-        postAsync.setReference(new TimeChangeAPI.Callback() {
+        PostAsync postAsync = new PostAsync();
+        postAsync.setRef(new PostAsync.Callback() {
             @Override
-            public void callbackMethod(String result) {
+            public void callback(String result) {
                 parseProfile(result);
                 setProfile();
             }
@@ -123,6 +103,17 @@ public class HomeActivity extends AppCompatActivity
     public void updateProfile() { }
 
     //荷物関係
+    public void getDeliveries() {
+        PostAsync postAsync = new PostAsync();
+        postAsync.setRef(new PostAsync.Callback() {
+            @Override
+            public void callback(String result) {
+                parseDeliveries(result);
+                reloadDeliveries();
+            }
+        });
+        postAsync.execute(User.getUrl(), User.getUserId());
+    }
     public void parseDeliveries(String json) {
 
         try {
@@ -364,7 +355,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void callbackMethod(String result) {
+    public void callback(String result) {
         System.out.println(result);
     }
 }

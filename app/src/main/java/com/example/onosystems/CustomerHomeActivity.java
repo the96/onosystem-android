@@ -122,8 +122,8 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
 
                 String newJson = json.toString();
 /*
-                TimeChangeAPI postAsync = new TimeChangeAPI();
-                postAsync.setReference(this);
+                PostAsync postAsync = new PostAsync();
+                postAsync.setRef(this);
                 postAsync.execute("http://www.onosystems.work/aws/SettingCustomer", newJson);
 */
             } catch (JSONException e) {
