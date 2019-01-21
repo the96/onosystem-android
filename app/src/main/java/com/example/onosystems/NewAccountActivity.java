@@ -1,7 +1,11 @@
 package com.example.onosystems;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,17 +13,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NewAccountActivity extends AppCompatActivity {
+/*
+ *   消費者の新規アカウントを作成する画面
+ */
+
+public class NewAccountActivity extends AppCompatActivity implements Request.CallBack {
 
     EditText editName, editPassword1, editPassword2, editMail, editAddress, editTel;
     String name, mail, password1, password2, address;
     long tel;
     private String url = "http://54.92.85.232/aws/RegisterAccount";
-    private AlertDialog alertDialog;
+    String result = "ok";
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +43,7 @@ public class NewAccountActivity extends AppCompatActivity {
         editTel = findViewById(R.id.tel);
         editAddress = findViewById(R.id.address);
 
-
-
+        // アカウント作成ボタン
         Button createAccountButton2 = findViewById(R.id.createAccountButton2);
         createAccountButton2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,43 +56,28 @@ public class NewAccountActivity extends AppCompatActivity {
                 String phone = editTel.getText().toString();
                 address = editAddress.getText().toString();
 
-                if (isEmpty(name) && isEmpty(mail) && isEmpty(password1) && isEmpty(password2)
-                        && isEmpty(phone) && isEmpty(address)) {
-
-                    if (isTelValid(phone)) {
-                        tel = Long.parseLong(phone);
-
-                        if (password1.equals(password2)) {
-                            createNewAccount(name, mail, tel, address, password1);
-
-                        } else {
-                            alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
-                                    .setMessage("パスワードが一致しません")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                        }
-                                    }).show();
-                        }
-                    } else {
-                        alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
-                                .setMessage("tel length = 11")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                    }
-                                }).show();
-                    }
+                if (!isEmpty(name)) {
+                    editName.setError("名前を入力して下さい");
+                } else if (!isEmpty(password1)) {
+                    editPassword1.setError("パスワードを入力して下さい");
+                } else if (!isEmpty(password2)) {
+                    editPassword2.setError("パスワードを再入力して下さい");
+                } else if (!password1.equals(password2)) {
+                    editPassword2.setError("パスワードが一致しません");
+                } else if (!isEmpty(mail)) {
+                    editMail.setError("メールアドレスを入力して下さい");
+                } else if (!isEmailValid(mail)) {
+                    editMail.setError("@が含まれていません");
+                } else if (!isEmpty(phone)) {
+                    editTel.setError("電話番号を入力して下さい");
+                } else if (!isTelValid(phone)) {
+                    editTel.setError("11桁で入力して下さい");
+                } else if (!isEmpty(address)) {
+                    editAddress.setError("住所を入力して下さい");
                 } else {
-                    alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
-                            .setMessage("input all form")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                }
-                            }).show();
+                    tel = Long.parseLong(phone);
+                    createNewAccount(name, mail, tel, address, password1);
                 }
-
             }
         });
     }
@@ -106,30 +100,54 @@ public class NewAccountActivity extends AppCompatActivity {
     // 新規アカウントの作成
     public void createNewAccount(String name, String mail, long tel, String address, String password) {
         try {
-        JSONObject json = new JSONObject();
-        json.put("name", name);
-        json.put("tel", tel);
-        json.put("password", password);
+            JSONObject json = new JSONObject();
+            json.put("name", name);
+            json.put("mail", mail);
+            json.put("tel", tel);
+            json.put("address", address);
+            json.put("password", password);
 
-        SampleLogin sampleLogin = new SampleLogin();
-        String send = json.toString();
-        sampleLogin.execute(url, send);
+            String info = json.toString();
+            sendRequest(info);
 
-//            String result = jsonObject.getString("result");
-//
-//            if (result.equals("ok")) {
-////                Intent newAccountIntent = new Intent(getApplication(), LoginActivity.class);
-////                newAccountIntent.putExtra()
-////                startActivity(newAccountIntent);
-//                // ログイン画面に戻る
-                finish();
-//            } else {
-//                Toast toast = Toast.makeText(NewAccountActivity.this, "error", Toast.LENGTH_SHORT);
-//                toast.show();
-//            }
-    } catch (JSONException e) {
-        e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (result.equals("ok")) {
+            alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
+                    .setMessage("アカウントを作成しました")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // ログイン画面に戻る
+                            finish();
+                        }
+                    }).show();
+        } else {
+            alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
+                    .setMessage("アカウントの作成に失敗しました")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
+        }
     }
-}
 
+    public void sendRequest(String json) {
+        Request request = new Request();
+        request.setCallBack(this);
+        request.execute(url, json);
+    }
+
+    @Override
+    public void fetchResult(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            this.result = jsonObject.getString("result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
