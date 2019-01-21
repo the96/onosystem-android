@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
         setContentView(R.layout.activity_login);
 
         // ログイン情報を保存するためのもの
-//        this.sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+        this.sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
 //        autoLogin();
 
         mEmailView = findViewById(R.id.loginId);
@@ -110,11 +110,11 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
     // 自動ログイン
     public void autoLogin() {
         // 端末からデータを取得
-//        String account = this.sharedPreferences.getString("account", "");
-//        String pass = this.sharedPreferences.getString("pass", "");
-//        if (isEmpty(account) && isEmpty(pass)) {
-//            login(account, pass);
-//        }
+        String account = this.sharedPreferences.getString("account", "");
+        String pass = this.sharedPreferences.getString("pass", "");
+        if (isEmpty(account) && isEmpty(pass)) {
+            login(account, pass);
+        }
     }
 
     // ログイン処理
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
             loginJson.put("password", password);
             loginJson.put("id", id);
             String token = FirebaseInstanceId.getInstance().getToken();
-//            loginJson.put("token", token);
+            loginJson.put("token", token);
 
             String loginInfo = loginJson.toString();
             sendRequest(loginInfo);
@@ -132,15 +132,15 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        showProgress(false);
 
         if (this.loginResult.equals("no")) {
             AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                    .setTitle("エラー")
                     .setMessage("ログインに失敗しました")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-//                               mPasswordView.setText("");
+                               mPasswordView.setText("");
                         }
                     }).show();
             } else {
@@ -154,11 +154,11 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
 //        sendToken();
 
         // ログイン情報を端末に保存
-        /*SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("account", loginEmail);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("account", this.loginEmail);
 
-        editor.putString("pass", loginPassword);
-        editor.apply();*/
+        editor.putString("pass", this.loginPassword);
+        editor.apply();
 
         if (this.customer_id != 0) {
             // 消費者側
@@ -176,8 +176,16 @@ public class LoginActivity extends AppCompatActivity implements PostAsync.Callba
             Toast toast = Toast.makeText(LoginActivity.this, "管理者ユーザーです。", Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            Toast toast = Toast.makeText(LoginActivity.this, "もう一度ログインボタンを押してください", Toast.LENGTH_SHORT);
-            toast.show();
+            AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                    .setMessage("ログインしますか？")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            login(loginEmail, loginPassword);
+                        }
+                    }).show();
+//            Toast toast = Toast.makeText(LoginActivity.this, "もう一度ログインボタンを押してください", Toast.LENGTH_SHORT);
+//            toast.show();
         }
     }
 
