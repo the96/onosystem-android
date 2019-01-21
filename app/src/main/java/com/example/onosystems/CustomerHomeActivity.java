@@ -19,7 +19,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_customer;
-        //detailActivity = CustomerDeliveryDetail.class;
+        detailActivity = CustomerDeliveryDetail.class;
         drawerLayout = R.id.customer_layout;
         homeLayout = R.layout.customer_home_layout;
 
