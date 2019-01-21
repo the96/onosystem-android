@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -43,14 +44,16 @@ import java.sql.Driver;
  * メールアドレスとパスワードでログインするログイン画面
  */
 
-public class LoginActivity extends AppCompatActivity implements RequestLogin.CallBack{
+public class LoginActivity extends AppCompatActivity implements PostAsync.Callback{
 
     private String loginEmail;
     private String loginPassword;
-    public int customer_id;
-    public int driver_id;
+    int customer_id = 0;
+    int driver_id = 0;
+    int manager_id = 0;
+    String loginResult = "";
     private SharedPreferences sharedPreferences;
-    private String url = "http://54.92.85.232/aws/Login";
+    private String url = "http://www.onosystems.work/aws/Login";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -64,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
         setContentView(R.layout.activity_login);
 
         // ログイン情報を保存するためのもの
-        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+//        this.sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
 //        autoLogin();
 
         mEmailView = findViewById(R.id.loginId);
@@ -104,71 +107,44 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
         });
     }
 
-    public void sendToken() {
-        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
-        myFirebaseMessagingService.onTokenRefresh();
-    }
-
     // 自動ログイン
     public void autoLogin() {
         // 端末からデータを取得
-        String account = sharedPreferences.getString("account", "");
-        String pass = sharedPreferences.getString("pass", "");
-        if (isEmpty(account) && isEmpty(pass)) {
-            login(account, pass);
-        }
+//        String account = this.sharedPreferences.getString("account", "");
+//        String pass = this.sharedPreferences.getString("pass", "");
+//        if (isEmpty(account) && isEmpty(pass)) {
+//            login(account, pass);
+//        }
     }
 
     // ログイン処理
     public void login(String id, String password) {
         try {
             JSONObject loginJson = new JSONObject();
-            loginJson.put("id", id);
             loginJson.put("password", password);
+            loginJson.put("id", id);
+            String token = FirebaseInstanceId.getInstance().getToken();
+//            loginJson.put("token", token);
 
             String loginInfo = loginJson.toString();
             sendRequest(loginInfo);
 
-//            // テスト用
-            JSONObject test = new JSONObject();
-            for (String credential : DUMMY_CUSTOMER) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(loginEmail) && pieces[1].equals(loginPassword)) {
-                    test.put("customer_id",1);
-                    this.customer_id = test.getInt("customer_id");
-                    this.driver_id = test.getInt("driver_id");
-                    String s = String.valueOf(customer_id);
-                }
-            }
-            for (String credential : DUMMY_DRIVER) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(loginEmail) && pieces[1].equals(loginPassword)) {
-                    test.put("driver_id", 1);
-//                            this.customer_id = test.getInt("customer_id");
-                    this.driver_id = test.getInt("driver_id");
-                    String s = String.valueOf(driver_id);
-                }
-            }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        showProgress(false);
 
-        String s = String.valueOf(customer_id);
-//        Toast toast = Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT);
-//        toast.show();
-
-        if (customer_id == 0 && driver_id == 0) {
+        if (this.loginResult.equals("no")) {
             AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                    .setMessage("ログインに失敗しました" + customer_id)
+                    .setMessage("ログインに失敗しました")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            mPasswordView.setText("");
+//                               mPasswordView.setText("");
                         }
                     }).show();
-        } else {
-            transitionActivity();
+            } else {
+                transitionActivity();
         }
     }
 
@@ -184,18 +160,48 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
         editor.putString("pass", loginPassword);
         editor.apply();*/
 
-        if (customer_id != 0) {
+        if (this.customer_id != 0) {
             // 消費者側
             Intent intent = new Intent(getApplication(), CustomerHomeActivity.class);
-            intent.putExtra("customer_id", customer_id);
-            intent.putExtra("password", loginPassword);
+            intent.putExtra("customer_id", this.customer_id);
+            intent.putExtra("password", this.loginPassword);
             startActivity(intent);
-        } else if (driver_id != 0) {
+        } else if (this.driver_id != 0) {
             // 配達員側
             Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-            intent.putExtra("driver_id", driver_id);
-            intent.putExtra("password", loginPassword);
+            intent.putExtra("driver_id", this.driver_id);
+            intent.putExtra("password", this.loginPassword);
             startActivity(intent);
+        } else if (this.manager_id != 0) {
+            Toast toast = Toast.makeText(LoginActivity.this, "管理者ユーザーです。", Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            Toast toast = Toast.makeText(LoginActivity.this, "もう一度ログインボタンを押してください", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    public void sendRequest(String json) {
+        showProgress(true);
+
+        PostAsync.initializeCallAPI();
+        PostAsync postAsync = new PostAsync();
+        postAsync.setRef(this);
+        postAsync.execute(url, json);
+    }
+
+    @Override
+    public void callback(String result) {
+        showProgress(false);
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            this.customer_id = jsonObject.optInt("customer_id");
+            this.driver_id = jsonObject.optInt("driver_id");
+            this.manager_id = jsonObject.optInt("manager_id");
+            this.loginResult = jsonObject.optString("result");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -205,43 +211,11 @@ public class LoginActivity extends AppCompatActivity implements RequestLogin.Cal
     }
 
     public boolean isEmpty(String text) {
-        if (!text.equals("") && !text.equals(null)) {
-            return true;
-        }
-        return false;
+        return !text.equals("");
     }
 
     private boolean isEmailValid(String email) {
         return email.contains("@");
-    }
-
-    public void sendRequest(String json) {
-        showProgress(true);
-
-        RequestLogin requestLogin = new RequestLogin();
-        requestLogin.setCallBack(this);
-        requestLogin.execute(url, json);
-    }
-
-    // テスト用
-    public static final String[] DUMMY_CUSTOMER = new String[]{
-            "@1:1","kut@gmail.com:onosystems", "kut2@gmail.com:onosystems2", "kut3@gmail.com:onosystems3"
-    };
-    public static final String[] DUMMY_DRIVER = new String[]{
-            "driver@gmail.com:driver","@2:2"
-    };
-
-    //    @Override
-    public void fetchResult(String result) {
-        try {
-            // テスト用
-            // Simulate network access.
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-        }
-
-        showProgress(false);
-
     }
 
     // progressの表示とログインフォームの非表示.
