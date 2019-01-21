@@ -1,5 +1,6 @@
 package com.example.onosystems;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -7,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import org.json.JSONArray;
@@ -33,14 +34,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class HomeActivity extends AppCompatActivity
-       implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
+        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, TimeChangeAPI.Callback {
 
     public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
@@ -48,6 +47,11 @@ public class HomeActivity extends AppCompatActivity
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
     public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
+    public User User = new User();
+    public Object profileInfo;
+    public EditText profileName, profileMail, profileTel, profileRePassword;
+    public TextView profilePassword;
+    public AlertDialog alertDialog;
 
     public int deliveredStatus;
     public int receivableStatus;
@@ -64,15 +68,39 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent i = getIntent();
+        int keyword = i.getIntExtra("customer_id", 0);
+
+
         setUserOptions();
         setContentView(homeLayout);
-        
-        toolbarView();
-        getDeliveries();
-        reloadDeliveries();
+
+
+        SampleLogin loginTask = new SampleLogin();
+        String body = "{\n" +
+                "  id: \"kut@gmail.com\",\n" +
+                "  password: \"onosystems\"\n" +
+                "}";
+        loginTask.execute("http://www.onosystems.work/aws/Login", body);
+
         findDeliveries();
-        setProfile();
+        toolbarView();
         refresh();
+        getDeliveries();
+        getProfile();
+    }
+
+    public void getDeliveries() {
+        TimeChangeAPI postAsync = new TimeChangeAPI();
+        postAsync.setReference(new TimeChangeAPI.Callback() {
+            @Override
+            public void callbackMethod(String result) {
+                parseDeliveries(result);
+                reloadDeliveries();
+            }
+        });
+        postAsync.execute(User.getUrl(), User.getUserId());
     }
 
     @Override
@@ -84,34 +112,44 @@ public class HomeActivity extends AppCompatActivity
 
     public void setUserOptions() { }
 
+    //プロフィール関係
+    public void getProfile() {
+        TimeChangeAPI postAsync = new TimeChangeAPI();
+        postAsync.setReference(new TimeChangeAPI.Callback() {
+            @Override
+            public void callbackMethod(String result) {
+                parseProfile(result);
+                setProfile();
+            }
+        });
+        postAsync.execute(User.getProfileURL(), User.getUserId());
+    }
+    public void parseProfile(String json) { }
     public void setProfile() { }
     public void updateProfile() { }
 
     //荷物関係
-    public void getDeliveries() {
-        //本来はサーバからデータ受け取る
-        try {
-            JSONArray json = new JSONArray("[{\"name\":\"001\", \"time\":\"1546239600\", \"slip_number\":\"1111\", \"address\":\"1001\", \"ship_from\":\"ヤマト\", \"delivered_status\":\"1\", \"receivable_status\":\"0\", \"delivery_time\":\"0\"}," +
-                                            "{\"name\":\"002\", \"time\":\"1545980400\", \"slip_number\":\"1112\", \"address\":\"1002\", \"ship_from\":\"佐川\", \"delivered_status\":\"0\", \"receivable_status\":\"1\", \"delivery_time\":\"1\"}," +
-                                            "{\"name\":\"003\", \"time\":\"1545951600\", \"slip_number\":\"1113\", \"address\":\"1003\", \"ship_from\":\"カンガルー\", \"delivered_status\":\"1\", \"receivable_status\":\"2\", \"delivery_time\":\"2\"}]");
+    public void parseDeliveries(String json) {
 
+        try {
+            JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < json.length(); i++) {
-                JSONObject deliveryData = json.getJSONObject(i);
+                JSONObject deliveryData = jsonArray.getJSONObject(i);
                 if(deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                                                  deliveryData.getString("name"),
-                                                  deliveryData.getString("address"),
-                                                  deliveryData.getString("ship_from"),
-                                                  deliveryData.getInt("time"),
-                                                  deliveryData.getInt("delivery_time"),
-                                                  deliveryData.getInt("delivered_status"),
-                                                  deliveryData.getInt("receivable_status"),
-                                                  Delivery.VISIBLE,
-                                                  Delivery.READ_FLAG));
+                            deliveryData.getString("name"),
+                            deliveryData.getString("address"),
+                            deliveryData.getString("ship_from"),
+                            deliveryData.getInt("time"),
+                            deliveryData.getInt("delivery_time"),
+                            deliveryData.getInt("delivered_status"),
+                            deliveryData.getInt("receivable_status"),
+                            Delivery.VISIBLE,
+                            Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 }
             }
-            
+
             sortTime(); //時間順にソート
         } catch (JSONException e) {
             e.printStackTrace();
@@ -153,7 +191,6 @@ public class HomeActivity extends AppCompatActivity
                 new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
         );
 
-        listView = findViewById(R.id.listView);
         listView.setEmptyView(findViewById(R.id.emptyView));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this); // リストの項目が選択されたときのイベントを追加
@@ -164,7 +201,6 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 getDeliveries();
-                reloadDeliveries();
 
                 if (SwipeRefresh.isRefreshing()) {
                     SwipeRefresh.setRefreshing(false);
@@ -172,7 +208,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
-    
+
     public void sortTime() {
         Collections.sort( deliveryInfo, new Comparator<Delivery>(){
             @Override
@@ -191,14 +227,14 @@ public class HomeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         toggle.setDrawerIndicatorEnabled(false);
-        toggle.setHomeAsUpIndicator(R.drawable.ic_menu_camera);
+        toggle.setHomeAsUpIndicator(R.drawable.user);
         toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (drawer.isDrawerVisible(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 } else {
-                    setProfile();
+                    getProfile();
                     drawer.openDrawer(GravityCompat.START);
                 }
             }
@@ -232,7 +268,7 @@ public class HomeActivity extends AppCompatActivity
                 toggleVisibleFromReceivable(Delivery.UNSELECTED, isChecked);
                 break;
             case R.id.toggle_layout_switch1:
-                toggleVisibleFromReceivable(Delivery.UNRECEIVABLE, isChecked);
+                toggleVisibleFromReceivable(Delivery.NOT_RECEIVABLE, isChecked);
                 break;
             case R.id.toggle_layout_switch2:
                 toggleVisibleFromReceivable(Delivery.RECEIVABLE, isChecked);
@@ -253,8 +289,6 @@ public class HomeActivity extends AppCompatActivity
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
         startActivity(intent);// 詳細画面に遷移
-
-        Log.d("124", list.toString());
     }
 
     //バッグボタンが押されたときのイベント
@@ -274,16 +308,10 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Log.d("1234", "a");
-        return super.onTouchEvent(event);
-    }
-
-
     // 検索関係
     public void findDeliveries() {
         SearchView search = findViewById(R.id.searchView);
+        listView = findViewById(R.id.listView);
         search.setOnQueryTextListener(this);
         listView.setTextFilterEnabled(true); // インクリメンタルサーチをおこなうかどうか
         search.setQueryHint("検索文字を入力して下さい"); // 何も入力されてないときのテキスト
@@ -341,6 +369,10 @@ public class HomeActivity extends AppCompatActivity
         reloadDeliveries();
     }
 
+    @Override
+    public void callbackMethod(String result) {
+        System.out.println(result);
+    }
 }
 
 class Delivery {
@@ -348,10 +380,10 @@ class Delivery {
     public static final boolean NOT_VISIBLE = FALSE;
     public static final boolean READ_FLAG = TRUE;
     public static final boolean NOT_READ_FLAG = FALSE;
-    public static final int UNDELIVERED = 0;
+    // public static final int UNDELIVERED = 0;
     public static final int DELIVERED = 1;
     public static final int UNSELECTED = 0;
-    public static final int UNRECEIVABLE = 1;
+    public static final int NOT_RECEIVABLE = 1;
     public static final int RECEIVABLE = 2;
     long slipNumber;
     String name;
@@ -364,17 +396,11 @@ class Delivery {
     boolean visible;
     boolean read_flag;
 
-    public long getSlipNumber() { return this.slipNumber; }
-
     public String getName() { return this.name; }
 
     public String getAddress() { return this.address; }
 
-    public String getShip_from() { return ship_from; }
-
     public int getTime() { return this.time; }
-
-    public int getDelivery_time() { return this.delivery_time; }
 
     public int getDelivered_status() { return delivered_status; }
 
@@ -402,10 +428,22 @@ class Delivery {
 }
 
 class User {
+    String userId;
     String name;
     String password;
     String mail;
     long tel;
+    String url;
+    String profileURL;
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
+
+    public String getProfileURL() { return profileURL; }
+    public void setProfileURL(String profileURL) { this.profileURL = profileURL; }
 
     public String getName() { return name; }
 
