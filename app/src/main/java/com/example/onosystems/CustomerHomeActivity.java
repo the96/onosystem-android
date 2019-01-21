@@ -67,7 +67,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         profileMail.setText(((Customer) profileInfo).getMail(), TextView.BufferType.NORMAL);
         profileTel.setText(String.valueOf(((Customer) profileInfo).getTel()), TextView.BufferType.NORMAL);
         profileAddress.setText(((Customer) profileInfo).getAddress(), TextView.BufferType.NORMAL);
-        profilePassword.setText(((Customer) profileInfo).getPassword(), TextView.BufferType.NORMAL);
+        profilePassword.setText(User.getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
         profileName.setOnFocusChangeListener(this);
@@ -121,11 +121,15 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                 json.put("password", newProfilePassword);
 
                 String newJson = json.toString();
-/*
+
                 PostAsync postAsync = new PostAsync();
-                postAsync.setRef(this);
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                    }
+                });
                 postAsync.execute("http://www.onosystems.work/aws/SettingCustomer", newJson);
-*/
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
