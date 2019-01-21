@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +25,7 @@ import java.util.HashMap;
 public class CourierDeliveryDetail extends AppCompatActivity {
     public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
+    public int toolBarLayout;
     AlertDialog mAlertDlg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +127,22 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             }
         });
 
+        Toolbar toolbar =  findViewById(R.id.detail_toolbar); //R.id.toolbarは各自で設定したidを入れる
+        toolbar.inflateMenu(R.menu.tool_options_detail);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.mapView) {
+                    //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplication(), CourierMapActivity.class);
+                    intent.putExtra("itemInfo", status);
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        });
 
     }
 

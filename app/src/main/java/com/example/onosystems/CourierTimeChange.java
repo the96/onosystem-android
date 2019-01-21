@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -190,6 +192,20 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
                 // 表示  getFragmentManager()は固定、sampleは識別タグ
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+            }
+        });
+
+        Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
+        toolbar.inflateMenu(R.menu.tool_options_detail);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.mapView) {
+                    Toast.makeText(CourierTimeChange.this, "settings clicked 2", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
             }
         });
 
