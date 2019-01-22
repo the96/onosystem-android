@@ -123,10 +123,9 @@ public class HomeActivity extends AppCompatActivity
     }
 
     public void parseDeliveries(String json) {
-
         try {
             JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < json.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject deliveryData = jsonArray.getJSONObject(i);
                 if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
