@@ -121,6 +121,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -130,13 +133,14 @@ import java.util.HashMap;
 public class CustomerDeliveryDetail extends AppCompatActivity {
     public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
-    public  String url = "http://www.onosystems.work/aws/CustomerDeliveryDetail";
+    public String url = "http://www.onosystems.work/aws/ReceiveCustomer";
     public int UNRECEIVABLE = 1;
+    private String slip_number;
     AlertDialog mAlertDlg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.courier_delivery_detail);
+        setContentView(R.layout.customer_delivery_detail);
 
         // 1. AlertDialog.Builder クラスのインスタンスを生成
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -148,26 +152,30 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 //サーバにデータ送信
-                PostAsync.initializeCallAPI(); // 初回の通信時のみ
                 PostAsync postAsync = new PostAsync();
                 postAsync.setRef(new PostAsync.Callback() {
                     @Override
                     public void callback(String result) {
                         // 処理内容を書く
-                        System.out.println("callbackされました");
+                        System.out.println("result:\r\n" + result);
                     }
                 });
-                String body = "{\"UNRECEIVABLE\": " + UNRECEIVABLE + "}";
-                postAsync.execute(url, body);
+                // 伝票(slip_number), receivable_status
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("slip_number", Long.parseLong(slip_number));
+                    jsonObject.put("receivable_status", UNRECEIVABLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                postAsync.execute(url, jsonObject.toString());
                 System.out.println(url);
 
 
                 // OK ボタンクリック処理
                 Toast.makeText(CustomerDeliveryDetail.this,
                         "受領不可にしました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -182,7 +190,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         mAlertDlg = builder.create();
 
         // 4. ボタンクリック時にダイアログを表示
-        Button btnExe = findViewById(R.id.delivery_complete_Button);
+        Button btnExe = findViewById(R.id.not_receive_Button);
         btnExe.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // ダイアログ表示
@@ -197,7 +205,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         //MainActivityから値を受け取る,初期値を設定
         status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
         String name = status.get("name");
-        String slip_number = status.get("slipNumber");
+        slip_number = status.get("slipNumber");
         String address = status.get("address");
         int unixtime = Integer.valueOf(status.get("unixTime"));
         int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
@@ -232,7 +240,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         time_change_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), CourierTimeChange.class);
+                Intent intent = new Intent(getApplication(), CustomerTimeChange.class);
                 //日時変更画面に遷移
                 intent.putExtra("itemInfo", status);
                 startActivity(intent);
