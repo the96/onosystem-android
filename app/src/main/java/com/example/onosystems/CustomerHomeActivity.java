@@ -35,9 +35,9 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "http://54.92.85.232/aws/TopCustomer";
+        String url = "http://www.onosystems.work/aws/TopCustomer";
         User.setUrl(url);
-        String profileURL = "http://54.92.85.232/aws/InformationCustomer";
+        String profileURL = "http://www.onosystems.work/aws/InformationCustomer";
         User.setProfileURL(profileURL);
     }
 
@@ -129,7 +129,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                         profUpdAlert(result);
                     }
                 });
-                postAsync.execute("http://54.92.85.232/aws/SettingCustomer", newJson);
+                postAsync.execute("http://wwww.onosystems.work/aws/SettingCustomer", newJson);
 
             } catch (JSONException e) {
                 e.printStackTrace();
