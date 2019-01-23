@@ -44,8 +44,6 @@ public class LoginActivity extends AppCompatActivity{
     int customer_id = 0;
     int driver_id = 0;
     int manager_id = 0;
-    String loginResult = "";
-    private String url = "http://www.onosystems.work/aws/Login";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -60,8 +58,8 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
 
         // ログイン情報を保存するためのもの
-        this.sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
-//        autoLogin();
+        sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+        autoLogin(false);
 
         mEmailView = findViewById(R.id.loginId);
         mPasswordView = findViewById(R.id.password);
@@ -111,12 +109,14 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     // 自動ログイン
-    public void autoLogin() {
-        // 端末からデータを取得
-        String account = this.sharedPreferences.getString("account", "");
-        String pass = this.sharedPreferences.getString("pass", "");
-        if (isEmpty(account) && isEmpty(pass)) {
-            login(account, pass);
+    public void autoLogin(boolean auto) {
+        if (auto) {
+            // 端末からデータを取得
+            loginEmail = sharedPreferences.getString("account", "");
+            loginPassword = sharedPreferences.getString("pass", "");
+            if (isEmpty(loginEmail) && isEmpty(loginPassword)) {
+                login(loginEmail, loginPassword);
+            }
         }
     }
 
@@ -176,7 +176,6 @@ public class LoginActivity extends AppCompatActivity{
         // ログイン情報を端末に保存
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("account", this.loginEmail);
-
         editor.putString("pass", this.loginPassword);
         editor.apply();
 
@@ -195,17 +194,6 @@ public class LoginActivity extends AppCompatActivity{
         } else if (this.manager_id != 0) {
             Toast toast = Toast.makeText(LoginActivity.this, "管理者ユーザーです。", Toast.LENGTH_SHORT);
             toast.show();
-        } else {
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setMessage("ログインしますか？")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            login(loginEmail, loginPassword);
-                        }
-                    }).show();
-//            Toast toast = Toast.makeText(LoginActivity.this, "もう一度ログインボタンを押してください", Toast.LENGTH_SHORT);
-//            toast.show();
         }
     }
 
