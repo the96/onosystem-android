@@ -35,8 +35,13 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity{
 
-    private String loginEmail;
-    private String loginPassword;
+    static String loginEmail;
+    static String loginPassword;
+    static int usertype;
+    static int logined_id;
+    static final int OTHER_USER = 0;
+    static final int DRIVER_USER = 1;
+    static final int CUSTOMER_USER = 2;
     private String token;
     public static final String URL_ORIGIN = "http://www.onosystems.work/aws/";
     private SharedPreferences sharedPreferences;
@@ -56,7 +61,7 @@ public class LoginActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         PostAsync.initializeCallAPI();
         setContentView(R.layout.activity_login);
-
+        usertype = OTHER_USER;
         // ログイン情報を保存するためのもの
         sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
         autoLogin(false);
@@ -140,14 +145,21 @@ public class LoginActivity extends AppCompatActivity{
                         int TmpManagerId = json.optInt("manager_id");
                         if (TmpCustomerId != 0) {
                             customer_id = TmpCustomerId;
+                            logined_id = customer_id;
+                            usertype = CUSTOMER_USER;
                         } else if (TmpDriverId != 0) {
                             driver_id = TmpDriverId;
+                            logined_id = driver_id;
+                            usertype = DRIVER_USER;
                         } else if (TmpManagerId != 0) {
                             manager_id = TmpManagerId;
+                            logined_id = manager_id;
+                            usertype = OTHER_USER;
                         } else {
                             customer_id = 0;
                             driver_id = 0;
                             manager_id = 0;
+                            usertype = OTHER_USER;
                             new AlertDialog.Builder(LoginActivity.this)
                                 .setTitle("エラー")
                                 .setMessage("ログインに失敗しました")
@@ -175,21 +187,21 @@ public class LoginActivity extends AppCompatActivity{
     public void transitionActivity() {
         // ログイン情報を端末に保存
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("account", this.loginEmail);
-        editor.putString("pass", this.loginPassword);
+        editor.putString("account", loginEmail);
+        editor.putString("pass", loginPassword);
         editor.apply();
 
         if (this.customer_id != 0) {
             // 消費者側
             Intent intent = new Intent(getApplication(), CustomerHomeActivity.class);
             intent.putExtra("customer_id", this.customer_id);
-            intent.putExtra("password", this.loginPassword);
+            intent.putExtra("password", loginPassword);
             startActivity(intent);
         } else if (this.driver_id != 0) {
             // 配達員側
             Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
             intent.putExtra("driver_id", this.driver_id);
-            intent.putExtra("password", this.loginPassword);
+            intent.putExtra("password", loginPassword);
             startActivity(intent);
         } else if (this.manager_id != 0) {
             Toast toast = Toast.makeText(LoginActivity.this, "管理者ユーザーです。", Toast.LENGTH_SHORT);
