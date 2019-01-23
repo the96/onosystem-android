@@ -6,16 +6,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,60 +33,7 @@ public class NotificationService extends FirebaseMessagingService implements Tex
     private static final int NOTICE_NEAR_DRIVER = 1;
     private static TextToSpeech textToSpeech;
     private static NoticeData data;
-    //private static
     private boolean initialized = false;
-
-    class Delivery {
-        private String name, address, ship_to, ship_from, ;
-        private long slip_number, time;
-        private int delivery_time, delivered_status, receivable_status;
-    }
-    class NoticeData {
-        private String title, body, userType;
-        private int type;
-        private Delivery delivery;
-
-        NoticeData(RemoteMessage.Notification notification, Map<String, String> payload) {
-            this.title = notification.getTitle();
-            this.body = notification.getBody();
-            userType = payload.get("user_type");
-            if (userType == null) {
-//            userTypeがなかった場合
-//            このコードではテストのため毎回読み上げる
-                userType = DRIVER_USER;
-            }
-            type = getAndParseInt("notice_type", payload);
-        }
-
-        private int getAndParseInt(String key, Map<String, String> payload) {
-            try {
-                return Integer.parseInt(payload.get("notice_type"));
-            } catch (NumberFormatException e) {
-                System.out.println(e);
-            }
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        public String getBody() {
-            return body;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getUserType() {
-            return userType;
-        }
-    }
-
-    @Override
-    public void onCreate() {
-        System.out.println("Notification Service is created!!");
-    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -94,24 +44,24 @@ public class NotificationService extends FirebaseMessagingService implements Tex
                 textToSpeech.setSpeechRate(1.0f);
                 textToSpeech.setPitch(1.0f);
 //            引数sは与えられたUUID
-//                textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-//                    @Override
-//                    public void onStart(String s) {
+                textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String s) {
 //                        System.out.println("読み上げ開始: " + s);
-//                    }
-//
-//                    @Override
-//                    public void onDone(String s) {
+                    }
+
+                    @Override
+                    public void onDone(String s) {
 //                        System.out.println("読み上げ終了: " + s);
-//                        textToSpeechDestroy();
-//                    }
-//
-//                    @Override
-//                    public void onError(String s) {
-//                        System.out.println("読み上げ中にエラーが発生しました。");
-//                        System.out.println(s);
-//                    }
-//                });
+                        textToSpeechDestroy();
+                    }
+
+                    @Override
+                    public void onError(String s) {
+                        System.out.println("読み上げ中にエラーが発生しました。");
+                        System.out.println(s);
+                    }
+                });
             } else {
                 speechText(data.getBody());
             }
@@ -139,21 +89,37 @@ public class NotificationService extends FirebaseMessagingService implements Tex
         }
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-        if (data.getUserType().equals(DRIVER_USER)) {
+        System.out.println("LOGINED_ID================================-");
+        System.out.println(LoginActivity.logined_id);
+        if (data.getUserType().equals(DRIVER_USER) && LoginActivity.usertype == LoginActivity.DRIVER_USER) {
+            Intent homeIntent = new Intent(getApplication(), CourierHomeActivity.class);
             Intent openIntent = new Intent(this, CourierDeliveryDetail.class);
+            homeIntent.putExtra("driver_id", LoginActivity.logined_id);
+            homeIntent.putExtra("password", LoginActivity.loginPassword);
+            openIntent.putExtra("itemInfo", data.getDelivery());
             taskStackBuilder.addParentStack(CourierHomeActivity.class);
+            taskStackBuilder.addNextIntent(homeIntent);
             taskStackBuilder.addNextIntent(openIntent);
-        } else if (data.getUserType().equals(CUSTOMER_USER)) {
+        } else if (data.getUserType().equals(CUSTOMER_USER) && LoginActivity.usertype == LoginActivity.CUSTOMER_USER) {
+            Intent homeIntent = new Intent(getApplication(), CustomerHomeActivity.class);
             Intent openIntent = new Intent(this, CustomerDeliveryDetail.class);
+            homeIntent.putExtra("customer_id", LoginActivity.logined_id);
+            homeIntent.putExtra("password", LoginActivity.loginPassword);
+            openIntent.putExtra("itemInfo", data.getDelivery());
             taskStackBuilder.addParentStack(CustomerHomeActivity.class);
+            taskStackBuilder.addNextIntent(homeIntent);
+            taskStackBuilder.addNextIntent(openIntent);
+        } else {
+            Intent openIntent = new Intent(getApplication(), LoginActivity.class);
+            taskStackBuilder.addParentStack(LoginActivity.class);
             taskStackBuilder.addNextIntent(openIntent);
         }
+        System.out.println("TaskStackBuilder.getIntents()");
+        for (Intent intent: taskStackBuilder.getIntents()) {
+            System.out.println(intent.toString());
+        }
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_ONE_SHOT);
-        PendingIntent pendingIntent =
-                taskStackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_CANCEL_CURRENT
-                );
+        PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
 
@@ -199,5 +165,65 @@ public class NotificationService extends FirebaseMessagingService implements Tex
         }
         textToSpeech = null;
         initialized = false;
+    }
+}
+
+class NoticeData {
+    private String title, body, userType;
+    private int type;
+    private HashMap<String, String> delivery;
+
+    NoticeData(RemoteMessage.Notification notification, Map<String, String> payload) {
+        this.title = notification.getTitle();
+        this.body = notification.getBody();
+        this.userType = getString("user_type", payload);
+        this.type = getAndParseInt("notice_type", payload);
+        payload.remove("user_type");
+        payload.remove("notice_type");
+        this.delivery = new HashMap<>();
+        this.delivery.put("name", getString("name", payload));
+        this.delivery.put("slipNumber", getString("slip_number", payload));
+        this.delivery.put("address", getString("address", payload));
+        this.delivery.put("unixTime", getString("time", payload));
+        this.delivery.put("deliveryTime", getString("delivery_time", payload));
+    }
+
+    private String getString(String key, Map<String, String> payload) {
+        String str = payload.get(key);
+        if (str != null) {
+            return str;
+        } else {
+            return "no string";
+        }
+    }
+
+    private int getAndParseInt(String key, Map<String, String> payload) {
+        String str = getString(key,payload);
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            System.out.println("cannot get number from string:" + str);
+            return -1;
+        }
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public HashMap<String, String> getDelivery() {
+        return delivery;
     }
 }
