@@ -64,7 +64,6 @@ public class LoginActivity extends AppCompatActivity{
         usertype = OTHER_USER;
         // ログイン情報を保存するためのもの
         sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
-        autoLogin(false);
 
         mEmailView = findViewById(R.id.loginId);
         mPasswordView = findViewById(R.id.password);
@@ -109,6 +108,7 @@ public class LoginActivity extends AppCompatActivity{
                         }
                         token = task.getResult().getToken();
                         System.out.println("TOKEN: " + token);
+                        autoLogin(true);
                     }
                 });
     }
