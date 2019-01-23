@@ -35,9 +35,9 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "http://www.onosystems.work/aws/TopCustomer";
+        String url = "http://54.92.85.232/aws/TopCustomer";
         User.setUrl(url);
-        String profileURL = "http://www.onosystems.work/aws/InformationCustomer";
+        String profileURL = "http://54.92.85.232/aws/InformationCustomer";
         User.setProfileURL(profileURL);
     }
 
@@ -67,7 +67,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         profileMail.setText(((Customer) profileInfo).getMail(), TextView.BufferType.NORMAL);
         profileTel.setText(String.valueOf(((Customer) profileInfo).getTel()), TextView.BufferType.NORMAL);
         profileAddress.setText(((Customer) profileInfo).getAddress(), TextView.BufferType.NORMAL);
-        profilePassword.setText(((Customer) profileInfo).getPassword(), TextView.BufferType.NORMAL);
+        profilePassword.setText(User.getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
         profileName.setOnFocusChangeListener(this);
@@ -121,11 +121,16 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                 json.put("password", newProfilePassword);
 
                 String newJson = json.toString();
-/*
+
                 PostAsync postAsync = new PostAsync();
-                postAsync.setRef(this);
-                postAsync.execute("http://www.onosystems.work/aws/SettingCustomer", newJson);
-*/
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                        profUpdAlert(result);
+                    }
+                });
+                postAsync.execute("http://54.92.85.232/aws/SettingCustomer", newJson);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
