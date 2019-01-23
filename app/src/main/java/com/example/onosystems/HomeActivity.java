@@ -1,6 +1,7 @@
 package com.example.onosystems;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -126,7 +127,7 @@ public class HomeActivity extends AppCompatActivity
 
         try {
             JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < json.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject deliveryData = jsonArray.getJSONObject(i);
                 if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
@@ -368,6 +369,36 @@ public class HomeActivity extends AppCompatActivity
 
         reloadDeliveries();
     }
+
+    public void profUpdAlert(String resultJson) {
+        try {
+            JSONObject result = new JSONObject(resultJson);
+            if (result.get("result").equals("ok")) {
+                alertDialog = new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("確認")
+                        .setMessage("更新されました")
+                        .setPositiveButton("戻る", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                drawer.closeDrawer(GravityCompat.START);
+                            }
+                        }).show();
+            } else if (result.get("result").equals("no")) {
+                alertDialog = new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("確認")
+                        .setMessage("更新できませんでした")
+                        .setPositiveButton("戻る", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                drawer.openDrawer(GravityCompat.START);
+                            }
+                        }).show();
+            }
+        } catch (JSONException e) {
+        e.printStackTrace();
+        }
+    }
+
 }
 
 class Delivery {
