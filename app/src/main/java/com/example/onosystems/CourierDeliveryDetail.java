@@ -43,9 +43,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 // OK ボタンクリック処理
                 Toast.makeText(CourierDeliveryDetail.this,
                         "配達完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -114,13 +112,13 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
                 ///////後で消す
-                SampleLogin loginTask = new SampleLogin();
-                String body = "{\n" +
-                        "  id: \"driver@gmail.com\",\n" +
-                        "  password: \"driver\"\n" +
-                        "}";
-                // 第一引数がURL、第二引数がPOSTするbody
-                loginTask.execute("http://www.onosystems.work/aws/CourierDeliveryDetail", body);
+//                SampleLogin loginTask = new SampleLogin();
+//                String body = "{\n" +
+//                        "  id: \"driver@gmail.com\",\n" +
+//                        "  password: \"driver\"\n" +
+//                        "}";
+//                // 第一引数がURL、第二引数がPOSTするbody
+//                loginTask.execute("http://www.onosystems.work/aws/CourierDeliveryDetail", body);
                 ///////
                 intent.putExtra("itemInfo", status);
                 startActivity(intent);
