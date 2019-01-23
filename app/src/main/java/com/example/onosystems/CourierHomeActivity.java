@@ -34,9 +34,9 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "http://54.92.85.232/aws/TopCourier";
+        String url = "http://www.onosystems.work/aws/TopCourier";
         User.setUrl(url);
-        String profileURL = "http://54.92.85.232/aws/InformationCourier";
+        String profileURL = "http://www.onosystems.work/aws/InformationCourier";
         User.setProfileURL(profileURL);
     }
 
@@ -140,7 +140,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                         profUpdAlert(result);
                     }
                 });
-                postAsync.execute("http://54.92.85.232/aws/SettingCourier", newJson);
+                postAsync.execute("http://www.onosystems.work/aws/SettingCourier", newJson);
 
             } catch (JSONException e) {
                 e.printStackTrace();
