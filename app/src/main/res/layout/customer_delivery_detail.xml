@@ -6,7 +6,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#dfe"
+    android:background="#d2e6f9"
     tools:context=".CourierDeliveryDetail">
 
     <LinearLayout
@@ -119,14 +119,24 @@
             android:text="@string/rescheduling_button"
             android:textSize="30sp"/>
 
+
+        <Button
+            android:id="@+id/receive_Button"
+            android:layout_width="160dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="15sp"
+            android:background="@drawable/button_complete"
+            android:text="受領可"
+            android:textSize="30sp" />
+
         <Button
             android:id="@+id/not_receive_Button"
             android:layout_width="160dp"
             android:layout_height="55dp"
             android:layout_margin="15sp"
-            android:background="@drawable/button_complete"
+            android:background="@drawable/button_no_complete"
             android:text="受領不可"
-            android:textSize="30sp"/>
+            android:textSize="30sp" />
 
     </LinearLayout>
 
