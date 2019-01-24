@@ -47,6 +47,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_time_change);
 
+
         Intent intent = getIntent();
 
      //ここで変更決定時のダイアログを作成
@@ -97,7 +98,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
         String name = status.get("name");
         slip_number = status.get("slipNumber");
-        delivery_time = status.get("deliverytime");
+        delivery_time = status.get("deliveryTime");
         String address = status.get("address");
         int unixtime = Integer.valueOf(status.get("unixTime"));
         date = new Date(unixtime * 1000L);
@@ -227,9 +228,10 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         // ここでAPIを呼ぶ
         TimeChangeAPI api = new TimeChangeAPI();
         api.setReference(this);
-        String body = "{\"slip_number\": " + slip_number +" ,\"time\": " + timeOfMillis + "}";
+        String body = "{\"slip_number\": " + slip_number +" ,\"delivery_time\": " + delivery_time +" ,\"time\": " + timeOfMillis + "}";
         System.out.println(timeOfMillis);
-
+        System.out.println(delivery_time);
+        System.out.println(slip_number);
         api.execute(url, body);
 
     }
