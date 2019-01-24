@@ -3,18 +3,34 @@ package com.example.onosystems;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.gms.location.LocationResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
+import java.util.Date;
+
+public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener, LocationUpdater.LocationResultListener {
+    LocationUpdater locationUpdater;
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        locationUpdater = new LocationUpdater(this, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        locationUpdater.run();
+    }
+
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_courier;
@@ -158,6 +174,11 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
     }
 
+    @Override
+    public void locationResult(LocationResult location) {
+        System.out.println(new Date());
+        System.out.println("location: " + location.toString());
+    }
 }
 
 class Courier extends User{
