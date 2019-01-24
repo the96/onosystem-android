@@ -42,7 +42,7 @@ import static java.lang.Boolean.TRUE;
 public class HomeActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
-    public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
+    public static ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
     public ArrayList<HashMap<String, String>> list = new ArrayList<>();
     public ListView listView;
@@ -138,6 +138,7 @@ public class HomeActivity extends AppCompatActivity
                             deliveryData.getInt("delivery_time"),
                             deliveryData.getInt("delivered_status"),
                             deliveryData.getInt("receivable_status"),
+                            i, // item_number
                             Delivery.VISIBLE,
                             Delivery.READ_FLAG));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
@@ -287,7 +288,7 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("deliveryInfo", list);
-        intent.putExtra("itemNumber", deliveryInfo.get(itemNum).slipNumber);
+        intent.putExtra("itemNumber", deliveryInfo.get(itemNum).item_number);
         startActivity(intent);// 詳細画面に遷移
     }
 
@@ -421,6 +422,8 @@ class Delivery {
     int delivery_time;
     int delivered_status;
     int receivable_status;
+
+    int item_number;
     boolean visible;
     boolean read_flag;
 
@@ -434,6 +437,8 @@ class Delivery {
 
     public int getReceivable_status() { return receivable_status; }
 
+    public int getItem_number() { return item_number; }
+
     public boolean getVisible() { return visible; }
 
     public void setVisible(boolean visible) { this.visible = visible; }
@@ -441,7 +446,7 @@ class Delivery {
     public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
 
     public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
-                    int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
@@ -450,6 +455,7 @@ class Delivery {
         this.delivery_time = delivery_time;
         this.delivered_status = delivered_status;
         this.receivable_status = receivable_status;
+        this.item_number = item_number;
         this.visible = visible;
         this.read_flag = read_flag;
     }
