@@ -19,7 +19,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
@@ -33,28 +38,23 @@ import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-class Deliver {
-    String name;
-    String address;
-    int time;
-    int deliverd_status;
-    int visible;
-    double lat;
-    double lng;
-}
-
+import java.util.Map;
 
 public class CourierMapActivity extends FragmentActivity  implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
     LocationManager locationManager;
     LatLng mylocation; //初期現在地(test用)
+    List<Map<String, String>> deliverylist;
+    private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
+    int time;
+    int maxResults = 1;
+    String status;
 
-
-    //toolbarのアイテム表示
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,24 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
+        Toolbar toolbar = findViewById(R.id.map_toolbar); //R.id.toolbarは各自で設定したidを入れる
+        toolbar.inflateMenu(R.menu.tool_options_couriermaps);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.toggle_pin_blue) {
+                    Toast.makeText(CourierMapActivity.this, "settings clicked 2", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
+            }
+
+        });
     }
+
+
+
 
     private class MyLocationSource implements LocationSource { //現在地を指定した座標に変える(テスト用)
         @Override
@@ -135,7 +152,7 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
     //--LocationListenerの構成要素、現在地マーカーの設置に必要
     @Override
     public void onRequestPermissionsResult( //パーミッションの許可を聞きにいった結果を返してくれる
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+                                            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1000) {
             // 使用が許可された
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -182,6 +199,34 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
     }
     //--ここまで
 
+    // アクションバーを表示するメソッド
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tool_options_couriermaps, menu);
+        return true;
+    }
+
+    // オプションメニューのアイテムが選択されたときに呼び出されるメソッド
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //TextView varTextView = (TextView) findViewById(R.id.textView);
+        switch (item.getItemId()) {
+            case R.id.toggle_pin_green:
+                //varTextView.setText(R.string.menu_item1);
+                return true;
+            case R.id.toggle_layout_pin_red:
+                //varTextView.setText(R.string.menu_item2);
+                return true;
+            case R.id.toggle_pin_blue:
+                //varTextView.setText(R.string.menu_item3);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -194,59 +239,7 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-
-        // ひとまず許しておいてほしいゾーン
-        // 簡易的なマーカーのデータを作成
-        Deliver[] deliver = new Deliver[4];
-        for (int i = 0; i < deliver.length; i++) {
-            deliver[i] = new Deliver();
-        }
-        int maxResults = 1;
-        final Intent intent_CourierDeliveryDetail = new Intent(getApplication(), CourierDeliveryDetail.class);
-
-        deliver[0].name = "高知工科大学";
-        deliver[0].address = "高知県香美市土佐山田町宮ノ口１８５";
-        deliver[0].time = 15;
-        deliver[0].deliverd_status = 0;
-        deliver[0].visible = 0;
-
-
-        deliver[1].name = "リトルガーデン庭園喫茶";
-        deliver[1].address = "高知県香美市土佐山田町佐古藪２８６ー２９";
-        deliver[1].time = 18;
-        deliver[1].deliverd_status = 1;
-        deliver[1].visible = 0;
-
-        deliver[2].name = "おおぞら";
-        deliver[2].address = "高知県香美市土佐山田町佐古藪１７２";
-        deliver[2].time = 10;
-        deliver[2].deliverd_status = 2;
-        deliver[2].visible = 0;
-
-
-        deliver[3].name = "片地小学校";
-        deliver[3].address = "高知県香美市土佐山田町宮ノ口９";
-        deliver[3].time = 10;
-        deliver[3].deliverd_status = 2;
-        deliver[3].visible = 0;
-
-        // ここまで
-
-        //Geocoder APIを使って住所から座標への変換を行う
-        Geocoder gcoder = new Geocoder(this, Locale.getDefault());
-        List<Address> lstAddr;
-        try {
-            for (int i = 0; i < deliver.length; i++) {
-                lstAddr = gcoder.getFromLocationName(deliver[i].address, maxResults);
-                Address addr = lstAddr.get(0);
-                deliver[i].lat = (addr.getLatitude());
-                deliver[i].lng = (addr.getLongitude());
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        final Intent detailActivity = new Intent(getApplication(), CourierDeliveryDetail.class);
 
         // 画面上にマップを作成
         mMap = googleMap; //マップ
@@ -261,10 +254,8 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
                         1000);
             } else {
                 locationStart();
-
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         1000, 50, this);
-
             }
             // 現在地設定の取得
             MyLocationSource source = new MyLocationSource();
@@ -278,47 +269,91 @@ public class CourierMapActivity extends FragmentActivity  implements OnMapReadyC
             settings.setZoomControlsEnabled(true); //ズームボタン有効化
         }
 
+        //CourierHomeActivityから荷物データを受けとる。
+        Intent intent = getIntent();
+        deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        //List<Map<String, String>> deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
 
         // ひとまず作ったデータをマーカーとして配置
-        LatLng[] points = new LatLng[deliver.length]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
+        LatLng[] points = new LatLng[deliverylist.size()]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
+        MarkerOptions[] option = new MarkerOptions[deliverylist.size()];
+
         for(int i = 0; i < points.length; i++) {
-            points[i] = new LatLng(deliver[i].lat, deliver[i].lng);
-        }
 
-        MarkerOptions[] option = new MarkerOptions[deliver.length];
-        for(int i = 0; i < deliver.length; i++){ // ピンごとに設定を変更
             option[i] = new MarkerOptions();
-            option[i].position(points[i]);
-            option[i].title(deliver[i].name);
-            option[i].snippet(String.valueOf(deliver[i].time) + "時頃");
-            if(deliver[i].deliverd_status == 0) {
-                option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            }else if(deliver[i].deliverd_status == 1) {
-                option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-            }else if(deliver[i].deliverd_status == 2) {
-                option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            }
-
         }
 
-        Marker[] markers = new Marker[deliver.length];
 
-        for(int i = 0; i < deliver.length; i++){
-            markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
-            mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    startActivity(intent_CourierDeliveryDetail);
+
+        //Geocoder APIを使って住所から座標への変換を行う
+        Geocoder gcoder = new Geocoder(this, Locale.getDefault());
+        List<Address> lstAddr;
+        try {
+            for (int i = 0; i < deliverylist.size(); i++) {
+                //ListにGeocoderAPIから帰ってきた値を入れる
+                lstAddr = gcoder.getFromLocationName(deliverylist.get(i).get("address"), maxResults);
+                Address addr = lstAddr.get(0);
+                points[i] = new LatLng((addr.getLatitude()), (addr.getLongitude()));
+
+
+                option[i].position(points[i]);
+                option[i].title(deliverylist.get(i).get("name"));
+
+                //deliveryTimeによる配達時間の判定
+                switch (deliverylist.get(i).get("deliveryTime")) {
+                    case "0":
+                        option[i].snippet("時間指定無し");
+                        break;
+                    case "1":
+                        option[i].snippet("9時から12時");
+                        break;
+                    case "2":
+                        option[i].snippet("12時から15時");
+                        break;
+                    case "3":
+                        option[i].snippet("15時から18時");
+                        break;
+                    case "4":
+                        option[i].snippet("18から21時");
+                        break;
+                    default:
+                        option[i].snippet("なし");
                 }
-            });
+
+                //deliveryStatusによるピンの色判定
+                status = deliverylist.get(i).get("deliveredStatus");
+                switch(status) {
+                    case "0":
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        break;
+                    case "1":
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        break;
+                    case "2":
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                }
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
+        //ピンの配置を開始
+        Marker[] markers = new Marker[deliverylist.size()];
+        for(int i = 0; i < deliverylist.size(); i++) {
+            markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
+            mHashMap.put(markers[i], i);
+        }
+        mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                int pos = mHashMap.get(marker); //タップされた情報ウインドウを持つMarkerのIDを取得
+                Intent intent = detailActivity;  // 遷移先指定
+                intent.putExtra("itemInfo", (Serializable) deliverylist.get(pos)); //タップされたピンの荷物情報を用意
+                startActivity(intent);// 詳細画面に遷移
+            }
+        });
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 15));
-
-
     }
-
-
-
 }
 

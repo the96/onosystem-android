@@ -81,7 +81,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         profileName.setText(((Courier) profileInfo).getName(), TextView.BufferType.NORMAL);
         profileMail.setText(((Courier) profileInfo).getMail(), TextView.BufferType.NORMAL);
         profileTel.setText(String.valueOf(((Courier) profileInfo).getTel()), TextView.BufferType.NORMAL);
-        profilePassword.setText(((Courier) profileInfo).getPassword(), TextView.BufferType.NORMAL);
+        profilePassword.setText(User.getPassword(), TextView.BufferType.NORMAL);
         profileRePassword.setText("");
 
         profileName.setOnFocusChangeListener(this);
@@ -132,11 +132,16 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                 json.put("password", newProfilePassword);
 
                 String newJson = json.toString();
-/*
+
                 PostAsync postAsync = new PostAsync();
-                postAsync.setReference(this);
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                        profUpdAlert(result);
+                    }
+                });
                 postAsync.execute("http://www.onosystems.work/aws/SettingCourier", newJson);
-*/
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
