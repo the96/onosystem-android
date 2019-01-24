@@ -72,9 +72,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 // OK ボタンクリック処理
                 Toast.makeText(CourierDeliveryDetail.this,
                         "配達完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
             }
         });
 

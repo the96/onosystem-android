@@ -227,7 +227,9 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         TimeChangeAPI api = new TimeChangeAPI();
         api.setReference(this);
         String body = "{\"slip_number\": " + slip_number + ", \"delivery_time\": " + delivery_time +" ,\"time\": " + timeOfMillis + "}";
-        api.execute("http://www.onosystems.work/aws/CompleteCourier", body);
+
+        api.execute("http://www.onosystems.work/aws/ChangeTimeCourier", body);
+
     }
 
     @Override
