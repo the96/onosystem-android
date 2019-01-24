@@ -13,14 +13,21 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.LocationResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener, LocationUpdater.LocationResultListener {
+    // NOTICE_THRESHOLD回位置情報取得で連続して基準距離を下回ったとき通知する
+    private static final int NOTICE_THRESHOLD = 6;
+    private static final int DISTANCE_THRESHOLD = 1500;
     LocationUpdater locationUpdater;
     Location location;
+    HashMap<Long, Integer> noticedMap;
     public static final boolean LOCATION_DEBUG_MODE = false;
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -187,8 +194,44 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     @Override
     public void locationResult(LocationResult location) {
         this.location = location.getLastLocation();
+        approachNotice(this.location);
     }
 
+    private void approachNotice(Location location) {
+        List<Long> slipNumbers = new ArrayList<>();
+        if (noticedMap == null) {
+            noticedMap = new HashMap<>();
+        }
+        for (Delivery delivery: deliveryInfo) {
+            // DISTANCE_THRESHOLD m 以内にNOTICE_THRESHOLD回連続で接近した場合通知を送る
+            if (calcDistance(location, delivery) <= DISTANCE_THRESHOLD) {
+                Integer count = noticedMap.get(delivery.slipNumber);
+                if (count == null) {
+                    count = 0;
+                }
+                if (count == NOTICE_THRESHOLD) {
+                    slipNumbers.add(delivery.slipNumber);
+                }
+                noticedMap.put(delivery.slipNumber, count + 1);
+            } else {
+                noticedMap.put(delivery.slipNumber, 0);
+            }
+        }
+        JSONArray jsonArray = new JSONArray(slipNumbers);
+        try {
+            JSONObject json = new JSONObject().putOpt("slip_nunber", jsonArray);
+            System.out.println(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private float calcDistance(Location location, Delivery delivery) {
+        float[] results = new float[3];
+        Location.distanceBetween(location.getLatitude(),location.getLongitude(),
+                                 delivery.getLatitude(), delivery.getLongitude(), results);
+        return results[0];
+    }
 }
 
 class Courier extends User{
