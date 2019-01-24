@@ -3,6 +3,7 @@ package com.example.onosystems;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
@@ -19,16 +20,25 @@ import java.util.Date;
 
 public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener, LocationUpdater.LocationResultListener {
     LocationUpdater locationUpdater;
+    Location location;
+    public static final boolean LOCATION_DEBUG_MODE = false;
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         locationUpdater = new LocationUpdater(this, this);
+        location = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         locationUpdater.run();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        locationUpdater.stopUpdateLocation();
     }
 
     @Override
@@ -69,8 +79,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     }
 
     public void showMapActivity() {
-        Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-        intent.putExtra("deliveryInfo", list);
+        Intent intent = new Intent(this, CourierMapActivity.class);  // 遷移先指定
+        intent.putExtra("deliveryInfo", list);;
         startActivity(intent);// CourierMapActivityに遷移
     }
 
@@ -176,9 +186,9 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
 
     @Override
     public void locationResult(LocationResult location) {
-        System.out.println(new Date());
-        System.out.println("location: " + location.toString());
+        this.location = location.getLastLocation();
     }
+
 }
 
 class Courier extends User{
