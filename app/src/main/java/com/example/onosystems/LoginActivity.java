@@ -98,6 +98,8 @@ public class LoginActivity extends AppCompatActivity{
                 createNewAccountActivity();
             }
         });
+
+        // トークンの取得
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
