@@ -29,7 +29,6 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     AlertDialog mAlertDlg;
 
     public  String url = "http://www.onosystems.work/aws/CompleteCourier";
-    public int RECEIVABLE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +57,12 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 //サーバにデータ送信
-                PostAsync.initializeCallAPI(); // 初回の通信時のみ
                 PostAsync postAsync = new PostAsync();
                 postAsync.setRef(new PostAsync.Callback() {
                     @Override
                     public void callback(String result) {
                         // 処理内容を書く
-                        System.out.println("callbackされました");
+                        System.out.println("CourierDeliveryDetail.CompleteCourier result =>" + result);
                     }
                 });
                 String body = "{\"slip_number\": " + slip_number + "}";
