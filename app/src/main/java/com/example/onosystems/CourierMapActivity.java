@@ -5,7 +5,6 @@ import android.location.Address;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.location.Location;
@@ -15,19 +14,13 @@ import android.location.LocationProvider;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
@@ -56,17 +49,18 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
     LatLng mylocation; //初期現在地(test用)
     List<Map<String, String>> deliverylist;
     private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
-    int time;
     int visiblekey;
     int maxResults = 1;
     String status1;
-    boolean blueVisible = true;
-    boolean redVisible = true;
-    boolean greenVisible = true;
-    boolean[] visible;
+    boolean blueVisible;
+    boolean redVisible;
+    boolean greenVisible;
+    boolean blueflag = false, redflag = false, greenflag = false;
+    String[] visible;
     LatLng[] points;
     MarkerOptions[] option;
-    public ToggleButton toggle0, toggle1, toggle2;
+    Marker[] markers;
+    public ToggleButton toggle_blue, toggle_red, toggle_green;
 
 
 
@@ -92,8 +86,7 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
         //CourierHomeActivityから荷物データを受けとる。
         Intent intent = getIntent();
         deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        //List<Map<String, String>> deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        visible = new boolean[deliverylist.size()];
+        visible = new String[deliverylist.size()];
         // ひとまず作ったデータをマーカーとして配置
         points = new LatLng[deliverylist.size()]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
         option = new MarkerOptions[deliverylist.size()];
@@ -218,9 +211,6 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
     //--ここまで
 
 
-
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -263,10 +253,8 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
             settings.setZoomControlsEnabled(true); //ズームボタン有効化
         }
 
-
-        reloadDelivers();
-
-
+        //荷物情報の更新
+        reloadDelivers(0);
 
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 15));
@@ -278,17 +266,17 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.tool_options_couriermaps, menu);
 
-        toggle0 = menu.findItem(R.id.toggle_pin_green).getActionView().findViewById(R.id.toggle_layout_pin_green);
-        toggle1 = menu.findItem(R.id.toggle_pin_red).getActionView().findViewById(R.id.toggle_layout_pin_red);
-        toggle2 = menu.findItem(R.id.toggle_pin_blue).getActionView().findViewById(R.id.toggle_layout_pin_blue);
+        toggle_green = menu.findItem(R.id.toggle_pin_green).getActionView().findViewById(R.id.toggle_layout_pin_green);
+        toggle_red = menu.findItem(R.id.toggle_pin_red).getActionView().findViewById(R.id.toggle_layout_pin_red);
+        toggle_blue = menu.findItem(R.id.toggle_pin_blue).getActionView().findViewById(R.id.toggle_layout_pin_blue);
 
-        toggle0.setChecked(true);
-        toggle1.setChecked(true);
-        toggle2.setChecked(true);
+        toggle_green.setChecked(blueVisible);
+        toggle_red.setChecked(redVisible);
+        toggle_blue.setChecked(greenVisible);
 
-        toggle0.setOnCheckedChangeListener(this);
-        toggle1.setOnCheckedChangeListener(this);
-        toggle2.setOnCheckedChangeListener(this);
+        toggle_green.setOnCheckedChangeListener(this);
+        toggle_red.setOnCheckedChangeListener(this);
+        toggle_blue.setOnCheckedChangeListener(this);
         return true;
     }
 
@@ -309,27 +297,23 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
                 Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_green");
                 visiblekey = 2;
                 visibleChange(visiblekey);
-                reloadDelivers();
+                reloadDelivers(1);
                 break;
             case R.id.toggle_layout_pin_red:
                 Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_red");
                 visiblekey = 1;
                 visibleChange(visiblekey);
-                reloadDelivers();
+                reloadDelivers(1);
                 break;
             case R.id.toggle_layout_pin_blue:
                 Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_blue");
                 visiblekey = 0;
                 visibleChange(visiblekey);
-                reloadDelivers();
+                reloadDelivers(1);
         }
     }
 
-    public void reloadDelivers() {
-
-
-
-
+    public void reloadDelivers(int virgin) {
         //Geocoder APIを使って住所から座標への変換を行う
         Geocoder gcoder = new Geocoder(this, Locale.getDefault());
         List<Address> lstAddr;
@@ -371,36 +355,45 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
                 switch (status1) {
                     case "0":
                         option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                        visible[i] = blueVisible;
+                        if(virgin == 0) blueVisible = Boolean.parseBoolean(deliverylist.get(i).get("visible"));
+                        blueflag = true;
                         break;
                     case "1":
                         option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        visible[i] = redVisible;
+                        if(virgin == 0) redVisible = Boolean.parseBoolean(deliverylist.get(i).get("visible"));
+                        redflag = true;
                         break;
                     case "2":
                         option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        visible[i] = greenVisible;
+                        if(virgin == 0) greenVisible = Boolean.parseBoolean(deliverylist.get(i).get("visible"));
+                        greenflag = true;
                 }
-
+                if(!blueflag) blueVisible = true;
+                if(!redflag) redVisible = true;
+                if(!greenflag) greenVisible = true;
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
+        if(virgin == 0) {
+            addMapMarker();
+        }else if(virgin == 1){
+            changeMarkerVisible();
+        }
 
     }
 
-    public void setMarker() {
+    public void addMapMarker() {
         //ピンの配置を開始
-        Marker[] markers = new Marker[deliverylist.size()];
+        markers = new Marker[deliverylist.size()];
 
         for (int i = 0; i < deliverylist.size(); i++) {
             markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
             mHashMap.put(markers[i], i);
-
-            markers[i].setVisible(visible[i]);
+            if(deliverylist.get(i).get("deliveredStatus").equals("0")){
+                markers[i].setVisible(Boolean.parseBoolean(deliverylist.get(i).get("visible")));
+            }else markers[i].setVisible(false);
         }
         mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
@@ -413,24 +406,24 @@ public class CourierMapActivity extends AppCompatActivity implements OnMapReadyC
         });
     }
 
-    public void visibleMarker(){
+    public void changeMarkerVisible(){
         String receivableStatus;
         for (int i = 0; i < deliverylist.size(); i++) {
             receivableStatus = deliverylist.get(i).get("receivableStatus");
             switch (receivableStatus) {
                 case "0":
                     option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                    visible[i] = blueVisible;
+                    visible[i] = String.valueOf(blueVisible);
                     break;
                 case "1":
                     option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    visible[i] = redVisible;
+                    visible[i] = String.valueOf(redVisible);
                     break;
                 case "2":
                     option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    visible[i] = greenVisible;
+                    visible[i] = String.valueOf(greenVisible);
             }
-            markers[i].setVisible(visible[i]);
+            markers[i].setVisible(Boolean.parseBoolean(visible[i]));
         }
     }
 
