@@ -171,6 +171,7 @@ public class HomeActivity extends AppCompatActivity
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
                 item.put("deliveryTime", String.valueOf(deliveryInfo.get(i).delivery_time));
+                item.put("visible", String.valueOf(deliveryInfo.get(i).visible));
                 item.put("image", statusName);
                 if (deliveryInfo.get(i).read_flag) {
                     String newName = String.valueOf(getResources().getIdentifier("newtext", "drawable", this.getPackageName()));
@@ -285,7 +286,8 @@ public class HomeActivity extends AppCompatActivity
         deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
+        intent.putExtra("deliveryInfo", list);
+        intent.putExtra("itemNumber", deliveryInfo.get(itemNum).slipNumber);
         startActivity(intent);// 詳細画面に遷移
     }
 
