@@ -216,7 +216,25 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
             }
         }
         try {
-            JSONObject json = new JSONObject().putOpt("slip-number", slipNumbers);
+            JSONObject json = new JSONObject().putOpt("slip_nunber", jsonArray);
+            PostAsync post = new PostAsync();
+            post.setRef(new PostAsync.Callback() {
+                @Override
+                public void callback(String result) {
+                    try {
+                        JSONObject res = new JSONObject(result);
+                        String str = res.getString("result");
+                        if (str == null || str.isEmpty() || !"ok".equals(str)) {
+                            System.out.println("approachNotice() is failed");
+                            System.out.println(result);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            post.execute(LoginActivity.URL_ORIGIN + "", json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

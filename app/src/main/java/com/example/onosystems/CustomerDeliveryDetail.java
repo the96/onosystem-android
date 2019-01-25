@@ -134,6 +134,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
     public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int UNRECEIVABLE = 1;
+    public int RECEIVABLE = 2;
     private String slip_number;
     AlertDialog mAlertDlg;
     @Override
@@ -191,6 +192,67 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         // 4. ボタンクリック時にダイアログを表示
         Button btnExe = findViewById(R.id.not_receive_Button);
         btnExe.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                // ダイアログ表示
+                mAlertDlg.show();
+            }
+        });
+
+
+
+        //ここから受領可ボタンを押したときの動作
+
+
+        // 1. AlertDialog.Builder クラスのインスタンスを生成
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+
+        // 2. ダイアログタイトル、表示メッセージ、ボタンを設定
+        builder1.setTitle(R.string.dlg_title);
+        builder1.setMessage(R.string.dlg_msg4);
+        builder1.setPositiveButton("受領可", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                //サーバにデータ送信
+                PostAsync postAsync = new PostAsync();
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                        // 処理内容を書く
+                        System.out.println("result:\r\n" + result);
+                    }
+                });
+                // 伝票(slip_number), receivable_status
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("slip_number", Long.parseLong(slip_number));
+                    jsonObject.put("receivable_status", RECEIVABLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                postAsync.execute(url, jsonObject.toString());
+                System.out.println(url);
+
+
+                // OK ボタンクリック処理
+                Toast.makeText(CustomerDeliveryDetail.this,
+                        "受領可にしました", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Cancel ボタンクリック処理
+
+            }
+        });
+
+        // 3. ダイアログを生成
+        mAlertDlg = builder.create();
+
+        // 4. ボタンクリック時にダイアログを表示
+        Button btnExe1 = findViewById(R.id.receive_Button);
+        btnExe1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // ダイアログ表示
                 mAlertDlg.show();
