@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity{
     static final int DRIVER_USER = 1;
     static final int CUSTOMER_USER = 2;
     private String token;
-    public static final String URL_ORIGIN = "http://www.onosystems.work/aws/";
     private SharedPreferences sharedPreferences;
 
     int customer_id = 0;
@@ -129,7 +128,6 @@ public class LoginActivity extends AppCompatActivity{
 
     // ログイン処理
     public void login(final String id, final String password) {
-        // urlとbodyは仮置き
         JSONObject body = new JSONObject();
         try {
             body.put("id", id);
@@ -179,7 +177,7 @@ public class LoginActivity extends AppCompatActivity{
                 }
             });
             showProgress(true);
-            postAsync.execute(URL_ORIGIN + "Login", body.toString());
+            postAsync.execute(PostURL.getLoginURL(), body.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -25,7 +25,6 @@ import java.util.List;
 //import java.sql.Time;
 
 public class CourierDeliveryDetail extends AppCompatActivity {
-    public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int toolBarLayout;
     AlertDialog mAlertDlg;
@@ -74,7 +73,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                     }
                 });
                 String body = "{\"slip_number\": " + slip_number + "}";
-                postAsync.execute(url, body);
+                postAsync.execute(PostURL.getCompleteCourierURL(), body);
 
 
                 // OK ボタンクリック処理

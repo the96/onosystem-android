@@ -133,7 +133,6 @@ import java.util.HashMap;
 public class CustomerDeliveryDetail extends AppCompatActivity {
     public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
-    public String url = "http://www.onosystems.work/aws/ReceiveCustomer";
     public int UNRECEIVABLE = 1;
     public int RECEIVABLE = 2;
     private String slip_number;
@@ -169,8 +168,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                postAsync.execute(url, jsonObject.toString());
-                System.out.println(url);
+                postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
+                System.out.println(PostURL.getReceiveCustomerURL());
 
 
                 // OK ボタンクリック処理

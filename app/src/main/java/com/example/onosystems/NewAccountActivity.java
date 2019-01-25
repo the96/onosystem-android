@@ -20,7 +20,6 @@ public class NewAccountActivity extends AppCompatActivity {
     EditText editName, editPassword1, editPassword2, editMail, editAddress, editTel;
     String name="", mail="", password1="", password2="", address="";
     long tel = 0;
-    private String url = "http://www.onosystems.work/aws/RegisterAccount";
     String responce = "";
     AlertDialog alertDialog;
 
@@ -109,7 +108,7 @@ public class NewAccountActivity extends AppCompatActivity {
                     }
                 }
             });
-            postAsync.execute(url, json.toString());
+            postAsync.execute(PostURL.getRegisterAccountURL(), json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

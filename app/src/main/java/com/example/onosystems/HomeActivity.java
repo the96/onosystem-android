@@ -3,6 +3,8 @@ package com.example.onosystems;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -29,12 +31,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -65,6 +69,8 @@ public class HomeActivity extends AppCompatActivity
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
     public SwipeRefreshLayout SwipeRefresh;
+
+    public Geocoder geocoder = new Geocoder(this , Locale.JAPANESE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +145,8 @@ public class HomeActivity extends AppCompatActivity
                             deliveryData.getInt("receivable_status"),
                             i, // item_number
                             Delivery.VISIBLE,
-                            Delivery.READ_FLAG));
+                            Delivery.READ_FLAG,
+                            geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 }
             }
@@ -413,6 +420,7 @@ class Delivery {
     public static final int UNSELECTED = 0;
     public static final int NOT_RECEIVABLE = 1;
     public static final int RECEIVABLE = 2;
+    private static final int SINGLE_RESULT = 1;
     long slipNumber;
     String name;
     String address;
@@ -425,6 +433,8 @@ class Delivery {
     int item_number;
     boolean visible;
     boolean read_flag;
+    private double latitude;
+    private double longitude;
 
     public String getName() { return this.name; }
 
@@ -444,8 +454,21 @@ class Delivery {
 
     public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
 
+    public void setLatLngFromAddress(Geocoder geocoder) {
+        try {
+            Address location = geocoder.getFromLocationName(address, SINGLE_RESULT).get(0);
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        } catch (IOException e) {
+            e.printStackTrace();
+            latitude = 0;
+            longitude = 0;
+        }
+
+    }
+
     public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
-                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag) {
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, Geocoder geocoder) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
@@ -457,6 +480,15 @@ class Delivery {
         this.item_number = item_number;
         this.visible = visible;
         this.read_flag = read_flag;
+        this.setLatLngFromAddress(geocoder);
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
 
