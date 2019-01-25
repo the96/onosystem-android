@@ -67,9 +67,9 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "http://www.onosystems.work/aws/TopCourier";
+        String url = "https://www.onosystems.work/aws/TopCourier";
         User.setUrl(url);
-        String profileURL = "http://www.onosystems.work/aws/InformationCourier";
+        String profileURL = "https://www.onosystems.work/aws/InformationCourier";
         User.setProfileURL(profileURL);
     }
 
@@ -173,7 +173,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                         profUpdAlert(result);
                     }
                 });
-                postAsync.execute("http://www.onosystems.work/aws/SettingCourier", newJson);
+                postAsync.execute("https://www.onosystems.work/aws/SettingCourier", newJson);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -198,7 +198,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     }
 
     private void approachNotice(Location location) {
-        List<Long> slipNumbers = new ArrayList<>();
+        JSONArray slipNumbers = new JSONArray();
         if (noticedMap == null) {
             noticedMap = new HashMap<>();
         }
@@ -210,17 +210,15 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                     count = 0;
                 }
                 if (count == NOTICE_THRESHOLD) {
-                    slipNumbers.add(delivery.slipNumber);
+                    slipNumbers.put(delivery.slipNumber);
                 }
                 noticedMap.put(delivery.slipNumber, count + 1);
             } else {
                 noticedMap.put(delivery.slipNumber, 0);
             }
         }
-        JSONArray jsonArray = new JSONArray(slipNumbers);
         try {
-            JSONObject json = new JSONObject().putOpt("slip_nunber", jsonArray);
-            System.out.println(json);
+            JSONObject json = new JSONObject().putOpt("slip-number", slipNumbers);
         } catch (JSONException e) {
             e.printStackTrace();
         }

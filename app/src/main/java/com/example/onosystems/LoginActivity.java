@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity{
     static final int DRIVER_USER = 1;
     static final int CUSTOMER_USER = 2;
     private String token;
-    public static final String URL_ORIGIN = "http://www.onosystems.work/aws/";
+    public static final String URL_ORIGIN = "https://www.onosystems.work/aws/";
     private SharedPreferences sharedPreferences;
 
     int customer_id = 0;

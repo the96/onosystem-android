@@ -28,7 +28,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     public int toolBarLayout;
     AlertDialog mAlertDlg;
 
-    public  String url = "http://www.onosystems.work/aws/CompleteCourier";
+    public  String url = "https://www.onosystems.work/aws/CompleteCourier";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
