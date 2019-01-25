@@ -52,7 +52,7 @@ public class LocationUpdater extends LocationCallback {
         }
 
         LocationRequest request = new LocationRequest();
-        request.setInterval(5000);
+        request.setInterval(10000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationClient.requestLocationUpdates(request, this, null);
     }

@@ -58,7 +58,7 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
     private FusedLocationProviderClient mLocationClient = null;
     LocationCallback locationCallback = null;
     private static final LocationRequest REQUEST = LocationRequest.create()
-            .setInterval(1000) // 5 seconds
+            .setInterval(1000) // 1 seconds
             .setFastestInterval(100) // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     private GoogleApiClient mGoogleApiClient;
