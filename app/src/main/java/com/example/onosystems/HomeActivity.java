@@ -46,9 +46,9 @@ import static java.lang.Boolean.TRUE;
 public class HomeActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
-    public static ArrayList<Delivery> deliveryInfo = new ArrayList<>();
+    public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
-    public ArrayList<HashMap<String, String>> list = new ArrayList<>();
+    public static ArrayList<HashMap<String, String>> list = new ArrayList<>();
     public ListView listView;
     public ToggleButton toggle0, toggle1, toggle2, toggle3;
     public SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日 HH:mm"); //日付フォーマット
@@ -70,11 +70,12 @@ public class HomeActivity extends AppCompatActivity
     public DrawerLayout drawer;
     public SwipeRefreshLayout SwipeRefresh;
 
-    public Geocoder geocoder = new Geocoder(this , Locale.JAPANESE);
+    public Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        geocoder = new Geocoder(this, Locale.JAPANESE);
         setUserOptions();
         setContentView(homeLayout);
         findDeliveries();

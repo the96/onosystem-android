@@ -18,6 +18,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +28,10 @@ public class NotificationService extends FirebaseMessagingService implements Tex
     private static final String NOTIFICATION_CHANNEL_NAME = "ONOSYSTEMS_NOTIFICATION";
     private static final String CUSTOMER_USER = "customer";
     private static final String DRIVER_USER = "driver";
+    private static final int NOT_INITIALIZED = -1;
+    private static final int LIST_HAS_NOT_DELIVERY = -2;
+    private static final int INVALID_INPUT = -3;
+    private static final int NOT_FOUND = -4;
     private static final int NOTICE_RECEIVABLE = 1;
     private static final int NOTICE_NOT_RECEIVABLE = 2;
     private static final int NOTICE_CHANGE_DATE = 3;
@@ -89,42 +94,70 @@ public class NotificationService extends FirebaseMessagingService implements Tex
         }
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-        System.out.println("LOGINED_ID================================-");
-        System.out.println(LoginActivity.logined_id);
-        if (data.getUserType().equals(DRIVER_USER) && LoginActivity.usertype == LoginActivity.DRIVER_USER) {
-            Intent homeIntent = new Intent(getApplication(), CourierHomeActivity.class);
-            Intent openIntent = new Intent(this, CourierDeliveryDetail.class);
-            homeIntent.putExtra("driver_id", LoginActivity.logined_id);
-            homeIntent.putExtra("password", LoginActivity.loginPassword);
-            openIntent.putExtra("itemInfo", data.getDelivery());
-            taskStackBuilder.addParentStack(CourierHomeActivity.class);
-            taskStackBuilder.addNextIntent(homeIntent);
-            taskStackBuilder.addNextIntent(openIntent);
-        } else if (data.getUserType().equals(CUSTOMER_USER) && LoginActivity.usertype == LoginActivity.CUSTOMER_USER) {
-            Intent homeIntent = new Intent(getApplication(), CustomerHomeActivity.class);
-            Intent openIntent = new Intent(this, CustomerDeliveryDetail.class);
+        int index = getIndexInDeliveries(data.getSlipNumber());
+        boolean valid_index = index != NOT_INITIALIZED && index != LIST_HAS_NOT_DELIVERY && index != NOT_FOUND;
+        ArrayList<HashMap<String, String>> list;
+        Intent homeIntent = null;
+        Intent openIntent = null;
+
+        if (LoginActivity.usertype != LoginActivity.OTHER_USER && equalTwoUserType(Integer.parseInt(data.getUserType()), LoginActivity.usertype)) {
+            if (data.getUserType().equals(DRIVER_USER) && LoginActivity.usertype == LoginActivity.DRIVER_USER) {
+                homeIntent = new Intent(getApplication(), CourierHomeActivity.class);
+                if (valid_index)
+                    openIntent = new Intent(this, CourierDeliveryDetail.class);
+                taskStackBuilder.addParentStack(CourierHomeActivity.class);
+            } else if (data.getUserType().equals(CUSTOMER_USER) && LoginActivity.usertype == LoginActivity.CUSTOMER_USER) {
+                homeIntent = new Intent(getApplication(), CustomerHomeActivity.class);
+                if (valid_index)
+                    openIntent = new Intent(this, CustomerDeliveryDetail.class);
+                taskStackBuilder.addParentStack(CustomerHomeActivity.class);
+            }
             homeIntent.putExtra("customer_id", LoginActivity.logined_id);
             homeIntent.putExtra("password", LoginActivity.loginPassword);
-            openIntent.putExtra("itemInfo", data.getDelivery());
-            taskStackBuilder.addParentStack(CustomerHomeActivity.class);
             taskStackBuilder.addNextIntent(homeIntent);
-            taskStackBuilder.addNextIntent(openIntent);
+            if (valid_index) {
+                openIntent.putExtra("itemNumber", index);
+                openIntent.putExtra("deliveryInfo", HomeActivity.list);
+                taskStackBuilder.addNextIntent(openIntent);
+            }
         } else {
-            Intent openIntent = new Intent(getApplication(), LoginActivity.class);
+            openIntent = new Intent(getApplication(), LoginActivity.class);
             taskStackBuilder.addParentStack(LoginActivity.class);
             taskStackBuilder.addNextIntent(openIntent);
         }
-        System.out.println("TaskStackBuilder.getIntents()");
-        for (Intent intent: taskStackBuilder.getIntents()) {
-            System.out.println(intent.toString());
-        }
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, openIntent, PendingIntent.FLAG_ONE_SHOT);
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
 
         notificationManager.notify(0, mBuilder.build());
 
+    }
+
+    private boolean equalTwoUserType(int usertype, int usertype_) {
+        return usertype == usertype_;
+    }
+
+    public int getIndexInDeliveries(long ship_number) {
+        if (HomeActivity.list == null) {
+            Log.e("NotificationService", "HomeActivity or Deliveries List is not initialized object");
+            return NOT_INITIALIZED;
+        }
+        if (HomeActivity.list.isEmpty()) {
+            Log.e("NotificationService", "HomeActivity's Deliveries list has not Delivery.");
+            return LIST_HAS_NOT_DELIVERY;
+        }
+        if (ship_number <= 0) {
+            Log.e("NotificationService", "input ship number is invalid number: " + ship_number);
+            return INVALID_INPUT;
+        }
+        int i = 0;
+        for (HashMap<String, String> map: HomeActivity.list) {
+            if (Long.parseLong(map.get("slipNumber")) == ship_number)
+                return i;
+            else
+                i++;
+        }
+        return NOT_FOUND;
     }
 
     @Override
@@ -225,5 +258,9 @@ class NoticeData {
 
     public HashMap<String, String> getDelivery() {
         return delivery;
+    }
+
+    public long getSlipNumber() {
+        return Long.parseLong(delivery.get("slipNumber"));
     }
 }
