@@ -28,7 +28,6 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     public int toolBarLayout;
     AlertDialog mAlertDlg;
 
-    public  String url = "https://www.onosystems.work/aws/CompleteCourier";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +65,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                     }
                 });
                 String body = "{\"slip_number\": " + slip_number + "}";
-                postAsync.execute(url, body);
+                postAsync.execute(PostURL.getCompleteCourierURL(), body);
 
 
                 // OK ボタンクリック処理

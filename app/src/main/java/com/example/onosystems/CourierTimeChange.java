@@ -38,7 +38,6 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     String slip_number;
     String delivery_time;
     //private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
-    public String url = "https://www.onosystems.work/aws/ChangeTimeCourier";
     private Spinner spinner;
 
 
@@ -230,7 +229,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         String body = "{\"slip_number\": " + slip_number +" ,\"time\": " + timeOfMillis + "}";
         System.out.println(timeOfMillis);
 
-        api.execute(url, body);
+        api.execute(PostURL.getChangeTimeCourierURL(), body);
 
     }
 
