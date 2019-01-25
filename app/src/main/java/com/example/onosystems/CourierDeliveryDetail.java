@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int toolBarLayout;
     AlertDialog mAlertDlg;
-    public List<HashMap<String, String>> items;
+    public ArrayList<HashMap<String, String>> items;
     public int index;
     public  HashMap<String,String> item;
     public  String url = "http://www.onosystems.work/aws/CompleteCourier";
@@ -39,7 +40,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-        items = (List<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        items = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
         index = intent.getIntExtra("itemNumber",-1);
         final HashMap<String, String> item = items.get(index);
 
@@ -154,7 +155,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", item);
+                    intent.putExtra("deliveryInfo", items);
                     intent.putExtra("itemNumber", item);
                     startActivity(intent);
                     return true;

@@ -229,8 +229,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                postAsync.execute(url, jsonObject.toString());
-                System.out.println(url);
+                postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
+
 
 
                 // OK ボタンクリック処理
