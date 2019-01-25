@@ -216,7 +216,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
             }
         }
         try {
-            JSONObject json = new JSONObject().putOpt("slip_nunber", jsonArray);
+            JSONObject json = new JSONObject().putOpt("slip_number", slipNumbers);
             PostAsync post = new PostAsync();
             post.setRef(new PostAsync.Callback() {
                 @Override
@@ -234,7 +234,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
 
                 }
             });
-            post.execute(LoginActivity.URL_ORIGIN + "", json.toString());
+            post.execute(PostURL.getNotificationURL(), json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
