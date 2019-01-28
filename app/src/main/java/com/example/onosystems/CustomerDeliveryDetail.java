@@ -125,13 +125,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 //import java.sql.Time;
 
 public class CustomerDeliveryDetail extends AppCompatActivity {
-    public HashMap<String, String> status;
+    public ArrayList<HashMap<String, String>> status;
+    int index;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int UNRECEIVABLE = 1;
     public int RECEIVABLE = 2;
@@ -264,12 +267,14 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         //MainActivityから値を受け取る,初期値を設定
-        status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
-        String name = status.get("name");
-        slip_number = status.get("slipNumber");
-        String address = status.get("address");
-        int unixtime = Integer.valueOf(status.get("unixTime"));
-        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
+        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber", -1);
+        HashMap<String, String> deliveryData = status.get(index);
+        String name = deliveryData.get("name");
+        slip_number = deliveryData.get("slipNumber");
+        String address = deliveryData.get("address");
+        int unixtime = Integer.valueOf(deliveryData.get("unixTime"));
+        int deliveryTime = Integer.valueOf(deliveryData.get("deliveryTime"));
         Date date = new Date(unixtime * 1000L);
         String time = sdf.format(date);
 
@@ -303,7 +308,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CustomerTimeChange.class);
                 //日時変更画面に遷移
-                intent.putExtra("itemInfo", status);
+                intent.putExtra("deliveryInfo", status);
+                intent.putExtra("itemNumber", index);
                 startActivity(intent);
             }
 

@@ -134,7 +134,9 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
 
-                intent.putExtra("itemInfo", status);
+                intent.putExtra("deliveryInfo", status);
+                intent.putExtra("itemNumber", index);
+
                 startActivity(intent);
             }
         });

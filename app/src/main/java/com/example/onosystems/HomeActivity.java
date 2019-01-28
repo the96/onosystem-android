@@ -70,11 +70,14 @@ public class HomeActivity extends AppCompatActivity
     public DrawerLayout drawer;
     public SwipeRefreshLayout SwipeRefresh;
 
-    public Geocoder geocoder = new Geocoder(this , Locale.JAPANESE);
+//    public Geocoder geocoder = new Geocoder(this , Locale.JAPANESE);
+    public Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        geocoder = new Geocoder(this , Locale.JAPANESE);
+
         setUserOptions();
         setContentView(homeLayout);
         findDeliveries();
