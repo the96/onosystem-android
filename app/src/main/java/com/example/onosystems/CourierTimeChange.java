@@ -279,6 +279,9 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
     @Override
     public void setDate(int y, int m, int d) {
+        year = y;
+        month = m;
+        day = d;
         System.out.println("callback");
         System.out.println(y + " " + m + " " + d);
     }

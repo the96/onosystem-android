@@ -113,7 +113,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
                 callTCAPI();
                 Toast.makeText(CustomerTimeChange.this,
                         "変更完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
+                Intent intent = new Intent(getApplication(), CustomerHomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }

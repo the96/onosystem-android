@@ -139,19 +139,22 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
     public int UNRECEIVABLE = 1;
     public int RECEIVABLE = 2;
     private String slip_number;
-    AlertDialog mAlertDlg;
+    AlertDialog mAlertDlg1;
+    AlertDialog mAlertDlg2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.customer_delivery_detail);
 
         // 1. AlertDialog.Builder クラスのインスタンスを生成
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+
 
         // 2. ダイアログタイトル、表示メッセージ、ボタンを設定
-        builder.setTitle(R.string.dlg_title);
-        builder.setMessage(R.string.dlg_msg3);
-        builder.setPositiveButton("受領不可", new DialogInterface.OnClickListener() {
+        builder1.setTitle(R.string.dlg_title);
+        builder1.setMessage(R.string.dlg_msg3);
+        builder1.setPositiveButton("受領不可", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 
                 //サーバにデータ送信
@@ -182,7 +185,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder1.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // Cancel ボタンクリック処理
 
@@ -190,14 +193,14 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         });
 
         // 3. ダイアログを生成
-        mAlertDlg = builder.create();
+        mAlertDlg1 = builder1.create();
 
         // 4. ボタンクリック時にダイアログを表示
         Button btnExe = findViewById(R.id.not_receive_Button);
         btnExe.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // ダイアログ表示
-                mAlertDlg.show();
+                mAlertDlg1.show();
             }
         });
 
@@ -207,12 +210,12 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
 
 
         // 1. AlertDialog.Builder クラスのインスタンスを生成
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
 
         // 2. ダイアログタイトル、表示メッセージ、ボタンを設定
-        builder1.setTitle(R.string.dlg_title);
-        builder1.setMessage(R.string.dlg_msg4);
-        builder1.setPositiveButton("受領可", new DialogInterface.OnClickListener() {
+        builder2.setTitle(R.string.dlg_title);
+        builder2.setMessage(R.string.dlg_msg4);
+        builder2.setPositiveButton("受領可", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 
                 //サーバにデータ送信
@@ -241,7 +244,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // Cancel ボタンクリック処理
 
@@ -249,14 +252,14 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         });
 
         // 3. ダイアログを生成
-        mAlertDlg = builder.create();
+        mAlertDlg2 = builder2.create();
 
         // 4. ボタンクリック時にダイアログを表示
         Button btnExe1 = findViewById(R.id.receive_Button);
         btnExe1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // ダイアログ表示
-                mAlertDlg.show();
+                mAlertDlg2.show();
             }
         });
 
