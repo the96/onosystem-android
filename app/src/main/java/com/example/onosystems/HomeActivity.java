@@ -270,7 +270,7 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("deliveryInfo", list);
-        intent.putExtra("itemNumber", deliveryInfo.get(itemNum).item_number);
+        intent.putExtra("itemNumber", item);
         startActivity(intent);// 詳細画面に遷移
     }
 
