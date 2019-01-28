@@ -40,8 +40,6 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-//        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-//        index = intent.getIntExtra("itemNumber",-1);
         final HashMap<String, String> item = (HashMap<String, String>) intent.getSerializableExtra("item");
 
 
