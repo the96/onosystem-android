@@ -113,9 +113,8 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
                 callTCAPI();
                 Toast.makeText(CourierTimeChange.this,
                         "変更完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
+
             }
         });
 
@@ -234,6 +233,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         });
 
         //MainActivityから値を受け取る,初期値を設定
+        //TODO: ここからマップけす
 
 
         Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる

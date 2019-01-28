@@ -233,8 +233,6 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
-                System.out.println(PostURL.getReceiveCustomerURL());
-
 
                 // OK ボタンクリック処理
                 Toast.makeText(CustomerDeliveryDetail.this,
