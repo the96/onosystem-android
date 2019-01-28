@@ -1,10 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.onosystems.NewAccountActivity">
+
+    <TextView
+        android:id="@+id/acountText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_account_name"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <ScrollView
         android:id="@+id/create_account_form"
@@ -15,231 +30,169 @@
             android:id="@+id/new_account_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/account_background"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:layout_marginTop="5dp"
+                android:ems="10"
+                android:text="@string/user_name"
+                android:textSize="@dimen/account_text" />
+
+
+            <EditText
+                android:id="@+id/name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/account_height"
+                android:layout_marginStart="@dimen/input_form_margin"
+                android:layout_marginEnd="@dimen/input_form_margin"
+                android:layout_marginBottom="@dimen/input_form_margin"
+                android:background="@drawable/account_form"
+                android:inputType="textPersonName"
+                android:textSize="@dimen/account_text" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_name"
-                    android:layout_marginStart="@dimen/input_account"/>
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:text="@string/password"
+                android:textSize="@dimen/account_text" />
 
-            </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <EditText
+                android:id="@+id/password1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:text=""
-                    android:background="@drawable/account_form"
-                    android:layout_marginStart="@dimen/input_form_margin"
-                    android:layout_marginEnd="@dimen/input_form_margin"
-                    android:layout_marginBottom="@dimen/input_form_margin"
-                    android:inputType="textPersonName" />
-
-            </android.support.design.widget.TextInputLayout>
+                android:layout_height="@dimen/account_height"
+                android:layout_marginStart="@dimen/input_form_margin"
+                android:layout_marginEnd="@dimen/input_form_margin"
+                android:layout_marginBottom="@dimen/input_form_margin"
+                android:background="@drawable/account_form"
+                android:ems="10"
+                android:imeActionId="6"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="@dimen/account_text" />
 
 
-                <!--<AutoCompleteTextView-->
-                    <!--android:id="@+id/loginId"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:hint="@string/prompt_id"-->
-                    <!--android:inputType="number"-->
-                    <!--android:maxLines="1"-->
-                    <!--android:singleLine="true"-->
-                    <!--tools:text="@string/prompt_id" />-->
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:text="@string/re_password"
+                android:textSize="@dimen/account_text" />
 
 
-            <android.support.design.widget.TextInputLayout
+            <EditText
+                android:id="@+id/password2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/account_height"
+                android:layout_marginStart="@dimen/input_form_margin"
+                android:layout_marginEnd="@dimen/input_form_margin"
+                android:layout_marginBottom="@dimen/input_form_margin"
+                android:background="@drawable/account_form"
+                android:ems="10"
+                android:imeActionId="6"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="@dimen/account_text" />
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/password"
-                    android:layout_marginStart="@dimen/input_account"/>
 
-            </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:text="@string/mail"
+                android:textSize="@dimen/account_text" />
 
-            <android.support.design.widget.TextInputLayout
+
+            <EditText
+                android:id="@+id/mail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/account_height"
+                android:layout_marginStart="@dimen/input_form_margin"
+                android:layout_marginEnd="@dimen/input_form_margin"
+                android:layout_marginBottom="@dimen/input_form_margin"
+                android:background="@drawable/account_form"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:textSize="@dimen/account_text" />
 
-                <EditText
-                    android:id="@+id/password1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeActionId="6"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:text=""
-                    android:background="@drawable/account_form"
-                    android:layout_marginStart="@dimen/input_form_margin"
-                    android:layout_marginEnd="@dimen/input_form_margin"
-                    android:layout_marginBottom="@dimen/input_form_margin"
-                    android:singleLine="true" />
 
-            </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:text="@string/tel"
+                android:textSize="@dimen/account_text" />
 
-            <android.support.design.widget.TextInputLayout
+
+            <EditText
+                android:id="@+id/tel"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/account_height"
+                android:layout_marginStart="@dimen/input_form_margin"
+                android:layout_marginEnd="@dimen/input_form_margin"
+                android:layout_marginBottom="@dimen/input_form_margin"
+                android:layout_weight="1"
+                android:background="@drawable/account_form"
+                android:ems="10"
+                android:inputType="phone"
+                android:textSize="@dimen/account_text" />
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/re_password"
-                    android:layout_marginStart="@dimen/input_account"/>
 
-            </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/input_account"
+                android:text="@string/address"
+                android:textSize="@dimen/account_text" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/password2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeActionId="6"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:text=""
-                    android:background="@drawable/account_form"
-                    android:layout_marginStart="@dimen/input_form_margin"
-                    android:layout_marginEnd="@dimen/input_form_margin"
-                    android:layout_marginBottom="@dimen/input_form_margin"
-                    android:singleLine="true" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/mail"
-                    android:layout_marginStart="@dimen/input_account"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/mail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:text=""
-                    android:background="@drawable/account_form"
-                    android:layout_marginStart="@dimen/input_form_margin"
-                    android:layout_marginEnd="@dimen/input_form_margin"
-                    android:layout_marginBottom="@dimen/input_form_margin"
-                    android:inputType="textEmailAddress" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tel"
-                    android:layout_marginStart="@dimen/input_account"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/tel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:text=""
-                    android:background="@drawable/account_form"
-                    android:layout_marginStart="@dimen/input_form_margin"
-                    android:layout_marginEnd="@dimen/input_form_margin"
-                    android:layout_marginBottom="@dimen/input_form_margin"
-                    android:inputType="phone" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/address"
-                    android:layout_marginStart="@dimen/input_account"/>
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/address"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:text=""
-                android:background="@drawable/account_form"
+                android:layout_height="@dimen/account_height"
                 android:layout_marginStart="@dimen/input_form_margin"
                 android:layout_marginEnd="@dimen/input_form_margin"
-                android:layout_marginBottom="@dimen/input_form_margin"
-                android:inputType="textPersonName" />
-            </android.support.design.widget.TextInputLayout>
+                android:background="@drawable/account_form"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:textSize="@dimen/account_text" />
 
             <Button
                 android:id="@+id/createAccountButton2"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/account_button"
                 android:text="@string/action_create_account"
-                android:textSize="30sp"
+                android:textSize="20sp"
+                android:layout_marginStart="@dimen/input_form_width"
+                android:layout_marginEnd="@dimen/input_form_width"
+                android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
-
         </LinearLayout>
     </ScrollView>
-
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
