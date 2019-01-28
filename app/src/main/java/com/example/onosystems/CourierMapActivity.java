@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +51,9 @@ import java.util.Map;
 public class CourierMapActivity extends FragmentActivity implements OnMapReadyCallback, LocationSource, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
-    List<Map<String, String>> deliverylist;
+    private ArrayList<HashMap<String, String>> deliverylist;
+    private LatLng[] points;
+    int index;
     private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
     int time;
     int maxResults = 1;
@@ -63,7 +66,7 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
             .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     private GoogleApiClient mGoogleApiClient;
     private OnLocationChangedListener onLocationChangedLister;
-    private boolean moveCameraFlag = true;
+    private boolean firstGetLocationFlag = true;
     private Circle circle;
 
     @Override
@@ -149,15 +152,19 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
                 onLocationChangedLister.onLocationChanged(location);
-                if (moveCameraFlag) {
+                if (firstGetLocationFlag) {
                     circle = mMap.addCircle(new CircleOptions()
                             .radius(100.0)
                             .fillColor(Color.argb(25, 0, 0,255))
                             .strokeColor(Color.rgb(0,0,255))
                             .strokeWidth(1f)
                             .center(new LatLng(location.getLatitude(), location.getLongitude())));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
-                    moveCameraFlag = false;
+                    if (index == -1) {
+                        moveCamera(new LatLng(location.getLatitude(),location.getLongitude()));
+                    } else {
+                        moveCamera(points[index]);
+                    }
+                    firstGetLocationFlag = false;
                 } else {
                     circle.setCenter(new LatLng(location.getLatitude(), location.getLongitude()));
                 }
@@ -166,6 +173,9 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
         };
     }
 
+    public void moveCamera(LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+    }
 
     @Override
     public void onRequestPermissionsResult( //パーミッションの許可を聞きにいった結果を返してくれる
@@ -218,7 +228,6 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
     }
 
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -252,16 +261,18 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
 
 
             mMap.setMyLocationEnabled(true); //現在地表示の有効化
+            settings.setMyLocationButtonEnabled(true);
             settings.setZoomControlsEnabled(true); //ズームボタン有効化
         }
 
         //CourierHomeActivityから荷物データを受けとる。
         Intent intent = getIntent();
-        deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        deliverylist = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber", -1);
         //List<Map<String, String>> deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
 
         // ひとまず作ったデータをマーカーとして配置
-        LatLng[] points = new LatLng[deliverylist.size()]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
+        points = new LatLng[deliverylist.size()]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
         MarkerOptions[] option = new MarkerOptions[deliverylist.size()];
 
         for(int i = 0; i < points.length; i++) {

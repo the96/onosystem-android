@@ -215,6 +215,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                 noticedMap.put(delivery.slipNumber, 0);
             }
         }
+        if (slipNumbers.length() <= 0) return;
         try {
             JSONObject json = new JSONObject().putOpt("slip_number", slipNumbers);
             PostAsync post = new PostAsync();
@@ -226,8 +227,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                         String str = res.getString("result");
                         if (str == null || str.isEmpty() || !"ok".equals(str)) {
                             System.out.println("approachNotice() is failed");
-                            System.out.println(result);
                         }
+                        System.out.println(result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

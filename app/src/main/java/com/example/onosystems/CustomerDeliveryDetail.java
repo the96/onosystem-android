@@ -231,8 +231,6 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                 }
                 postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
 
-
-
                 // OK ボタンクリック処理
                 Toast.makeText(CustomerDeliveryDetail.this,
                         "受領可にしました", Toast.LENGTH_SHORT).show();
