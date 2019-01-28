@@ -15,21 +15,24 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 //import java.sql.Time;
 
 public class CourierDeliveryDetail extends AppCompatActivity {
-    public ArrayList<HashMap<String, String>> status;
-    int index;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int toolBarLayout;
     AlertDialog mAlertDlg;
-
+    public ArrayList<HashMap<String, String>> items;
+    public int index;
+    public  HashMap<String,String> item;
+    public  String url = "http://www.onosystems.work/aws/CompleteCourier";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,14 +40,16 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber", -1);
-        HashMap<String, String> deliveryData = status.get(index);
-        String name = deliveryData.get("name");
-        final String slip_number = deliveryData.get("slipNumber");
-        String address = deliveryData.get("address");
-        int unixtime = Integer.valueOf(deliveryData.get("unixTime"));
-        int deliveryTime = Integer.valueOf(deliveryData.get("deliveryTime"));
+        items = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber",-1);
+        final HashMap<String, String> item = items.get(index);
+
+
+        String name = item.get("name");
+        final String slip_number = item.get("slipNumber");
+        String address = item.get("address");
+        int unixtime = Integer.valueOf(item.get("unixTime"));
+        int deliveryTime = Integer.valueOf(item.get("deliveryTime"));
         Date date = new Date(unixtime * 1000L);
         String time = sdf.format(date);
 
@@ -133,8 +138,8 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
+                intent.putExtra("deliveryInfo",item);
 
-                intent.putExtra("itemInfo", status);
                 startActivity(intent);
             }
         });
@@ -150,8 +155,8 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", status);
-                    intent.putExtra("itemNumber", index);
+                    intent.putExtra("deliveryInfo", items);
+                    intent.putExtra("itemNumber", item);
                     startActivity(intent);
                     return true;
                 }
