@@ -50,7 +50,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_time_change);
+        setContentView(R.layout.customer_time_change);
 
 
 
@@ -110,6 +110,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
                 timeOfMillis = ((cal.getTimeInMillis()) / 1000L);
                 System.out.println(timeOfMillis);
 
+
                 callTCAPI();
                 Toast.makeText(CustomerTimeChange.this,
                         "変更完了しました", Toast.LENGTH_SHORT).show();
@@ -150,10 +151,10 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
         String time = sdf.format(date);
 
         // TextView のインスタンスを作成
-        TextView Customer_name = findViewById(R.id.name1);
-        TextView Slip_number = findViewById(R.id.slip_number1);
-        TextView Address = findViewById(R.id.address1);
-        TextView Time = findViewById(R.id.dialog_button1);
+        TextView Customer_name = findViewById(R.id.name2);
+        TextView Slip_number = findViewById(R.id.slip_number2);
+        TextView Address = findViewById(R.id.address2);
+        TextView Time = findViewById(R.id.dialog_button2);
 
         // テキストビューのテキストを設定
         Customer_name.setText(name);
@@ -169,7 +170,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
 
         //ここでプルダウンメニューの設定
 
-        spinner = findViewById(R.id.spinner);
+        spinner = findViewById(R.id.spinner2);
 
 
         // ArrayAdapter
@@ -203,7 +204,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
         //ここで
 
         // idがdialogButtonのButtonを取得
-        Button dialogButton =  findViewById(R.id.dialog_button1);
+        Button dialogButton =  findViewById(R.id.dialog_button2);
 
         // clickイベント追加
         dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -236,28 +237,28 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
         //MainActivityから値を受け取る,初期値を設定
 
 
-        Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
-        toolbar.inflateMenu(R.menu.tool_options_detail);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == R.id.mapView) {
-                    //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", status);
-                    intent.putExtra("itemNumber", index);
-                    startActivity(intent);
-                    return true;
-                }
-                return false;
-            }
-        });
+//        Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
+//        toolbar.inflateMenu(R.menu.tool_options_detail);
+//        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem menuItem) {
+//                int id = menuItem.getItemId();
+//                if (id == R.id.mapView) {
+//                    //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
+//                    Intent intent = new Intent(getApplication(), CourierMapActivity.class);
+//                    intent.putExtra("deliveryInfo", status);
+//                    intent.putExtra("itemNumber", index);
+//                    startActivity(intent);
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
     }
     // ダイアログで入力した値をtextViewに入れる - ダイアログから呼び出される
     public void setTextView(String value){
-        TextView textView = findViewById(R.id.dialog_button1);
+        TextView textView = findViewById(R.id.dialog_button2);
         textView.setText(value);
     }
 
@@ -269,7 +270,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
         System.out.println(timeOfMillis);
         System.out.println(deliveryTime);
         System.out.println(slip_number);
-        api.execute(PostURL.getChangeTimeCourierURL(), body);
+        api.execute(PostURL.getChangeTimeCustomerURL(), body);
     }
 
     @Override
