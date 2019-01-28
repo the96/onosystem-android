@@ -51,13 +51,13 @@ import java.util.Map;
 public class CourierMapActivity extends FragmentActivity implements OnMapReadyCallback, LocationSource, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
-    private ArrayList<HashMap<String, String>> deliverylist;
-    private LatLng[] points;
+//    private ArrayList<Delivery> deliverylist;
+//    private LatLng[] points;
     int index;
     private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
     int time;
     int maxResults = 1;
-    String status;
+    int status;
     private FusedLocationProviderClient mLocationClient = null;
     LocationCallback locationCallback = null;
     private static final LocationRequest REQUEST = LocationRequest.create()
@@ -68,6 +68,7 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
     private OnLocationChangedListener onLocationChangedLister;
     private boolean firstGetLocationFlag = true;
     private Circle circle;
+    private LatLng latlng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,10 +160,10 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
                             .strokeColor(Color.rgb(0,0,255))
                             .strokeWidth(1f)
                             .center(new LatLng(location.getLatitude(), location.getLongitude())));
-                    if (index == -1) {
+                    if (latlng == null) {
                         moveCamera(new LatLng(location.getLatitude(),location.getLongitude()));
                     } else {
-                        moveCamera(points[index]);
+                        moveCamera(latlng);
                     }
                     firstGetLocationFlag = false;
                 } else {
@@ -267,77 +268,71 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
 
         //CourierHomeActivityから荷物データを受けとる。
         Intent intent = getIntent();
-        deliverylist = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber", -1);
-        //List<Map<String, String>> deliverylist = (List<Map<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        String address = intent.getStringExtra("address");
+        if (address != null && !address.isEmpty()) {
+            //Geocoder APIを使って住所から座標への変換を行う
+            Geocoder gcoder = new Geocoder(this, Locale.getDefault());
+            try {
+                Address location = gcoder.getFromLocationName(address, 1).get(0);
+                latlng = new LatLng(location.getLatitude(), location.getLongitude());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            latlng = null;
+        }
 
         // ひとまず作ったデータをマーカーとして配置
-        points = new LatLng[deliverylist.size()]; // maps apiが用意してくれている緯度経度を入れるやつ(LatLng)
-        MarkerOptions[] option = new MarkerOptions[deliverylist.size()];
-
-        for(int i = 0; i < points.length; i++) {
-
+        MarkerOptions[] option = new MarkerOptions[HomeActivity.deliveryInfo.size()];
+        for(int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
             option[i] = new MarkerOptions();
         }
 
+        for (int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
 
+            Delivery delivery = HomeActivity.deliveryInfo.get(i);
 
-        //Geocoder APIを使って住所から座標への変換を行う
-        Geocoder gcoder = new Geocoder(this, Locale.getDefault());
-        List<Address> lstAddr;
-        try {
-            for (int i = 0; i < deliverylist.size(); i++) {
-                //ListにGeocoderAPIから帰ってきた値を入れる
-                lstAddr = gcoder.getFromLocationName(deliverylist.get(i).get("address"), maxResults);
-                Address addr = lstAddr.get(0);
-                points[i] = new LatLng((addr.getLatitude()), (addr.getLongitude()));
+            option[i].position(new LatLng(delivery.getLatitude(), delivery.getLongitude()));
+            option[i].title(delivery.getName());
 
-
-                option[i].position(points[i]);
-                option[i].title(deliverylist.get(i).get("name"));
-
-                //deliveryTimeによる配達時間の判定
-                switch (deliverylist.get(i).get("deliveryTime")) {
-                    case "0":
-                        option[i].snippet("時間指定無し");
-                        break;
-                    case "1":
-                        option[i].snippet("9時から12時");
-                        break;
-                    case "2":
-                        option[i].snippet("12時から15時");
-                        break;
-                    case "3":
-                        option[i].snippet("15時から18時");
-                        break;
-                    case "4":
-                        option[i].snippet("18から21時");
-                        break;
-                    default:
-                        option[i].snippet("なし");
-                }
-
-                //deliveryStatusによるピンの色判定
-                status = deliverylist.get(i).get("deliveredStatus");
-                switch(status) {
-                    case "0":
-                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                        break;
-                    case "1":
-                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        break;
-                    case "2":
-                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }
+            //deliveryTimeによる配達時間の判定
+            switch (delivery.delivery_time) {
+                case 0:
+                    option[i].snippet("時間指定無し");
+                    break;
+                case 1:
+                    option[i].snippet("9時から12時");
+                    break;
+                case 2:
+                    option[i].snippet("12時から15時");
+                    break;
+                case 3:
+                    option[i].snippet("15時から18時");
+                    break;
+                case 4:
+                    option[i].snippet("18から21時");
+                    break;
+                default:
+                    option[i].snippet("なし");
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            //deliveryStatusによるピンの色判定
+            status = delivery.getDelivered_status();
+            switch(status) {
+                case 0:
+                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    break;
+                case 1:
+                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    break;
+                case 2:
+                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            }
         }
 
         //ピンの配置を開始
-        Marker[] markers = new Marker[deliverylist.size()];
-        for(int i = 0; i < deliverylist.size(); i++) {
+        Marker[] markers = new Marker[HomeActivity.deliveryInfo.size()];
+        for(int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
             markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
             mHashMap.put(markers[i], i);
         }
@@ -346,7 +341,13 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
             public void onInfoWindowClick(Marker marker) {
                 int pos = mHashMap.get(marker); //タップされた情報ウインドウを持つMarkerのIDを取得
                 Intent intent = detailActivity;  // 遷移先指定
-                intent.putExtra("itemInfo", (Serializable) deliverylist.get(pos)); //タップされたピンの荷物情報を用意
+                HashMap<String, String> delivery = new HashMap<>();
+                delivery.put("name", HomeActivity.deliveryInfo.get(pos).getName());
+                delivery.put("slipNumber", String.valueOf(HomeActivity.deliveryInfo.get(pos).slipNumber));
+                delivery.put("address", HomeActivity.deliveryInfo.get(pos).getAddress());
+                delivery.put("unixTime", String.valueOf(HomeActivity.deliveryInfo.get(pos).time));
+                delivery.put("deliveryTime", String.valueOf(HomeActivity.deliveryInfo.get(pos).delivery_time));
+                intent.putExtra("item", delivery); //タップされたピンの荷物情報を用意
                 startActivity(intent);// 詳細画面に遷移
             }
         });

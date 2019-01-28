@@ -40,8 +40,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-        final HashMap<String, String> item = (HashMap<String, String>) intent.getSerializableExtra("item");
-
+        item = (HashMap<String, String>) intent.getSerializableExtra("item");
 
         String name = item.get("name");
         final String slip_number = item.get("slipNumber");
@@ -138,7 +137,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 //日時変更画面に遷移
                 intent.putExtra("deliveryInfo",item);
 
-
+//TODO
                 intent.putExtra("deliveryInfo", status);
                 intent.putExtra("itemNumber", index);
 
@@ -158,8 +157,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", status);
-                    intent.putExtra("itemNumber", item);
+                    intent.putExtra("address", item.get("address"));
                     startActivity(intent);
                     return true;
                 }

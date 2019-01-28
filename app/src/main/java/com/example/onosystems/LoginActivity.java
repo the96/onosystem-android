@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity{
                         }
                         token = task.getResult().getToken();
                         System.out.println("TOKEN: " + token);
-                        autoLogin(true);
+                        autoLogin(false);
                     }
                 });
     }

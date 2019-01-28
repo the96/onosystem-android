@@ -96,7 +96,7 @@ public class NotificationService extends FirebaseMessagingService implements Tex
             Intent openIntent = new Intent(this, CourierDeliveryDetail.class);
             homeIntent.putExtra("driver_id", LoginActivity.logined_id);
             homeIntent.putExtra("password", LoginActivity.loginPassword);
-            openIntent.putExtra("itemInfo", data.getDelivery());
+            openIntent.putExtra("item", data.getDelivery());
             taskStackBuilder.addParentStack(CourierHomeActivity.class);
             taskStackBuilder.addNextIntent(homeIntent);
             taskStackBuilder.addNextIntent(openIntent);
@@ -105,7 +105,7 @@ public class NotificationService extends FirebaseMessagingService implements Tex
             Intent openIntent = new Intent(this, CustomerDeliveryDetail.class);
             homeIntent.putExtra("customer_id", LoginActivity.logined_id);
             homeIntent.putExtra("password", LoginActivity.loginPassword);
-            openIntent.putExtra("itemInfo", data.getDelivery());
+            openIntent.putExtra("item", data.getDelivery());
             taskStackBuilder.addParentStack(CustomerHomeActivity.class);
             taskStackBuilder.addNextIntent(homeIntent);
             taskStackBuilder.addNextIntent(openIntent);
