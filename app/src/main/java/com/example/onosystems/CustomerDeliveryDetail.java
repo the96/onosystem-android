@@ -125,16 +125,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 //import java.sql.Time;
 
 public class CustomerDeliveryDetail extends AppCompatActivity {
-    public HashMap<String, String> status;
+    public ArrayList<HashMap<String, String>> status;
+    int index;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
-    public String url = "http://www.onosystems.work/aws/ReceiveCustomer";
     public int UNRECEIVABLE = 1;
+    public int RECEIVABLE = 2;
     private String slip_number;
     AlertDialog mAlertDlg;
     @Override
@@ -168,8 +171,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                postAsync.execute(url, jsonObject.toString());
-                System.out.println(url);
+                postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
+                System.out.println(PostURL.getReceiveCustomerURL());
 
 
                 // OK ボタンクリック処理
@@ -200,15 +203,76 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
 
 
 
+        //ここから受領可ボタンを押したときの動作
+
+
+        // 1. AlertDialog.Builder クラスのインスタンスを生成
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+
+        // 2. ダイアログタイトル、表示メッセージ、ボタンを設定
+        builder1.setTitle(R.string.dlg_title);
+        builder1.setMessage(R.string.dlg_msg4);
+        builder1.setPositiveButton("受領可", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                //サーバにデータ送信
+                PostAsync postAsync = new PostAsync();
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                        // 処理内容を書く
+                        System.out.println("result:\r\n" + result);
+                    }
+                });
+                // 伝票(slip_number), receivable_status
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("slip_number", Long.parseLong(slip_number));
+                    jsonObject.put("receivable_status", RECEIVABLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                postAsync.execute(PostURL.getReceiveCustomerURL(), jsonObject.toString());
+
+                // OK ボタンクリック処理
+                Toast.makeText(CustomerDeliveryDetail.this,
+                        "受領可にしました", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Cancel ボタンクリック処理
+
+            }
+        });
+
+        // 3. ダイアログを生成
+        mAlertDlg = builder.create();
+
+        // 4. ボタンクリック時にダイアログを表示
+        Button btnExe1 = findViewById(R.id.receive_Button);
+        btnExe1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                // ダイアログ表示
+                mAlertDlg.show();
+            }
+        });
+
+
+
 
         Intent intent = getIntent();
         //MainActivityから値を受け取る,初期値を設定
-        status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
-        String name = status.get("name");
-        slip_number = status.get("slipNumber");
-        String address = status.get("address");
-        int unixtime = Integer.valueOf(status.get("unixTime"));
-        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
+        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber", -1);
+        HashMap<String, String> deliveryData = status.get(index);
+        String name = deliveryData.get("name");
+        slip_number = deliveryData.get("slipNumber");
+        String address = deliveryData.get("address");
+        int unixtime = Integer.valueOf(deliveryData.get("unixTime"));
+        int deliveryTime = Integer.valueOf(deliveryData.get("deliveryTime"));
         Date date = new Date(unixtime * 1000L);
         String time = sdf.format(date);
 
@@ -242,7 +306,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CustomerTimeChange.class);
                 //日時変更画面に遷移
-                intent.putExtra("itemInfo", status);
+                intent.putExtra("deliveryInfo", status);
+                intent.putExtra("itemNumber", index);
                 startActivity(intent);
             }
 

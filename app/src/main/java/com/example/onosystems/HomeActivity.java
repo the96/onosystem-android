@@ -3,6 +3,8 @@ package com.example.onosystems;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -29,12 +31,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -42,7 +46,7 @@ import static java.lang.Boolean.TRUE;
 public class HomeActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
-    public ArrayList<Delivery> deliveryInfo = new ArrayList<>();
+    public static ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
     public ArrayList<HashMap<String, String>> list = new ArrayList<>();
     public ListView listView;
@@ -66,9 +70,14 @@ public class HomeActivity extends AppCompatActivity
     public DrawerLayout drawer;
     public SwipeRefreshLayout SwipeRefresh;
 
+//    public Geocoder geocoder = new Geocoder(this , Locale.JAPANESE);
+    public Geocoder geocoder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        geocoder = new Geocoder(this , Locale.JAPANESE);
+
         setUserOptions();
         setContentView(homeLayout);
         findDeliveries();
@@ -123,32 +132,7 @@ public class HomeActivity extends AppCompatActivity
         postAsync.execute(User.getUrl(), User.getUserId());
     }
 
-    public void parseDeliveries(String json) {
-        try {
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject deliveryData = jsonArray.getJSONObject(i);
-                if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
-                    deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                            deliveryData.getString("name"),
-                            deliveryData.getString("address"),
-                            deliveryData.getString("ship_from"),
-                            deliveryData.getInt("time"),
-                            deliveryData.getInt("delivery_time"),
-                            deliveryData.getInt("delivered_status"),
-                            deliveryData.getInt("receivable_status"),
-                            Delivery.VISIBLE,
-                            Delivery.READ_FLAG));
-                    deliveryCheck.put(deliveryData.getLong("slip_number"), true);
-                }
-            }
-
-            sortTime(); //時間順にソート
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
+    public void parseDeliveries(String json) { }
 
     public void reloadDeliveries() {
         list = new ArrayList<>(); //初期化
@@ -170,6 +154,7 @@ public class HomeActivity extends AppCompatActivity
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
                 item.put("unixTime", String.valueOf(deliveryInfo.get(i).time)); //受け渡し用
                 item.put("deliveryTime", String.valueOf(deliveryInfo.get(i).delivery_time));
+                item.put("visible", String.valueOf(deliveryInfo.get(i).visible));
                 item.put("image", statusName);
                 if (deliveryInfo.get(i).read_flag) {
                     String newName = String.valueOf(getResources().getIdentifier("newtext", "drawable", this.getPackageName()));
@@ -284,7 +269,8 @@ public class HomeActivity extends AppCompatActivity
         deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        intent.putExtra("itemInfo", (HashMap<String, String>) parent.getItemAtPosition(position));
+        intent.putExtra("deliveryInfo", list);
+        intent.putExtra("itemNumber", deliveryInfo.get(itemNum).item_number);
         startActivity(intent);// 詳細画面に遷移
     }
 
@@ -410,6 +396,7 @@ class Delivery {
     public static final int UNSELECTED = 0;
     public static final int NOT_RECEIVABLE = 1;
     public static final int RECEIVABLE = 2;
+    private static final int SINGLE_RESULT = 1;
     long slipNumber;
     String name;
     String address;
@@ -418,8 +405,23 @@ class Delivery {
     int delivery_time;
     int delivered_status;
     int receivable_status;
+
+    int item_number;
     boolean visible;
     boolean read_flag;
+    private double latitude;
+    private double longitude;
+
+    public boolean getCustomer_updated() {
+        return customer_updated;
+    }
+
+    public boolean getDriver_updated() {
+        return driver_updated;
+    }
+
+    boolean customer_updated;
+    boolean driver_updated;
 
     public String getName() { return this.name; }
 
@@ -431,14 +433,29 @@ class Delivery {
 
     public int getReceivable_status() { return receivable_status; }
 
+    public int getItem_number() { return item_number; }
+
     public boolean getVisible() { return visible; }
 
     public void setVisible(boolean visible) { this.visible = visible; }
 
     public void setRead_flag(boolean read_flag) { this.read_flag = read_flag; }
 
+    public void setLatLngFromAddress(Geocoder geocoder) {
+        try {
+            Address location = geocoder.getFromLocationName(address, SINGLE_RESULT).get(0);
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        } catch (IOException e) {
+            e.printStackTrace();
+            latitude = 0;
+            longitude = 0;
+        }
+
+    }
+
     public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
-                    int delivered_status, int receivable_status, boolean visible, boolean read_flag) {
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean driver_updated, Geocoder geocoder) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
@@ -447,8 +464,36 @@ class Delivery {
         this.delivery_time = delivery_time;
         this.delivered_status = delivered_status;
         this.receivable_status = receivable_status;
+        this.item_number = item_number;
         this.visible = visible;
         this.read_flag = read_flag;
+        this.driver_updated = driver_updated;
+        this.setLatLngFromAddress(geocoder);
+    }
+
+    public Delivery(String name, long slipNumber, String address, String ship_from, int time, int delivery_time,
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean customer_updated, Geocoder geocoder) {
+        this.slipNumber = slipNumber;
+        this.name = name;
+        this.address = address;
+        this.ship_from = ship_from;
+        this.time = time;
+        this.delivery_time = delivery_time;
+        this.delivered_status = delivered_status;
+        this.receivable_status = receivable_status;
+        this.item_number = item_number;
+        this.visible = visible;
+        this.read_flag = read_flag;
+        this.customer_updated = customer_updated;
+        this.setLatLngFromAddress(geocoder);
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
 
