@@ -142,6 +142,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
     private String slip_number;
     AlertDialog mAlertDlg1;
     AlertDialog mAlertDlg2;
+    private static final int TIME_CHANGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -304,13 +305,22 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), CustomerTimeChange.class);
                 //日時変更画面に遷移
                 intent.putExtra("item", deliveryData);
-                startActivity(intent);
+                startActivityForResult(intent, TIME_CHANGE);
             }
 
         });
 
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TIME_CHANGE:
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 

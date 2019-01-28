@@ -33,6 +33,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     public int index;
     public  HashMap<String,String> item;
     public  String url = "http://www.onosystems.work/aws/CompleteCourier";
+    private static final int TIME_CHANGE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,7 +132,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
                 intent.putExtra("item", item);
-                startActivity(intent);
+                startActivityForResult(intent,TIME_CHANGE);
             }
         });
 
@@ -153,9 +154,17 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 return false;
             }
         });
-
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TIME_CHANGE:
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 
