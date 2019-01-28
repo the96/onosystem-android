@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,9 +35,9 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "http://54.92.85.232/aws/TopCourier";
+        String url = "https://www.onosystems.work/aws/TopCourier";
         User.setUrl(url);
-        String profileURL = "http://54.92.85.232/aws/InformationCourier";
+        String profileURL = "https://www.onosystems.work/aws/InformationCourier";
         User.setProfileURL(profileURL);
     }
 
@@ -56,6 +57,55 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
         intent.putExtra("deliveryInfo", list);
         startActivity(intent);// CourierMapActivityに遷移
+    }
+
+    @Override
+    public void parseDeliveries(String json) {
+
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject deliveryData = jsonArray.getJSONObject(i);
+
+                if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
+                    deliveryInfo.add(new Delivery(deliveryData.getString("name"),
+                            deliveryData.getLong("slip_number"),
+                            deliveryData.getString("address"),
+                            deliveryData.getString("ship_from"),
+                            deliveryData.getInt("time"),
+                            deliveryData.getInt("delivery_time"),
+                            deliveryData.getInt("delivered_status"),
+                            deliveryData.getInt("receivable_status"),
+                            i, // item_number
+                            Delivery.VISIBLE,
+                            Delivery.READ_FLAG,
+                            deliveryData.getBoolean("customer_updated")));
+                    deliveryCheck.put(deliveryData.getLong("slip_number"), true);
+                } else {
+                    for (int j = 0; j < jsonArray.length(); j++) {
+                        if (deliveryData.getBoolean("customer_updated") && deliveryData.getLong("slip_number") == deliveryInfo.get(j).slipNumber) {
+                            deliveryInfo.set(j, new Delivery(deliveryData.getString("name"),
+                                    deliveryData.getLong("slip_number"),
+                                    deliveryData.getString("address"),
+                                    deliveryData.getString("ship_from"),
+                                    deliveryData.getInt("time"),
+                                    deliveryData.getInt("delivery_time"),
+                                    deliveryData.getInt("delivered_status"),
+                                    deliveryData.getInt("receivable_status"),
+                                    i, // item_number
+                                    Delivery.VISIBLE,
+                                    Delivery.READ_FLAG,
+                                    deliveryData.getBoolean("customer_updated")));
+                        }
+                    }
+                }
+            }
+
+            sortTime(); //時間順にソート
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
