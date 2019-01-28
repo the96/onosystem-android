@@ -50,7 +50,7 @@
                     android:layout_marginStart="@dimen/input_form_width"
                     android:layout_marginTop="@dimen/input_form_margin"
                     android:layout_marginEnd="@dimen/input_form_width"
-                    android:background="@color/input_form"
+                    android:background="@drawable/login_form"
                     android:completionHint="@string/prompt_id"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
@@ -75,7 +75,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:background="@color/input_form"
+                    android:background="@drawable/login_form"
                     android:layout_marginStart="@dimen/input_form_width"
                     android:layout_marginEnd="@dimen/input_form_width"
                     android:layout_marginTop="@dimen/input_form_margin"
@@ -93,18 +93,6 @@
                 android:background="@color/login_background"
                 app:srcCompat="@drawable/login_button"/>
 
-            <!--<Button-->
-                <!--android:id="@+id/loginButton2"-->
-                <!--style="?android:textAppearanceSmall"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginStart="@dimen/login_button_width"-->
-                <!--android:layout_marginEnd="@dimen/login_button_width"-->
-                <!--android:layout_marginTop="@dimen/input_form_margin"-->
-                <!--android:background="@color/login_button"-->
-                <!--android:text="@string/action_sign_in"-->
-                <!--android:textStyle="bold" />-->
-
             <Button
                 android:id="@+id/newAccountButton"
                 android:layout_width="match_parent"
@@ -114,7 +102,8 @@
                 android:layout_marginTop="@dimen/input_form_margin"
                 android:background="@drawable/button_complete"
                 android:text="@string/action_create_account"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                style="?android:attr/borderlessButtonStyle"/>
 
 
         </LinearLayout>

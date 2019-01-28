@@ -3,13 +3,13 @@
     android:shape="rectangle">
 
     <!-- 背景色 -->
-    <solid android:color="@color/input_form" />
+    <solid android:color="@color/account_input_form" />
 
     <!-- 角の丸み -->
     <corners android:radius="5dp" />
 
     <!-- 枠線 width:線の幅、color:線の色 -->
     <stroke
-        android:width="2dp"
-        android:color="@color/input_form" />
+        android:width="1dp"
+        android:color="@color/input_stroke" />
 </shape>
