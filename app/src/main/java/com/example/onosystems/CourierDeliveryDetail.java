@@ -119,14 +119,9 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         Address.setText(address);
         Time.setText(time);
         delivery_time.setText(time_id[deliveryTime]);
-
         //time_id.setText(time_id(delivery_time));
-
-
         //表示
         //setContentView(textView);
-
-
 
         //日時変更ボタンをタップ時
         Button time_change_Button = findViewById(R.id.rescheduling_Button);
@@ -135,13 +130,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
-                intent.putExtra("deliveryInfo",item);
-
-//TODO
-                intent.putExtra("deliveryInfo", status);
-                intent.putExtra("itemNumber", index);
-
-
+                intent.putExtra("item", item);
                 startActivity(intent);
             }
         });
