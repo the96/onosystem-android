@@ -45,7 +45,7 @@ import static java.lang.Boolean.TRUE;
 
 public class HomeActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
-
+    private static final int DETAIL_ACTIVITY = 1;
     public static ArrayList<Delivery> deliveryInfo = new ArrayList<>();
     public HashMap<Long, Boolean> deliveryCheck = new HashMap<>();
     public ArrayList<HashMap<String, String>> list = new ArrayList<>();
@@ -270,7 +270,7 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("item", item);
-        startActivity(intent);// 詳細画面に遷移
+        startActivityForResult(intent, DETAIL_ACTIVITY);// 詳細画面に遷移
     }
 
     //バッグボタンが押されたときのイベント
@@ -380,6 +380,17 @@ public class HomeActivity extends AppCompatActivity
             }
         } catch (JSONException e) {
         e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case DETAIL_ACTIVITY:
+                getDeliveries();
+                break;
+            default:
+                break;
         }
     }
 
