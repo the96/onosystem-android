@@ -12,9 +12,12 @@
     <color name="colorChange_date">#8ca7e1</color>
 
     <color name="login_background">#ffffff</color>
-    <color name="input_form">#d9e2f5</color>
+    <color name="login_input_form">#d9e2f5</color>
     <color name="account_back">#dbf4fe</color>
     <color name="login_button">#96c2ea</color>
     <color name="colorNoComplete">#e54b18</color>
+    <color name="account_background">#dbf4fe</color>
+    <color name="account_input_form">#f2f2f2</color>
+    <color name="input_stroke">#a9e2f3</color>
 
 </resources>
