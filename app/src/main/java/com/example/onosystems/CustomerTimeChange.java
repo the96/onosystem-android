@@ -56,10 +56,10 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
 
         Intent intent = getIntent();
         //MainActivityから値を受け取る,初期値を設定
-        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+//        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
 //        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber", -1);
-        final HashMap<String, String> deliveryData = status.get(index);
+//        index = intent.getIntExtra("itemNumber", -1);
+        final HashMap<String, String> deliveryData = (HashMap<String, String>) intent.getSerializableExtra("item");
         String name = deliveryData.get("name");
         slip_number = deliveryData.get("slipNumber");
         delivery_time = deliveryData.get("deliveryTime");

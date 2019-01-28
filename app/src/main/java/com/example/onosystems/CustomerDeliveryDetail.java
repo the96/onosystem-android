@@ -134,6 +134,7 @@ import java.util.List;
 
 public class CustomerDeliveryDetail extends AppCompatActivity {
     public ArrayList<HashMap<String, String>> status;
+    HashMap<String, String> deliveryData;
     int index;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int UNRECEIVABLE = 1;
@@ -268,9 +269,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         //MainActivityから値を受け取る,初期値を設定
-        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber", -1);
-        HashMap<String, String> deliveryData = status.get(index);
+        deliveryData = (HashMap<String, String>) intent.getSerializableExtra("item");
         String name = deliveryData.get("name");
         slip_number = deliveryData.get("slipNumber");
         String address = deliveryData.get("address");
@@ -295,13 +294,8 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
         delivery_time.setText(time_id[deliveryTime]);
 
         //time_id.setText(time_id(delivery_time));
-
-
         //表示
         //setContentView(textView);
-
-
-
 
         Button time_change_Button = findViewById(R.id.rescheduling_Button1);
         time_change_Button.setOnClickListener(new View.OnClickListener() {
@@ -309,8 +303,7 @@ public class CustomerDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CustomerTimeChange.class);
                 //日時変更画面に遷移
-                intent.putExtra("deliveryInfo", status);
-                intent.putExtra("itemNumber", index);
+                intent.putExtra("item", deliveryData);
                 startActivity(intent);
             }
 

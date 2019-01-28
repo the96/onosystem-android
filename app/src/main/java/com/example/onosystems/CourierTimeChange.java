@@ -33,6 +33,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     public SimpleDateFormat sdfm = new SimpleDateFormat("MM"); //日付フォーマット
     public SimpleDateFormat sdfd = new SimpleDateFormat("dd"); //日付フォーマット
     public ArrayList<HashMap<String, String>> status;
+    HashMap<String, String> item;
     public int hourOfDay = 0;
     Calendar cal = Calendar.getInstance();
     int index;
@@ -52,21 +53,16 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_time_change);
 
-
-
         Intent intent = getIntent();
         //MainActivityから値を受け取る,初期値を設定
-        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-//        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber", -1);
-        final HashMap<String, String> deliveryData = status.get(index);
-        String name = deliveryData.get("name");
-        slip_number = deliveryData.get("slipNumber");
-        delivery_time = deliveryData.get("deliveryTime");
-        String address = deliveryData.get("address");
-        int unixtime = Integer.valueOf(deliveryData.get("unixTime"));
+        item = (HashMap<String, String>) intent.getSerializableExtra("item");
+        String name = item.get("name");
+        slip_number = item.get("slipNumber");
+        delivery_time = item.get("deliveryTime");
+        String address = item.get("address");
+        int unixtime = Integer.valueOf(item.get("unixTime"));
         date = new Date(unixtime * 1000L);
-        deliveryTime = Integer.valueOf(deliveryData.get("deliveryTime"));
+        deliveryTime = Integer.valueOf(item.get("deliveryTime"));
 
 
         //ここでカレンダーの入力値を初期化している

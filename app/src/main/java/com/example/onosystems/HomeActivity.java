@@ -269,8 +269,7 @@ public class HomeActivity extends AppCompatActivity
         deliveryInfo.get(itemNum).setRead_flag(Delivery.NOT_READ_FLAG);
 
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
-        intent.putExtra("deliveryInfo", list);
-        intent.putExtra("itemNumber", item);
+        intent.putExtra("item", item);
         startActivity(intent);// 詳細画面に遷移
     }
 

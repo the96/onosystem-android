@@ -40,10 +40,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
-        index = intent.getIntExtra("itemNumber",-1);
-        final HashMap<String, String> item = status.get(index);
-
+        item = (HashMap<String, String>) intent.getSerializableExtra("item");
 
         String name = item.get("name");
         final String slip_number = item.get("slipNumber");
@@ -122,14 +119,9 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         Address.setText(address);
         Time.setText(time);
         delivery_time.setText(time_id[deliveryTime]);
-
         //time_id.setText(time_id(delivery_time));
-
-
         //表示
         //setContentView(textView);
-
-
 
         //日時変更ボタンをタップ時
         Button time_change_Button = findViewById(R.id.rescheduling_Button);
@@ -138,13 +130,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
-                intent.putExtra("deliveryInfo",item);
-
-
-                intent.putExtra("deliveryInfo", status);
-                intent.putExtra("itemNumber", index);
-
-
+                intent.putExtra("item", item);
                 startActivity(intent);
             }
         });
@@ -160,8 +146,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", status);
-                    intent.putExtra("itemNumber", item);
+                    intent.putExtra("address", item.get("address"));
                     startActivity(intent);
                     return true;
                 }
