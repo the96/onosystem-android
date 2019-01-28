@@ -29,7 +29,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int toolBarLayout;
     AlertDialog mAlertDlg;
-    public ArrayList<HashMap<String, String>> items;
+    public ArrayList<HashMap<String, String>> status;
     public int index;
     public  HashMap<String,String> item;
     public  String url = "http://www.onosystems.work/aws/CompleteCourier";
@@ -40,9 +40,9 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
         //MainActivityから値を受け取る,初期値を設定
         Intent intent = getIntent();
-        items = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
         index = intent.getIntExtra("itemNumber",-1);
-        final HashMap<String, String> item = items.get(index);
+        final HashMap<String, String> item = status.get(index);
 
 
         String name = item.get("name");
@@ -160,7 +160,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("deliveryInfo", items);
+                    intent.putExtra("deliveryInfo", status);
                     intent.putExtra("itemNumber", item);
                     startActivity(intent);
                     return true;

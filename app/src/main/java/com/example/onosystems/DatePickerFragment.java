@@ -36,8 +36,14 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         callback.setDate(year, month, dayOfMonth);
         String dateStr = year + "年" + (month + 1) + "月" + dayOfMonth + "日";
-        ((CourierTimeChange)getActivity()).setTextView(dateStr);
-        //((CustomerTimeChange)getActivity()).setTextView(dateStr);
+        Activity activity = getActivity();
+        if (activity instanceof CourierTimeChange) {
+            ((CourierTimeChange)getActivity()).setTextView(dateStr);
+        } else if(activity instanceof CustomerTimeChange) {
+            ((CustomerTimeChange)getActivity()).setTextView(dateStr);
+
+        }
+
 
     }
 }
