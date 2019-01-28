@@ -69,5 +69,7 @@
     <string name="dlg_title">確認</string>
     <string name="dlg_msg1">配達が完了しましたか？</string>
     <string name="dlg_msg2">変更が完了しましたか？</string>
+    <string name="dlg_msg3">荷物を受領できませんか？</string>
+    <string name="dlg_msg4">荷物を受領できますか？</string>
 
 </resources>

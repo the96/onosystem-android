@@ -15,4 +15,6 @@
     <color name="input_form">#d9e2f5</color>
     <color name="account_back">#dbf4fe</color>
     <color name="login_button">#96c2ea</color>
+    <color name="colorNoComplete">#e54b18</color>
+
 </resources>

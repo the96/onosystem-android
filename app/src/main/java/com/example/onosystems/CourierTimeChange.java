@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.io.Serializable;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,12 +32,17 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     public SimpleDateFormat sdfy = new SimpleDateFormat("yyyy"); //日付フォーマット
     public SimpleDateFormat sdfm = new SimpleDateFormat("MM"); //日付フォーマット
     public SimpleDateFormat sdfd = new SimpleDateFormat("dd"); //日付フォーマット
+    public ArrayList<HashMap<String, String>> status;
+    public int hourOfDay = 0;
+    Calendar cal = Calendar.getInstance();
+    int index;
     AlertDialog mAlertDlg;
     Date date;
     int year, month, day;
-    String timeOfMillis;
+    Long timeOfMillis;
     String slip_number;
     String delivery_time;
+    public int deliveryTime;
     //private int index = 0;//0:時間指定なし、1:9-12、2:12-15、3:15-18、4:18-21
     private Spinner spinner;
 
@@ -46,7 +52,30 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_time_change);
 
+
+
         Intent intent = getIntent();
+        //MainActivityから値を受け取る,初期値を設定
+        status = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+//        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber", -1);
+        final HashMap<String, String> deliveryData = status.get(index);
+        String name = deliveryData.get("name");
+        slip_number = deliveryData.get("slipNumber");
+        delivery_time = deliveryData.get("deliveryTime");
+        String address = deliveryData.get("address");
+        int unixtime = Integer.valueOf(deliveryData.get("unixTime"));
+        date = new Date(unixtime * 1000L);
+        deliveryTime = Integer.valueOf(deliveryData.get("deliveryTime"));
+
+
+        //ここでカレンダーの入力値を初期化している
+        this.year = Integer.parseInt(sdfy.format(date));
+        this.month = Integer.parseInt(sdfm.format(date));
+        this.day = Integer.parseInt(sdfd.format(date));
+        System.out.println(year + ","+month+","+day);
+
+
 
      //ここで変更決定時のダイアログを作成
 
@@ -59,12 +88,33 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         builder.setPositiveButton("変更", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // OK ボタンクリック処理
+                if(deliveryTime == 1){
+                    hourOfDay = 9;
+
+                }else if(deliveryTime == 2){
+                    hourOfDay = 12;
+
+                }else if(deliveryTime == 3){
+                    hourOfDay = 15;
+
+                }else if(deliveryTime == 4){
+                    hourOfDay = 18;
+
+                }else{
+                    hourOfDay = 0;
+                }
+
+
+                cal.set(year,month,day,hourOfDay,0);
+                System.out.println(cal.getTime());
+                timeOfMillis = ((cal.getTimeInMillis()) / 1000L);
+                System.out.println(timeOfMillis);
+
                 callTCAPI();
                 Toast.makeText(CourierTimeChange.this,
                         "変更完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
+
             }
         });
 
@@ -92,24 +142,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
 
 
 
-        //MainActivityから値を受け取る,初期値を設定
-        final HashMap<String, String> status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
-        String name = status.get("name");
-        slip_number = status.get("slipNumber");
-        delivery_time = status.get("deliverytime");
-        String address = status.get("address");
-        int unixtime = Integer.valueOf(status.get("unixTime"));
-        date = new Date(unixtime * 1000L);
-        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
 
-        //ここでカレンダーの入力値を初期化している
-        this.year = Integer.parseInt(sdfy.format(date));
-        this.month = Integer.parseInt(sdfm.format(date));
-        this.day = Integer.parseInt(sdfd.format(date));
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(year,month,day);
-        timeOfMillis = String.valueOf(cal.getTimeInMillis());
 
 
 
@@ -129,7 +162,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         //表示
         //setContentView(textView);
 
-        intent.putExtra("itemInfo",name);
+        intent.putExtra("deliveryInfo",name);
 
 
 
@@ -153,6 +186,8 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 //スピナー内のアイテムが選択された場合の処理をここに記載
+                //スピナーのIDを更新
+                deliveryTime = spinner.getSelectedItemPosition();
             }
 
             @Override
@@ -190,12 +225,15 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
                 datePickerFragment.setArguments(args);
 
 
+
                 // 表示  getFragmentManager()は固定、sampleは識別タグ
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+
             }
         });
 
         //MainActivityから値を受け取る,初期値を設定
+        //TODO: ここからマップけす
 
 
         Toolbar toolbar =  findViewById(R.id.time_change_toolbar); //R.id.toolbarは各自で設定したidを入れる
@@ -207,7 +245,8 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("itemInfo", status);
+                    intent.putExtra("deliveryInfo", status);
+                    intent.putExtra("itemNumber", index);
                     startActivity(intent);
                     return true;
                 }
@@ -226,8 +265,11 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
         // ここでAPIを呼ぶ
         TimeChangeAPI api = new TimeChangeAPI();
         api.setReference(this);
-        String body = "{\"slip_number\": " + slip_number + ", \"delivery_time\": " + delivery_time +" ,\"time\": " + timeOfMillis + "}";
-        api.execute("http://54.92.85.232/aws/ChangeTimeCourier", body);
+        String body = "{\"slip_number\": " + slip_number +" ,\"delivery_time\": " + deliveryTime +" ,\"time\": " + timeOfMillis + "}";
+        System.out.println(timeOfMillis);
+        System.out.println(deliveryTime);
+        System.out.println(slip_number);
+        api.execute(PostURL.getChangeTimeCourierURL(), body);
     }
 
     @Override

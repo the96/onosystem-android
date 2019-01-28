@@ -3,19 +3,50 @@ package com.example.onosystems;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class CourierHomeActivity extends HomeActivity implements View.OnFocusChangeListener, LocationUpdater.LocationResultListener {
+    // NOTICE_THRESHOLD回位置情報取得で連続して基準距離を下回ったとき通知する
+    private static final int NOTICE_THRESHOLD = 6;
+    private static final int DISTANCE_THRESHOLD = 1500;
+    LocationUpdater locationUpdater;
+    Location location;
+    HashMap<Long, Integer> noticedMap;
+    public static final boolean LOCATION_DEBUG_MODE = false;
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        locationUpdater = new LocationUpdater(this, this);
+        location = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        locationUpdater.run();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        locationUpdater.stopUpdateLocation();
+    }
+
     @Override
     public void setUserOptions() {
         toolBarLayout = R.menu.tool_options_courier;
@@ -35,10 +66,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "https://www.onosystems.work/aws/TopCourier";
-        User.setUrl(url);
-        String profileURL = "https://www.onosystems.work/aws/InformationCourier";
-        User.setProfileURL(profileURL);
+        User.setUrl(PostURL.getTopCourierURL());
+        User.setProfileURL(PostURL.getInformationCourierURL());
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -54,8 +83,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     }
 
     public void showMapActivity() {
-        Intent intent = new Intent(getApplication(), CourierMapActivity.class);  // 遷移先指定
-        intent.putExtra("deliveryInfo", list);
+        Intent intent = new Intent(this, CourierMapActivity.class);  // 遷移先指定
+        intent.putExtra("deliveryInfo", list);;
         startActivity(intent);// CourierMapActivityに遷移
     }
 
@@ -79,7 +108,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                             i, // item_number
                             Delivery.VISIBLE,
                             Delivery.READ_FLAG,
-                            deliveryData.getBoolean("customer_updated")));
+                            deliveryData.getBoolean("customer_updated"),
+                                                 geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 } else {
                     for (int j = 0; j < jsonArray.length(); j++) {
@@ -95,7 +125,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                                     i, // item_number
                                     Delivery.VISIBLE,
                                     Delivery.READ_FLAG,
-                                    deliveryData.getBoolean("customer_updated")));
+                                    deliveryData.getBoolean("customer_updated"),
+                                                            geocoder));
                         }
                     }
                 }
@@ -190,7 +221,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                         profUpdAlert(result);
                     }
                 });
-                postAsync.execute("http://54.92.85.232/aws/SettingCourier", newJson);
+                postAsync.execute(PostURL.getSettingCourierURL(), newJson);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -208,6 +239,64 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         }
     }
 
+    @Override
+    public void locationResult(LocationResult location) {
+        this.location = location.getLastLocation();
+        approachNotice(this.location);
+    }
+
+    private void approachNotice(Location location) {
+        JSONArray slipNumbers = new JSONArray();
+        if (noticedMap == null) {
+            noticedMap = new HashMap<>();
+        }
+        for (Delivery delivery: deliveryInfo) {
+            // DISTANCE_THRESHOLD m 以内にNOTICE_THRESHOLD回連続で接近した場合通知を送る
+            if (calcDistance(location, delivery) <= DISTANCE_THRESHOLD) {
+                Integer count = noticedMap.get(delivery.slipNumber);
+                if (count == null) {
+                    count = 0;
+                }
+                if (count == NOTICE_THRESHOLD) {
+                    slipNumbers.put(delivery.slipNumber);
+                }
+                noticedMap.put(delivery.slipNumber, count + 1);
+            } else {
+                noticedMap.put(delivery.slipNumber, 0);
+            }
+        }
+        if (slipNumbers.length() <= 0) return;
+        try {
+            JSONObject json = new JSONObject().putOpt("slip_number", slipNumbers);
+            PostAsync post = new PostAsync();
+            post.setRef(new PostAsync.Callback() {
+                @Override
+                public void callback(String result) {
+                    try {
+                        JSONObject res = new JSONObject(result);
+                        String str = res.getString("result");
+                        if (str == null || str.isEmpty() || !"ok".equals(str)) {
+                            System.out.println("approachNotice() is failed");
+                        }
+                        System.out.println(result);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            post.execute(PostURL.getNotificationURL(), json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private float calcDistance(Location location, Delivery delivery) {
+        float[] results = new float[3];
+        Location.distanceBetween(location.getLatitude(),location.getLongitude(),
+                                 delivery.getLatitude(), delivery.getLongitude(), results);
+        return results[0];
+    }
 }
 
 class Courier extends User{

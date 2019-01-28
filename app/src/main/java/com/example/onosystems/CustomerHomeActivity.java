@@ -36,10 +36,8 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
-        String url = "https://www.onosystems.work/aws/TopCustomer";
-        User.setUrl(url);
-        String profileURL = "https://www.onosystems.work/aws/InformationCustomer";
-        User.setProfileURL(profileURL);
+        User.setUrl(PostURL.getTopCustomerURL());
+        User.setProfileURL(PostURL.getInformationCustomerURL());
     }
 
     @Override
@@ -60,7 +58,8 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                             i, // item_number
                             Delivery.VISIBLE,
                             Delivery.READ_FLAG,
-                            deliveryData.getBoolean("driver_updated")));
+                            deliveryData.getBoolean("driver_updated"),
+                                                 geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 } else {
                     for (int j = 0; j < jsonArray.length(); j++) {
@@ -76,7 +75,8 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                                     i, // item_number
                                     Delivery.VISIBLE,
                                     Delivery.READ_FLAG,
-                                    deliveryData.getBoolean("driver_updated")));
+                                    deliveryData.getBoolean("driver_updated"),
+                                                            geocoder));
                         }
                     }
                 }
@@ -177,7 +177,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                         profUpdAlert(result);
                     }
                 });
-                postAsync.execute("http://54.92.85.232/aws/SettingCustomer", newJson);
+                postAsync.execute(PostURL.getSettingCourierURL(), newJson);
 
             } catch (JSONException e) {
                 e.printStackTrace();

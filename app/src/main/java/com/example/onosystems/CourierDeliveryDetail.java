@@ -15,22 +15,45 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 //import java.sql.Time;
 
 public class CourierDeliveryDetail extends AppCompatActivity {
-    public HashMap<String, String> status;
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日"); //日付フォーマット
     public int toolBarLayout;
     AlertDialog mAlertDlg;
+    public ArrayList<HashMap<String, String>> items;
+    public int index;
+    public  HashMap<String,String> item;
+    public  String url = "http://www.onosystems.work/aws/CompleteCourier";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.courier_delivery_detail);
+
+        //MainActivityから値を受け取る,初期値を設定
+        Intent intent = getIntent();
+        items = (ArrayList<HashMap<String, String>>) intent.getSerializableExtra("deliveryInfo");
+        index = intent.getIntExtra("itemNumber",-1);
+        final HashMap<String, String> item = items.get(index);
+
+
+        String name = item.get("name");
+        final String slip_number = item.get("slipNumber");
+        String address = item.get("address");
+        int unixtime = Integer.valueOf(item.get("unixTime"));
+        int deliveryTime = Integer.valueOf(item.get("deliveryTime"));
+        Date date = new Date(unixtime * 1000L);
+        String time = sdf.format(date);
+
+
 
         // 1. AlertDialog.Builder クラスのインスタンスを生成
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -40,12 +63,24 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         builder.setMessage(R.string.dlg_msg1);
         builder.setPositiveButton("完了", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+
+                //サーバにデータ送信
+                PostAsync postAsync = new PostAsync();
+                postAsync.setRef(new PostAsync.Callback() {
+                    @Override
+                    public void callback(String result) {
+                        // 処理内容を書く
+                        System.out.println("CourierDeliveryDetail.CompleteCourier result =>" + result);
+                    }
+                });
+                String body = "{\"slip_number\": " + slip_number + "}";
+                postAsync.execute(PostURL.getCompleteCourierURL(), body);
+
+
                 // OK ボタンクリック処理
                 Toast.makeText(CourierDeliveryDetail.this,
                         "配達完了しました", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplication(), CourierHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -71,16 +106,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
 
 
-        Intent intent = getIntent();
-        //MainActivityから値を受け取る,初期値を設定
-        status = (HashMap<String, String>) intent.getSerializableExtra("itemInfo");
-        String name = status.get("name");
-        String slip_number = status.get("slipNumber");
-        String address = status.get("address");
-        int unixtime = Integer.valueOf(status.get("unixTime"));
-        int deliveryTime = Integer.valueOf(status.get("deliveryTime"));
-        Date date = new Date(unixtime * 1000L);
-        String time = sdf.format(date);
+
 
 
         // TextView のインスタンスを作成
@@ -90,7 +116,6 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         TextView Time = findViewById(R.id.delivery_date);
         TextView delivery_time = findViewById(R.id.delivery_time);
         String[] time_id = getResources().getStringArray(R.array.time_list);
-        System.out.println(time_id[deliveryTime]);
         // テキストビューのテキストを設定
         Customer_name.setText(name);
         Slip_number.setText(slip_number);
@@ -106,26 +131,25 @@ public class CourierDeliveryDetail extends AppCompatActivity {
 
 
 
-
+        //日時変更ボタンをタップ時
         Button time_change_Button = findViewById(R.id.rescheduling_Button);
         time_change_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), CourierTimeChange.class);
                 //日時変更画面に遷移
-                ///////後で消す
-                SampleLogin loginTask = new SampleLogin();
-                String body = "{\n" +
-                        "  id: \"driver@gmail.com\",\n" +
-                        "  password: \"driver\"\n" +
-                        "}";
-                // 第一引数がURL、第二引数がPOSTするbody
-                loginTask.execute("http://www.onosystems.work/aws/CourierDeliveryDetail", body);
-                ///////
-                intent.putExtra("itemInfo", status);
+                intent.putExtra("deliveryInfo",item);
+
+
+                intent.putExtra("deliveryInfo", status);
+                intent.putExtra("itemNumber", index);
+
+
                 startActivity(intent);
             }
         });
+
+        //メニューバーのマップ遷移部分
 
         Toolbar toolbar =  findViewById(R.id.detail_toolbar); //R.id.toolbarは各自で設定したidを入れる
         toolbar.inflateMenu(R.menu.tool_options_detail);
@@ -136,7 +160,8 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 if (id == R.id.mapView) {
                     //Toast.makeText(CourierDeliveryDetail.this,"", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplication(), CourierMapActivity.class);
-                    intent.putExtra("itemInfo", status);
+                    intent.putExtra("deliveryInfo", items);
+                    intent.putExtra("itemNumber", item);
                     startActivity(intent);
                     return true;
                 }

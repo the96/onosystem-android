@@ -1,19 +1,12 @@
 package com.example.onosystems;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,13 +15,12 @@ import org.json.JSONObject;
  *   消費者の新規アカウントを作成する画面
  */
 
-public class NewAccountActivity extends AppCompatActivity implements PostAsync.Callback {
+public class NewAccountActivity extends AppCompatActivity {
 
     EditText editName, editPassword1, editPassword2, editMail, editAddress, editTel;
-    String name, mail, password1, password2, address;
-    long tel;
-    private String url = "http://www.onosystems.work/aws/RegisterAccount";
-    private String result = "";
+    String name="", mail="", password1="", password2="", address="";
+    long tel = 0;
+    String responce = "";
     AlertDialog alertDialog;
 
     @Override
@@ -96,22 +88,34 @@ public class NewAccountActivity extends AppCompatActivity implements PostAsync.C
 
     // 新規アカウントの作成
     public void createNewAccount(String name, String mail, long tel, String address, String password) {
+        JSONObject json = new JSONObject();
         try {
-            JSONObject json = new JSONObject();
             json.put("name", name);
             json.put("mail", mail);
             json.put("tel", tel);
             json.put("address", address);
             json.put("password", password);
-
-            String info = json.toString();
-            sendRequest(info);
-
+            PostAsync postAsync = new PostAsync();
+            postAsync.setRef(new PostAsync.Callback() {
+                @Override
+                public void callback(String accountResult) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(accountResult);
+                        responce = jsonObject.getString("result");
+                        checkResult();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            postAsync.execute(PostURL.getRegisterAccountURL(), json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
-        if (result.equals("ok")) {
+    public void checkResult() {
+        if (this.responce.equals("ok")) {
             alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
                     .setMessage("アカウントを作成しました")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -123,28 +127,12 @@ public class NewAccountActivity extends AppCompatActivity implements PostAsync.C
                     }).show();
         } else {
             alertDialog = new AlertDialog.Builder(NewAccountActivity.this)
-                    .setMessage("アカウントの作成に失敗しました")
+                    .setMessage("アカウントの作成に失敗しました" + responce)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     }).show();
-        }
-    }
-
-    public void sendRequest(String json) {
-        PostAsync postAsync = new PostAsync();
-        postAsync.setRef(this);
-        postAsync.execute(url, json);
-    }
-
-    @Override
-    public void callback(String result) {
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            this.result = jsonObject.getString("result");
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 }
