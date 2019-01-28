@@ -140,6 +140,11 @@ public class CourierDeliveryDetail extends AppCompatActivity {
                 //日時変更画面に遷移
                 intent.putExtra("deliveryInfo",item);
 
+
+                intent.putExtra("deliveryInfo", status);
+                intent.putExtra("itemNumber", index);
+
+
                 startActivity(intent);
             }
         });
