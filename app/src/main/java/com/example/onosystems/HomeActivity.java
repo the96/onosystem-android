@@ -132,34 +132,7 @@ public class HomeActivity extends AppCompatActivity
         postAsync.execute(User.getUrl(), User.getUserId());
     }
 
-    public void parseDeliveries(String json) {
-        try {
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject deliveryData = jsonArray.getJSONObject(i);
-                if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
-                    deliveryInfo.add(new Delivery(deliveryData.getLong("slip_number"),
-                            deliveryData.getString("name"),
-                            deliveryData.getString("address"),
-                            deliveryData.getString("ship_from"),
-                            deliveryData.getInt("time"),
-                            deliveryData.getInt("delivery_time"),
-                            deliveryData.getInt("delivered_status"),
-                            deliveryData.getInt("receivable_status"),
-                            i, // item_number
-                            Delivery.VISIBLE,
-                            Delivery.READ_FLAG,
-                            geocoder));
-                    deliveryCheck.put(deliveryData.getLong("slip_number"), true);
-                }
-            }
-
-            sortTime(); //時間順にソート
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
+    public void parseDeliveries(String json) { }
 
     public void reloadDeliveries() {
         list = new ArrayList<>(); //初期化
@@ -439,6 +412,17 @@ class Delivery {
     private double latitude;
     private double longitude;
 
+    public boolean getCustomer_updated() {
+        return customer_updated;
+    }
+
+    public boolean getDriver_updated() {
+        return driver_updated;
+    }
+
+    boolean customer_updated;
+    boolean driver_updated;
+
     public String getName() { return this.name; }
 
     public String getAddress() { return this.address; }
@@ -471,7 +455,7 @@ class Delivery {
     }
 
     public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
-                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, Geocoder geocoder) {
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean driver_updated, Geocoder geocoder) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
@@ -483,6 +467,24 @@ class Delivery {
         this.item_number = item_number;
         this.visible = visible;
         this.read_flag = read_flag;
+        this.driver_updated = driver_updated;
+        this.setLatLngFromAddress(geocoder);
+    }
+
+    public Delivery(String name, long slipNumber, String address, String ship_from, int time, int delivery_time,
+                    int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean customer_updated, Geocoder geocoder) {
+        this.slipNumber = slipNumber;
+        this.name = name;
+        this.address = address;
+        this.ship_from = ship_from;
+        this.time = time;
+        this.delivery_time = delivery_time;
+        this.delivered_status = delivered_status;
+        this.receivable_status = receivable_status;
+        this.item_number = item_number;
+        this.visible = visible;
+        this.read_flag = read_flag;
+        this.customer_updated = customer_updated;
         this.setLatLngFromAddress(geocoder);
     }
 
