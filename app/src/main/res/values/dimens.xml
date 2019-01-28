@@ -10,9 +10,12 @@
     <dimen name="editText_height">35dp</dimen>
 
     <dimen name="input_form_width">30dp</dimen>
-    <dimen name="input_form_margin">16dp</dimen>
+    <dimen name="input_form_margin">15dp</dimen>
     <dimen name="login_button_width">90dp</dimen>
     <dimen name="login_padding">5dp</dimen>
     <dimen name="input_account">10dp</dimen>
+    <dimen name="account_create">10dp</dimen>
+    <dimen name="account_text">18sp</dimen>
+    <dimen name="account_height">30sp</dimen>
 
 </resources>
