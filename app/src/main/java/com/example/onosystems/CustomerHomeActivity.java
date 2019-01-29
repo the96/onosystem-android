@@ -33,7 +33,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
             String userId = json.toString();
             User.setUserId(userId);
         } catch (JSONException e) {
-            e.printStackTrace();C
+            e.printStackTrace();
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
