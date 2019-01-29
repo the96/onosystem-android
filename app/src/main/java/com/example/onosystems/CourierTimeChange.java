@@ -39,7 +39,7 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     int index;
     AlertDialog mAlertDlg;
     Date date;
-    int year, month, day;
+    int year, month, day, count;
     Long timeOfMillis;
     String slip_number;
     String delivery_time;
@@ -218,6 +218,11 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
                 args.putInt("time_y", time_y);
                 args.putInt("time_m", time_m);
                 args.putInt("time_d", time_d);
+                args.putInt("time_year", year);
+                args.putInt("time_month", month);
+                args.putInt("time_dayOfMonth", day);
+                args.putInt("time_count", count);
+
                 datePickerFragment.setArguments(args);
 
 
@@ -274,10 +279,12 @@ public class CourierTimeChange extends AppCompatActivity implements TimeChangeAP
     }
 
     @Override
-    public void setDate(int y, int m, int d) {
+    public void setDate(int y, int m, int d, int cnt) {
         year = y;
         month = m;
         day = d;
+        count = cnt;
+
         System.out.println("callback");
         System.out.println(y + " " + m + " " + d);
     }

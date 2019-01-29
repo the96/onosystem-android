@@ -38,7 +38,7 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
     int index;
     AlertDialog mAlertDlg;
     Date date;
-    int year, month, day;
+    int year, month, day, count;
     Long timeOfMillis;
     String slip_number;
     String delivery_time;
@@ -279,10 +279,12 @@ public class CustomerTimeChange extends AppCompatActivity implements TimeChangeA
     }
 
     @Override
-    public void setDate(int y, int m, int d) {
+    public void setDate(int y, int m, int d, int cnt) {
         year = y;
         month = m;
         day = d;
+        count = cnt;
+
         System.out.println("callback");
         System.out.println(y + " " + m + " " + d);
     }

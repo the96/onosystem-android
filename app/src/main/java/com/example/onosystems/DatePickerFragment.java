@@ -14,17 +14,34 @@ import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
     interface Callback {
-        void setDate(int y, int m, int d);
+        void setDate(int y, int m, int d, int count);
     }
-    private int y, m, d;
+    private int y, m, d, count;
     private Callback callback;
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         Bundle args = getArguments();
         y = args.getInt("time_y");
         m = args.getInt("time_m");
         d = args.getInt("time_d");
+        count = args.getInt("time_count");
+
+        count += 1;
+        System.out.println(count);
+
+        //何故か年と月が−１されるので微調整
+
+        if(count > 1){
+            y = (args.getInt("time_year")) ;
+            m = (args.getInt("time_mont")) + 1;
+            d = args.getInt("time_dayOfMonth");
+            System.out.println("~~~~~~~~~~~~~~~~~~^");
+            System.out.println(d);
+        }
+
         Context context = getActivity();
         if (!(context instanceof Callback)) {
             throw new ClassCastException("context が DatePickerFragment.Callbackを実装していません");
@@ -34,7 +51,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     }
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        callback.setDate(year, month, dayOfMonth);
+        callback.setDate(year, month, dayOfMonth,count);
         String dateStr = year + "年" + (month + 1) + "月" + dayOfMonth + "日";
         Activity activity = getActivity();
         if (activity instanceof CourierTimeChange) {
