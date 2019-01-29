@@ -100,35 +100,35 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
 
                 if (deliveryCheck.get(deliveryData.getLong("slip_number")) == null) {
                     deliveryInfo.add(new Delivery(deliveryData.getString("name"),
-                            deliveryData.getLong("slip_number"),
-                            deliveryData.getString("address"),
-                            deliveryData.getString("ship_from"),
-                            deliveryData.getInt("time"),
-                            deliveryData.getInt("delivery_time"),
-                            deliveryData.getInt("delivered_status"),
-                            deliveryData.getInt("receivable_status"),
-                            i, // item_number
-                            Delivery.VISIBLE,
-                            Delivery.READ_FLAG,
-                            deliveryData.getBoolean("customer_updated"),
-                            geocoder));
+                                                  deliveryData.getLong("slip_number"),
+                                                  deliveryData.getString("address"),
+                                                  deliveryData.getString("ship_from"),
+                                                  deliveryData.getInt("time"),
+                                                  deliveryData.getInt("delivery_time"),
+                                                  deliveryData.getInt("delivered_status"),
+                                                  deliveryData.getInt("receivable_status"),
+                                                  i, // item_number
+                                                  Delivery.VISIBLE,
+                                                  Delivery.READ_FLAG,
+                                                  deliveryData.getBoolean("customer_updated"),
+                                                  geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
-                } else {
+                } else if (deliveryData.getBoolean("customer_updated")) {
                     for (int j = 0; j < jsonArray.length(); j++) {
-                        if (deliveryData.getBoolean("customer_updated") && deliveryData.getLong("slip_number") == deliveryInfo.get(j).slipNumber) {
+                        if (deliveryData.getLong("slip_number") == deliveryInfo.get(j).slipNumber) {
                             deliveryInfo.set(j, new Delivery(deliveryData.getString("name"),
-                                    deliveryData.getLong("slip_number"),
-                                    deliveryData.getString("address"),
-                                    deliveryData.getString("ship_from"),
-                                    deliveryData.getInt("time"),
-                                    deliveryData.getInt("delivery_time"),
-                                    deliveryData.getInt("delivered_status"),
-                                    deliveryData.getInt("receivable_status"),
-                                    i, // item_number
-                                    Delivery.VISIBLE,
-                                    Delivery.READ_FLAG,
-                                    deliveryData.getBoolean("customer_updated"),
-                                    geocoder));
+                                                             deliveryData.getLong("slip_number"),
+                                                            deliveryData.getString("address"),
+                                                            deliveryData.getString("ship_from"),
+                                                            deliveryData.getInt("time"),
+                                                            deliveryData.getInt("delivery_time"),
+                                                            deliveryData.getInt("delivered_status"),
+                                                            deliveryData.getInt("receivable_status"),
+                                                            i, // item_number
+                                                            Delivery.VISIBLE,
+                                                            Delivery.READ_FLAG,
+                                                            deliveryData.getBoolean("customer_updated"),
+                                                            geocoder));
                         }
                     }
                 }
