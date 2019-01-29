@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 public class CustomerHomeActivity extends HomeActivity implements View.OnFocusChangeListener {
     public EditText profileAddress;
+    int id;
 
     @Override
     public void setUserOptions() {
@@ -25,12 +26,12 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         homeLayout = R.layout.customer_home_layout;
 
         Intent i = getIntent();
-        int userId = i.getIntExtra("customer_id", 0);
+        id = i.getIntExtra("customer_id", -1);
         try {
             JSONObject json = new JSONObject();
-            json.put("customer_id", userId);
-            String id = json.toString();
-            User.setUserId(id);
+            json.put("customer_id", id);
+            String userId = json.toString();
+            User.setUserId(userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -59,7 +60,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                             Delivery.VISIBLE,
                             Delivery.READ_FLAG,
                             deliveryData.getBoolean("driver_updated"),
-                                                 geocoder));
+                            geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 } else {
                     for (int j = 0; j < jsonArray.length(); j++) {
@@ -76,7 +77,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                                     Delivery.VISIBLE,
                                     Delivery.READ_FLAG,
                                     deliveryData.getBoolean("driver_updated"),
-                                                            geocoder));
+                                    geocoder));
                         }
                     }
                 }
@@ -161,7 +162,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
             //更新する
             try {
                 JSONObject json = new JSONObject();
-                json.put("customer_id", "1");
+                json.put("customer_id", id);
                 json.put("name", newProfileName);
                 json.put("address", newProfileAddress);
                 json.put("mail", newProfileMail);

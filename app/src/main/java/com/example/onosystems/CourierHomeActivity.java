@@ -28,6 +28,8 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     Location location;
     HashMap<Long, Integer> noticedMap;
     public static final boolean LOCATION_DEBUG_MODE = false;
+    int id;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -55,12 +57,12 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
         homeLayout = R.layout.courier_home_layout;
 
         Intent i = getIntent();
-        int userId = i.getIntExtra("driver_id", 0);
+        id = i.getIntExtra("driver_id", -1);
         try {
             JSONObject json = new JSONObject();
-            json.put("driver_id", userId);
-            String id = json.toString();
-            User.setUserId(id);
+            json.put("driver_id", id);
+            String userId = json.toString();
+            User.setUserId(userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -109,7 +111,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                             Delivery.VISIBLE,
                             Delivery.READ_FLAG,
                             deliveryData.getBoolean("customer_updated"),
-                                                 geocoder));
+                            geocoder));
                     deliveryCheck.put(deliveryData.getLong("slip_number"), true);
                 } else {
                     for (int j = 0; j < jsonArray.length(); j++) {
@@ -126,7 +128,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
                                     Delivery.VISIBLE,
                                     Delivery.READ_FLAG,
                                     deliveryData.getBoolean("customer_updated"),
-                                                            geocoder));
+                                    geocoder));
                         }
                     }
                 }
@@ -206,7 +208,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
             //更新する
             try {
                 JSONObject json = new JSONObject();
-                json.put("driver_id", "1");
+                json.put("driver_id", id);
                 json.put("name", newProfileName);
                 json.put("mail", newProfileMail);
                 json.put("tel", newProfileTel);
@@ -294,7 +296,7 @@ public class CourierHomeActivity extends HomeActivity implements View.OnFocusCha
     private float calcDistance(Location location, Delivery delivery) {
         float[] results = new float[3];
         Location.distanceBetween(location.getLatitude(),location.getLongitude(),
-                                 delivery.getLatitude(), delivery.getLongitude(), results);
+                delivery.getLatitude(), delivery.getLongitude(), results);
         return results[0];
     }
 }
