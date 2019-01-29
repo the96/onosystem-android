@@ -26,14 +26,14 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
         homeLayout = R.layout.customer_home_layout;
 
         Intent i = getIntent();
-        id = i.getIntExtra("customer_id", 0);
+        id = i.getIntExtra("customer_id", -1);
         try {
             JSONObject json = new JSONObject();
             json.put("customer_id", id);
             String userId = json.toString();
             User.setUserId(userId);
         } catch (JSONException e) {
-            e.printStackTrace();
+            e.printStackTrace();C
         }
         String password = i.getStringExtra("password");
         User.setPassword(password);
