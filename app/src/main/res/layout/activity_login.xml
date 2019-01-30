@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/login_layout"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -12,6 +13,13 @@
     android:background="@color/login_background"
     tools:context="com.example.onosystems.LoginActivity">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/login_background"
+        app:srcCompat="@drawable/onosystem_logo" />
+
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -20,13 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/login_background"
-        app:srcCompat="@drawable/onosystem_logo" />
 
     <ScrollView
         android:id="@+id/login_form"
@@ -83,29 +84,33 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <ImageButton
+
+            <Button
                 android:id="@+id/email_sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/login_button_width"
                 android:layout_marginEnd="@dimen/login_button_width"
                 android:layout_marginTop="@dimen/input_form_margin"
-                android:background="@color/login_background"
-                app:srcCompat="@drawable/login_button"/>
+                android:drawableLeft="@drawable/login_button_icon"
+                android:background="@drawable/login_button_color"
+                android:text="@string/action_sign_in"
+                android:textSize="18sp"
+                style="?android:attr/borderlessButtonStyle"/>
 
             <Button
                 android:id="@+id/newAccountButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/input_form_width"
-                android:layout_marginEnd="@dimen/input_form_width"
-                android:layout_marginTop="@dimen/input_form_margin"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/button_complete"
                 android:text="@string/action_create_account"
                 android:textSize="16sp"
                 style="?android:attr/borderlessButtonStyle"/>
 
-
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>
