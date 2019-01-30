@@ -13,11 +13,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,6 +57,8 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private LinearLayout loginLayout;
+    private InputMethodManager inputMethodManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +73,19 @@ public class LoginActivity extends AppCompatActivity{
         mPasswordView = findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        loginLayout = findViewById(R.id.email_login_form);
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // ログインボタン
-        final ImageButton loginButton = findViewById(R.id.email_sign_in_button);
+        final Button loginButton = findViewById(R.id.email_sign_in_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loginEmail = mEmailView.getText().toString();
                 loginPassword = mPasswordView.getText().toString();
+
+                //  キーボードを閉じる
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                 if (!isEmpty(loginEmail)) {
                     mEmailView.setError("メールアドレスを入力してください");
@@ -109,7 +119,7 @@ public class LoginActivity extends AppCompatActivity{
                         }
                         token = task.getResult().getToken();
                         System.out.println("TOKEN: " + token);
-                        autoLogin(true);
+                        autoLogin(false);
                     }
                 });
     }
@@ -244,6 +254,15 @@ public class LoginActivity extends AppCompatActivity{
                 mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    // ONO-Systemsをタップしたらキーボードが閉じる
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        inputMethodManager.hideSoftInputFromWindow(loginLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        loginLayout.requestFocus();
+
+        return false;
     }
 }
 
