@@ -30,7 +30,7 @@
         android:enabled="true"
         android:title=""
         android:visible="true"
-        app:actionLayout="@layout/toggle_layout_switch0"
+        app:actionLayout="@layout/toggle_layout_switch0_customer"
         app:showAsAction="always" />
 
 </menu>
