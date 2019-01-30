@@ -1,12 +1,16 @@
 package com.example.onosystems;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +26,7 @@ public class NewAccountActivity extends AppCompatActivity {
     long tel = 0;
     String responce = "";
     AlertDialog alertDialog;
+    private InputMethodManager inputMethodManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class NewAccountActivity extends AppCompatActivity {
         editPassword2 = findViewById(R.id.password2);
         editTel = findViewById(R.id.tel);
         editAddress = findViewById(R.id.address);
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // アカウント作成ボタン
         Button createAccountButton2 = findViewById(R.id.createAccountButton2);
@@ -41,6 +47,10 @@ public class NewAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //  キーボードを閉じる
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                // 入力文字の取得
                 name = editName.getText().toString();
                 mail = editMail.getText().toString();
                 password1 = editPassword1.getText().toString();
@@ -48,6 +58,7 @@ public class NewAccountActivity extends AppCompatActivity {
                 String phone = editTel.getText().toString();
                 address = editAddress.getText().toString();
 
+                // 入力文字の判定
                 if (!isEmpty(name)) {
                     editName.setError("名前を入力して下さい");
                 } else if (!isEmpty(password1)) {
