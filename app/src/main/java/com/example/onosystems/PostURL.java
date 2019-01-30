@@ -7,6 +7,9 @@ public class PostURL {
     public static String getLoginURL() {
         return ORIGIN + "Login";
     }
+    public static String getManagerURL() {
+        return ORIGIN + "LoginManager.jsp";
+    }
     public static String getRegisterAccountURL() {
         return ORIGIN + "RegisterAccount";
     }
