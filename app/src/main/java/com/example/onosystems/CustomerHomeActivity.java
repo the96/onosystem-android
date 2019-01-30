@@ -57,7 +57,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                                                   deliveryData.getInt("delivered_status"),
                                                   deliveryData.getInt("receivable_status"),
                                                   i, // item_number
-                                                  Delivery.VISIBLE,
+                                                  deliveryData.getInt("delivered_status")==0?Delivery.VISIBLE:Delivery.NOT_VISIBLE,
                                                   Delivery.READ_FLAG,
                                                   deliveryData.getBoolean("driver_updated"),
                                                   geocoder));
@@ -74,7 +74,7 @@ public class CustomerHomeActivity extends HomeActivity implements View.OnFocusCh
                                                              deliveryData.getInt("delivered_status"),
                                                              deliveryData.getInt("receivable_status"),
                                                              i, // item_number
-                                                             Delivery.VISIBLE,
+                                                             deliveryData.getInt("delivered_status")==0?Delivery.VISIBLE:Delivery.NOT_VISIBLE,
                                                              Delivery.READ_FLAG,
                                                              deliveryData.getBoolean("driver_updated"),
                                                              geocoder));
