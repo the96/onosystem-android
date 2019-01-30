@@ -26,6 +26,7 @@ public class NewAccountActivity extends AppCompatActivity {
     long tel = 0;
     String responce = "";
     AlertDialog alertDialog;
+    private LinearLayout linearLayout;
     private InputMethodManager inputMethodManager;
 
     @Override
@@ -39,6 +40,7 @@ public class NewAccountActivity extends AppCompatActivity {
         editPassword2 = findViewById(R.id.password2);
         editTel = findViewById(R.id.tel);
         editAddress = findViewById(R.id.address);
+        linearLayout = findViewById(R.id.new_account_form);
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // アカウント作成ボタン
@@ -145,5 +147,14 @@ public class NewAccountActivity extends AppCompatActivity {
                         }
                     }).show();
         }
+    }
+
+    // 背景の白いところをタップしたらキーボードが閉じる
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        inputMethodManager.hideSoftInputFromWindow(linearLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        linearLayout.requestFocus();
+
+        return false;
     }
 }
