@@ -142,7 +142,7 @@ public class NotificationService extends FirebaseMessagingService implements Tex
     }
 
     private void speechText(final String text) {
-        if (initialized && text.length() > 0) {
+        if (initialized && text != null && text.length() > 0) {
             new Thread( new Runnable() {
                 @Override
                 public void run() {
