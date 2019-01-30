@@ -234,7 +234,7 @@ public class HomeActivity extends AppCompatActivity
         toggle0.setChecked(true);
         toggle1.setChecked(true);
         toggle2.setChecked(true);
-        toggle3.setChecked(true);
+        toggle3.setChecked(false);
         toggle0.setOnCheckedChangeListener(this);
         toggle1.setOnCheckedChangeListener(this);
         toggle2.setOnCheckedChangeListener(this);
