@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
@@ -271,6 +272,13 @@ public class HomeActivity extends AppCompatActivity
         Intent intent = new Intent(getApplication(), detailActivity);  // 遷移先指定
         intent.putExtra("item", item);
         startActivityForResult(intent, DETAIL_ACTIVITY);// 詳細画面に遷移
+
+        listView.setEnabled(false);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                listView.setEnabled(true);
+            }
+        }, 3000L);
     }
 
     //バッグボタンが押されたときのイベント
