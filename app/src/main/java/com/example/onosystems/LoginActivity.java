@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,9 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,6 +29,7 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 
 /**
@@ -214,8 +214,11 @@ public class LoginActivity extends AppCompatActivity{
             intent.putExtra("password", loginPassword);
             startActivity(intent);
         } else if (this.manager_id != 0) {
-            Toast toast = Toast.makeText(LoginActivity.this, "管理者ユーザーです。", Toast.LENGTH_SHORT);
-            toast.show();
+            // 管理者ログインページ(簡易ページ)に遷移
+            Intent intent = new Intent(getApplication(), LoginManagerActivity.class);
+//            Uri uri = Uri.parse(PostURL.getManagerURL());
+//            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
         }
     }
 
