@@ -13,11 +13,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,16 +52,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CourierMapActivity extends FragmentActivity implements OnMapReadyCallback, LocationSource, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class CourierMapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationSource, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CompoundButton.OnCheckedChangeListener {
     private static final int LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
 //    private ArrayList<Delivery> deliverylist;
 //    private LatLng[] points;
     int index;
     private HashMap<Marker, Integer> mHashMap = new HashMap<Marker, Integer>();
-    int time;
     int maxResults = 1;
-    int status;
+    int colorStatus;
     private FusedLocationProviderClient mLocationClient = null;
     LocationCallback locationCallback = null;
     private static final LocationRequest REQUEST = LocationRequest.create()
@@ -69,6 +72,14 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
     private boolean firstGetLocationFlag = true;
     private Circle circle;
     private LatLng latlng;
+
+    boolean blueVisible, redVisible, greenVisible;
+    boolean[] pinVisible;
+    MarkerOptions[] option;
+    Marker[] markers;
+    public ToggleButton toggle_blue, toggle_red, toggle_green;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,20 +107,9 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        Toolbar toolbar = findViewById(R.id.map_toolbar); //R.id.toolbarは各自で設定したidを入れる
-        toolbar.inflateMenu(R.menu.tool_options_couriermaps);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == R.id.toggle_pin_blue) {
-                    Toast.makeText(CourierMapActivity.this, "settings clicked 2", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
-            }
-
-        });
+        Toolbar toolbar = findViewById(R.id.map_toolbar);
+        setSupportActionBar(toolbar);
+        setDelivers();
     }
 
     @Override
@@ -202,31 +202,24 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-    // アクションバーを表示するメソッド
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.tool_options_couriermaps, menu);
-        return true;
+    public void setDelivers(){
+        //CourierHomeActivityから荷物データを受けとる。
+        Intent intent = getIntent();
+        String address = intent.getStringExtra("address");
+        if (address != null && !address.isEmpty()) {
+            //Geocoder APIを使って住所から座標への変換を行う
+            Geocoder gcoder = new Geocoder(this, Locale.getDefault());
+            try {
+                Address location = gcoder.getFromLocationName(address, 1).get(0);
+                latlng = new LatLng(location.getLatitude(), location.getLongitude());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            latlng = null;
+        }
     }
 
-    // オプションメニューのアイテムが選択されたときに呼び出されるメソッド
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TextView varTextView = (TextView) findViewById(R.id.textView);
-        switch (item.getItemId()) {
-            case R.id.toggle_pin_green:
-                //varTextView.setText(R.string.menu_item1);
-                return true;
-            case R.id.toggle_layout_pin_red:
-                //varTextView.setText(R.string.menu_item2);
-                return true;
-            case R.id.toggle_pin_blue:
-                //varTextView.setText(R.string.menu_item3);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 
     /**
@@ -240,8 +233,6 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-        final Intent detailActivity = new Intent(getApplication(), CourierDeliveryDetail.class);
 
         // 画面上にマップを作成
         mMap = googleMap; //マップ
@@ -264,26 +255,16 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
             mMap.setMyLocationEnabled(true); //現在地表示の有効化
             settings.setMyLocationButtonEnabled(true);
             settings.setZoomControlsEnabled(true); //ズームボタン有効化
+            reloadDelivers(0);
         }
 
-        //CourierHomeActivityから荷物データを受けとる。
-        Intent intent = getIntent();
-        String address = intent.getStringExtra("address");
-        if (address != null && !address.isEmpty()) {
-            //Geocoder APIを使って住所から座標への変換を行う
-            Geocoder gcoder = new Geocoder(this, Locale.getDefault());
-            try {
-                Address location = gcoder.getFromLocationName(address, 1).get(0);
-                latlng = new LatLng(location.getLatitude(), location.getLongitude());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            latlng = null;
-        }
+
+    }
+
+    public void reloadDelivers(int virgin) {
 
         // ひとまず作ったデータをマーカーとして配置
-        MarkerOptions[] option = new MarkerOptions[HomeActivity.deliveryInfo.size()];
+        option = new MarkerOptions[HomeActivity.deliveryInfo.size()];
         for(int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
             option[i] = new MarkerOptions();
         }
@@ -315,27 +296,89 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
                 default:
                     option[i].snippet("なし");
             }
+        }
+        if(virgin == 0) {
+            addMapMarker();
+        }else if(virgin == 1){
+            changeMarkerVisible();
+        }
 
-            //deliveryStatusによるピンの色判定
-            status = delivery.getDelivered_status();
-            switch(status) {
-                case 0:
-                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                    break;
-                case 1:
-                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    break;
-                case 2:
-                    option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tool_options_couriermaps, menu);
+
+        toggle_green = menu.findItem(R.id.toggle_pin_green).getActionView().findViewById(R.id.toggle_layout_pin_green);
+        toggle_red = menu.findItem(R.id.toggle_pin_red).getActionView().findViewById(R.id.toggle_layout_pin_red);
+        toggle_blue = menu.findItem(R.id.toggle_pin_blue).getActionView().findViewById(R.id.toggle_layout_pin_blue);
+
+        toggle_green.setChecked(greenVisible);
+        toggle_red.setChecked(redVisible);
+        toggle_blue.setChecked(blueVisible);
+
+        toggle_green.setOnCheckedChangeListener(this);
+        toggle_red.setOnCheckedChangeListener(this);
+        toggle_blue.setOnCheckedChangeListener(this);
+        return true;
+    }
+
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()){
+            case R.id.toggle_layout_pin_green:
+                Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_green");
+                greenVisible = !greenVisible;
+                reloadDelivers(1);
+                break;
+            case R.id.toggle_layout_pin_red:
+                Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_red");
+                redVisible = !redVisible;
+                reloadDelivers(1);
+                break;
+            case R.id.toggle_layout_pin_blue:
+                Log.i("onCheckedChanged", "clicked R.id.toggle_layout_pin_blue");
+                blueVisible = !blueVisible;
+                reloadDelivers(1);
+        }
+    }
+
+    public void addMapMarker() {
+        final Intent detailActivity = new Intent(getApplication(), CourierDeliveryDetail.class);
+        //ピンの配置を開始
+        markers = new Marker[HomeActivity.deliveryInfo.size()];
+        pinVisible  = new boolean[HomeActivity.deliveryInfo.size()];
+
+
+        for(int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
+
+            if(HomeActivity.deliveryInfo.get(i).getDelivered_status() == 1) {
+                //ReceivableStatusによるピンの色判定
+                colorStatus = HomeActivity.deliveryInfo.get(i).receivable_status;
+                switch (colorStatus) {
+                    case 0:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        blueVisible = HomeActivity.deliveryInfo.get(i).getVisible();
+                        pinVisible[i] = blueVisible;
+                        break;
+                    case 1:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        redVisible = HomeActivity.deliveryInfo.get(i).getVisible();
+                        pinVisible[i] = redVisible;
+                        break;
+                    case 2:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        greenVisible = HomeActivity.deliveryInfo.get(i).getVisible();
+                        pinVisible[i] = greenVisible;
+                }
+                markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
+                markers[i].setVisible(pinVisible[i]);
+                mHashMap.put(markers[i], i);
             }
         }
 
-        //ピンの配置を開始
-        Marker[] markers = new Marker[HomeActivity.deliveryInfo.size()];
-        for(int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
-            markers[i] = mMap.addMarker(option[i]); // ここでピンをセット
-            mHashMap.put(markers[i], i);
-        }
         mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -351,8 +394,30 @@ public class CourierMapActivity extends FragmentActivity implements OnMapReadyCa
                 startActivity(intent);// 詳細画面に遷移
             }
         });
-
     }
 
+    public void changeMarkerVisible(){
+        int receivableStatus;
+        for (int i = 0; i < HomeActivity.deliveryInfo.size(); i++) {
+            if (HomeActivity.deliveryInfo.get(i).delivered_status == 1) {
+                receivableStatus = HomeActivity.deliveryInfo.get(i).receivable_status;
+                switch (receivableStatus) {
+                    case 0:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        pinVisible[i] = blueVisible;
+                        break;
+                    case 1:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        pinVisible[i] = redVisible;
+                        break;
+                    case 2:
+                        option[i].icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        pinVisible[i] = greenVisible;
+                }
+                markers[i].setVisible(pinVisible[i]);
+                HomeActivity.deliveryInfo.get(i).setVisible(pinVisible[i]);
+            }
+        }
+    }
 }
 
