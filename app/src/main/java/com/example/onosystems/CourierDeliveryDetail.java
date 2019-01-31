@@ -43,7 +43,7 @@ public class CourierDeliveryDetail extends AppCompatActivity {
         Intent intent = getIntent();
         item = (HashMap<String, String>) intent.getSerializableExtra("item");
 
-        String name = item.get("name");
+        String name = item.get("shipTo");
         final String slip_number = item.get("slipNumber");
         String address = item.get("address");
         int unixtime = Integer.valueOf(item.get("unixTime"));

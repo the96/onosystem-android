@@ -150,6 +150,7 @@ public class HomeActivity extends AppCompatActivity
                 item.put("time", String.valueOf(sdf.format(date)));
                 item.put("slipNumber", String.valueOf(deliveryInfo.get(i).slipNumber));
                 item.put("address", deliveryInfo.get(i).address);
+                item.put("shipTo", deliveryInfo.get(i).ship_to);
                 item.put("shipFrom", deliveryInfo.get(i).ship_from);
                 item.put("deliveredStatus", String.valueOf(deliveryInfo.get(i).delivered_status));
                 item.put("receivableStatus", String.valueOf(deliveryInfo.get(i).receivable_status));
@@ -164,12 +165,20 @@ public class HomeActivity extends AppCompatActivity
                 list.add(item);
             }
         }
-
-        SimpleAdapter adapter = new SimpleAdapter(this,
-                list, R.layout.list_layout,
-                new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
-                new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
-        );
+        SimpleAdapter adapter;
+        if (this instanceof CustomerHomeActivity) {
+            adapter = new SimpleAdapter(this,
+                    list, R.layout.list_layout,
+                    new String[]{"name", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
+                    new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
+            );
+        } else {
+            adapter = new SimpleAdapter(this,
+                    list, R.layout.list_layout,
+                    new String[]{"shipTo", "time", "slipNumber", "address", "image", "shipFrom", "new"}, // どの項目を
+                    new int[]{R.id.addressText, R.id.timeText, R.id.slipNumberText, R.id.deliveryAddressText, R.id.image, R.id.shipFrom, R.id.newText} // どのidの項目に入れるか
+            );
+        }
 
         listView.setEmptyView(findViewById(R.id.emptyView));
         listView.setAdapter(adapter);
@@ -418,6 +427,7 @@ class Delivery {
     long slipNumber;
     String name;
     String address;
+    String ship_to;
     String ship_from;
     int time;
     int delivery_time;
@@ -472,11 +482,12 @@ class Delivery {
 
     }
 
-    public Delivery(long slipNumber, String name, String address, String ship_from, int time, int delivery_time,
+    public Delivery(long slipNumber, String name, String address, String ship_to, String ship_from, int time, int delivery_time,
                     int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean driver_updated, Geocoder geocoder) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
+        this.ship_to = ship_to;
         this.ship_from = ship_from;
         this.time = time;
         this.delivery_time = delivery_time;
@@ -489,11 +500,12 @@ class Delivery {
         this.setLatLngFromAddress(geocoder);
     }
 
-    public Delivery(String name, long slipNumber, String address, String ship_from, int time, int delivery_time,
+    public Delivery(String name, long slipNumber, String address,String ship_to, String ship_from, int time, int delivery_time,
                     int delivered_status, int receivable_status, int item_number, boolean visible, boolean read_flag, boolean customer_updated, Geocoder geocoder) {
         this.slipNumber = slipNumber;
         this.name = name;
         this.address = address;
+        this.ship_to = ship_to;
         this.ship_from = ship_from;
         this.time = time;
         this.delivery_time = delivery_time;
